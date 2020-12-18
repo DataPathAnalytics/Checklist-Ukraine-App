@@ -1,10 +1,9 @@
 package com.datapath.checklistukraineapp.security;
 
-import com.datapath.checklistukraineapp.dao.node.UserNode;
+import com.datapath.checklistukraineapp.dao.node.User;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,16 +19,16 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        UserNode user = service.findByEmail(username);
+        User user = service.findActiveByEmail(username);
 
         if (isNull(user)) throw new UsernameNotFoundException(username);
 
-        return User
+        return org.springframework.security.core.userdetails.User
                 .builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
                 .disabled(user.isDisable())
-                .accountLocked(false)
+                .accountLocked(user.isLocked())
                 .authorities(new SimpleGrantedAuthority(user.getRole()))
                 .build();
     }

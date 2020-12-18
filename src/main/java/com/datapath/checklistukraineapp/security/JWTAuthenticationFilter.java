@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.security;
 
-import com.datapath.checklistukraineapp.dao.node.UserNode;
+import com.datapath.checklistukraineapp.dao.node.User;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import com.datapath.checklistukraineapp.domain.request.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +15,6 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -79,12 +78,12 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult) {
 
-        UserNode userNode = userDaoService.findByEmail(((User) authResult.getPrincipal()).getUsername());
+        User user = userDaoService.findActiveByEmail(((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername());
 
         String token = Jwts.builder()
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
-                .setSubject(((User) authResult.getPrincipal()).getUsername())
-                .setId(userNode.getId().toString())
+                .setSubject(((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername())
+                .setId(user.getId().toString())
                 .claim("permissions", authResult.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .compact();
 

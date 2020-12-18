@@ -1,9 +1,11 @@
 package com.datapath.checklistukraineapp.dao.repository;
 
-import com.datapath.checklistukraineapp.dao.node.UserNode;
+import com.datapath.checklistukraineapp.dao.node.User;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-public interface UserRepository extends Neo4jRepository<UserNode, Long> {
+public interface UserRepository extends Neo4jRepository<User, Long> {
 
-    UserNode findByEmail(String email);
+    User findByEmail(String email);
+
+    User findByEmailAndRemovedIsFalse(String email);
 }

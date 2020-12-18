@@ -21,6 +21,8 @@ import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 
+import static com.datapath.checklistukraineapp.util.Constants.PUBLIC_ENDPOINTS;
+
 @EnableWebSecurity
 @Configuration
 @EnableGlobalMethodSecurity(
@@ -40,9 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(authenticationFilter(authenticationManagerBean()), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JWTAuthorizationFilter(authenticationManagerBean()))
                 .authorizeRequests()
-                .antMatchers(
-                        "/user/register",
-                        "/login")
+                .antMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

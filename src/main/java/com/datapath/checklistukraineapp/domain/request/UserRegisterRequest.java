@@ -3,6 +3,7 @@ package com.datapath.checklistukraineapp.domain.request;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 public class UserRegisterRequest {
@@ -13,5 +14,6 @@ public class UserRegisterRequest {
     private String email;
     @NotBlank
     private String password;
-
+    @NotNull
+    private Long departmentId;
 }

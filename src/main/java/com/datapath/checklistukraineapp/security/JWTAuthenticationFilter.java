@@ -1,8 +1,8 @@
 package com.datapath.checklistukraineapp.security;
 
-import com.datapath.checklistukraineapp.dao.node.User;
+import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
-import com.datapath.checklistukraineapp.domain.request.LoginRequest;
+import com.datapath.checklistukraineapp.domain.request.users.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -78,7 +78,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authResult) {
 
-        User user = userDaoService.findActiveByEmail(((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername());
+        UserEntity user = userDaoService.findActiveByEmail(((org.springframework.security.core.userdetails.User) authResult.getPrincipal()).getUsername());
 
         String token = Jwts.builder()
                 .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
@@ -88,5 +88,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .compact();
 
         response.addHeader(HttpHeaders.AUTHORIZATION, SecurityConstants.TOKEN_PREFIX + token);
+        UsersStorageService.addUser(user.getId());
     }
 }

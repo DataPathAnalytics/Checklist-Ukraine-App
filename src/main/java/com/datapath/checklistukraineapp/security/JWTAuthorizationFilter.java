@@ -56,6 +56,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String user = tokenBody.getSubject();
             String id = tokenBody.getId();
 
+            if (!UsersStorageService.isUserPresent(Long.parseLong(id))) {
+                return null;
+            }
+
             ArrayList rawPermissions = tokenBody.get("permissions", ArrayList.class);
 
             List<SimpleGrantedAuthority> permissions = new ArrayList<>();

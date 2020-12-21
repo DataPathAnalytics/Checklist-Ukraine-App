@@ -1,6 +1,6 @@
-package com.datapath.checklistukraineapp.dao.node;
+package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.relatioship.UserToDepartment;
+import com.datapath.checklistukraineapp.dao.relatioship.UserDepartment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,19 +10,20 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@Node
+@Node("User")
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    private String firstName;
+    private String lastName;
     private String email;
     private String password;
     private String role;
@@ -32,5 +33,5 @@ public class User {
     private LocalDateTime registeredDateTime;
 
     @Relationship(type = "FROM", direction = Relationship.Direction.OUTGOING)
-    private List<UserToDepartment> departments = new ArrayList<>();
+    private Set<UserDepartment> departments = new HashSet<>();
 }

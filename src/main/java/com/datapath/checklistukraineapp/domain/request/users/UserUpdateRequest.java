@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.domain.request;
+package com.datapath.checklistukraineapp.domain.request.users;
 
 import com.datapath.checklistukraineapp.util.UserRole;
 import lombok.Data;
@@ -13,7 +13,7 @@ public class UserUpdateRequest {
 
     @NotNull
     private Long id;
-    private Long departmentId;
+    private String department;
     private Boolean disable;
     private UserRole userRole;
 

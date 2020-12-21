@@ -1,0 +1,1 @@
+MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, role: 'admin', removed: false})

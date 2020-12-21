@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.security;
 
-import com.datapath.checklistukraineapp.dao.node.User;
+import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,7 +19,7 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = service.findActiveByEmail(username);
+        UserEntity user = service.findActiveByEmail(username);
 
         if (isNull(user)) throw new UsernameNotFoundException(username);
 

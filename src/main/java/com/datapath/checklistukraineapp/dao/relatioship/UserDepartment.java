@@ -1,11 +1,10 @@
 package com.datapath.checklistukraineapp.dao.relatioship;
 
-import com.datapath.checklistukraineapp.dao.node.Department;
+import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.schema.TargetNode;
 
@@ -15,18 +14,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @RelationshipProperties
-public class UserToDepartment {
+@EqualsAndHashCode(of = {"start", "end"})
+public class UserDepartment {
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    //    @Id
+//    @GeneratedValue
+//    private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
 
     @TargetNode
-    private Department department;
+    private DepartmentEntity department;
 
-    public UserToDepartment(Department department, LocalDateTime start, LocalDateTime end) {
+    public UserDepartment(DepartmentEntity department, LocalDateTime start, LocalDateTime end) {
         this.department = department;
         this.start = start;
         this.end = end;

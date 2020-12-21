@@ -1,10 +1,10 @@
 package com.datapath.checklistukraineapp.controller;
 
 import com.datapath.checklistukraineapp.domain.dto.UserDTO;
-import com.datapath.checklistukraineapp.domain.request.UserRegisterRequest;
-import com.datapath.checklistukraineapp.domain.request.UserUpdateRequest;
-import com.datapath.checklistukraineapp.exception.DepartmentException;
-import com.datapath.checklistukraineapp.exception.UserException;
+import com.datapath.checklistukraineapp.domain.request.users.ResetPasswordRequest;
+import com.datapath.checklistukraineapp.domain.request.users.ResetPasswordSendRequest;
+import com.datapath.checklistukraineapp.domain.request.users.UserRegisterRequest;
+import com.datapath.checklistukraineapp.domain.request.users.UserUpdateRequest;
 import com.datapath.checklistukraineapp.service.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,13 +26,13 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public void register(@Valid @RequestBody UserRegisterRequest request) throws UserException, DepartmentException {
+    public void register(@Valid @RequestBody UserRegisterRequest request) {
         service.register(request);
     }
 
     @PutMapping
     @PreAuthorize("hasAuthority('admin')")
-    public List<UserDTO> update(@RequestBody @Valid List<UserUpdateRequest> requests) throws UserException, DepartmentException {
+    public List<UserDTO> update(@RequestBody @Valid List<UserUpdateRequest> requests) {
         for (UserUpdateRequest request : requests) {
             service.update(request);
         }
@@ -41,8 +41,23 @@ public class UserController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('admin')")
-    public List<UserDTO> delete(@PathVariable Long id) throws UserException {
+    public List<UserDTO> delete(@PathVariable Long id) {
         service.delete(id);
         return service.list();
+    }
+
+    @PostMapping("password/reset/mail")
+    public void sendMailResetPassword(@Valid @RequestBody ResetPasswordSendRequest request) {
+        service.sendMailForResetPassword(request);
+    }
+
+    @GetMapping("password/reset/check")
+    public void checkResetPassword(@RequestParam String token) {
+        service.checkTokenForResetPassword(token);
+    }
+
+    @PostMapping("password/reset/save")
+    public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        service.resetPassword(request);
     }
 }

@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.node.Department;
+import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistukraineapp.dao.repository.DepartmentRepository;
 import com.datapath.checklistukraineapp.exception.DepartmentException;
 import lombok.AllArgsConstructor;
@@ -14,12 +14,12 @@ public class DepartmentDaoService {
 
     private final DepartmentRepository repository;
 
-    public List<Department> findAll() {
+    public List<DepartmentEntity> findAll() {
         return repository.findAll();
     }
 
-    public Department findById(Long departmentId) throws DepartmentException {
-        return repository.findById(departmentId)
+    public DepartmentEntity findById(String department) throws DepartmentException {
+        return repository.findById(department)
                 .orElseThrow(() -> new DepartmentException("Department not found"));
     }
 }

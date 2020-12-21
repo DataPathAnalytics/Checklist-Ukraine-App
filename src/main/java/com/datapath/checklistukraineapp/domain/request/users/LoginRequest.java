@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.domain.request;
+package com.datapath.checklistukraineapp.domain.request.users;
 
 import lombok.Data;
 

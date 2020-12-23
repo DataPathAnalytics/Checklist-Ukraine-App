@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
-import com.datapath.checklistukraineapp.dao.relatioship.UserDepartment;
+import com.datapath.checklistukraineapp.dao.entity.WorkPeriodEntity;
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import com.datapath.checklistukraineapp.domain.dto.UserDTO;
@@ -23,9 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import static com.datapath.checklistukraineapp.util.Constants.*;
@@ -53,10 +53,10 @@ public class UserWebService {
                     UserDTO dto = new UserDTO();
                     BeanUtils.copyProperties(u, dto);
 
-                    Optional<UserDepartment> lastDepartment = getLastDepartment(u.getDepartments());
+                    Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(u.getWorkPeriods());
 
-                    lastDepartment.ifPresent(
-                            userDepartment -> dto.setDepartment(userDepartment.getDepartment().getRegion())
+                    lastWorkPeriod.ifPresent(
+                            workPeriod -> dto.setDepartment(workPeriod.getDepartment().getRegion())
                     );
 
                     return dto;
@@ -144,35 +144,36 @@ public class UserWebService {
         UserEntity user = userDaoService.findById(id);
         user.setRemoved(true);
 
-        Optional<UserDepartment> lastDepartment = getLastDepartment(user.getDepartments());
-        lastDepartment.ifPresent(d -> d.setEnd(LocalDateTime.now()));
+        Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(user.getWorkPeriods());
+        lastWorkPeriod.ifPresent(period -> period.setEnd(LocalDateTime.now()));
 
         userDaoService.save(user);
         UsersStorageService.removeUser(user.getId());
     }
 
     private void updateDepartmentRelationship(UserEntity user, LocalDateTime date, String departmentRegion) {
-        Set<UserDepartment> departments = user.getDepartments();
+        List<WorkPeriodEntity> workPeriods = user.getWorkPeriods();
         DepartmentEntity department = departmentDaoService.findById(departmentRegion);
 
-        if (!isEmpty(departments)) {
-            Optional<UserDepartment> lastDepartment = getLastDepartment(user.getDepartments());
+        if (!isEmpty(workPeriods)) {
+            Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(user.getWorkPeriods());
 
-            if (!lastDepartment.isPresent()) {
-                departments.add(new UserDepartment(department, date, null));
+            if (!lastWorkPeriod.isPresent()) {
+
+                workPeriods.add(new WorkPeriodEntity(date, null, department));
             } else {
-                if (!lastDepartment.get().getDepartment().getRegion().equals(departmentRegion)) {
-                    lastDepartment.get().setEnd(date);
-                    departments.add(new UserDepartment(department, date, null));
+                if (!lastWorkPeriod.get().getDepartment().getRegion().equals(departmentRegion)) {
+                    lastWorkPeriod.get().setEnd(date);
+                    workPeriods.add(new WorkPeriodEntity(date, null, department));
                 }
             }
         } else {
-            departments.add(new UserDepartment(department, date, null));
+            workPeriods.add(new WorkPeriodEntity(date, null, department));
         }
     }
 
-    private Optional<UserDepartment> getLastDepartment(Set<UserDepartment> departments) {
-        return departments.stream()
+    private Optional<WorkPeriodEntity> getLastWorkPeriod(Collection<WorkPeriodEntity> workPeriods) {
+        return workPeriods.stream()
                 .filter(d -> isNull(d.getEnd()))
                 .findFirst();
     }

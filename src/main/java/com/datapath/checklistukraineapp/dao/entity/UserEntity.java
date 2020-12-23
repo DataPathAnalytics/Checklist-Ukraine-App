@@ -1,6 +1,5 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.relatioship.UserDepartment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +9,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Node("User")
@@ -32,6 +31,6 @@ public class UserEntity {
     private boolean removed;
     private LocalDateTime registeredDateTime;
 
-    @Relationship(type = "FROM", direction = Relationship.Direction.OUTGOING)
-    private Set<UserDepartment> departments = new HashSet<>();
+    @Relationship(type = "WORKED_PERIOD", direction = Relationship.Direction.OUTGOING)
+    private List<WorkPeriodEntity> workPeriods = new ArrayList<>();
 }

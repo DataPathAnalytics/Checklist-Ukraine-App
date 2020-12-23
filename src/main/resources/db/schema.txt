@@ -1,1 +1,3 @@
 CREATE CONSTRAINT user_email_cnt IF NOT EXISTS ON (u:User) ASSERT u.email IS UNIQUE
+
+CREATE CONSTRAINT department_region_cnt IF NOT EXISTS ON (d:Department) ASSERT d.region IS UNIQUE

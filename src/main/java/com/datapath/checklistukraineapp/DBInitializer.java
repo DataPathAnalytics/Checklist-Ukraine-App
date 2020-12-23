@@ -2,6 +2,7 @@ package com.datapath.checklistukraineapp;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -41,6 +42,8 @@ public class DBInitializer implements InitializingBean {
         BufferedReader br = new BufferedReader(
                 new InputStreamReader(resourceLoader.getResource(filePath).getInputStream(), UTF_8));
 
-        br.lines().forEach(l -> client.query(l).run());
+        br.lines()
+                .filter(Strings::isNotEmpty)
+                .forEach(l -> client.query(l).run());
     }
 }

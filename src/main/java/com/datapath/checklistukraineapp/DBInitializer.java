@@ -29,6 +29,7 @@ public class DBInitializer implements InitializingBean {
         try {
             runQueriesFromFile("schema");
             runQueriesFromFile("data");
+            runQueriesFromFile("relationship");
         } catch (DataIntegrityViolationException e) {
             log.warn(e.getMessage());
         } catch (Exception e) {

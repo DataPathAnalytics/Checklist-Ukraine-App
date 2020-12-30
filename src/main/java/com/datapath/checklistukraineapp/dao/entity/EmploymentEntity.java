@@ -11,10 +11,10 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
 
 @Data
-@Node("WorkPeriod")
+@Node("Employment")
 @AllArgsConstructor
 @NoArgsConstructor
-public class WorkPeriodEntity {
+public class EmploymentEntity {
 
     @Id
     @GeneratedValue
@@ -22,10 +22,10 @@ public class WorkPeriodEntity {
     private LocalDateTime start;
     private LocalDateTime end;
 
-    @Relationship(type = "WORKED_FOR", direction = Relationship.Direction.OUTGOING)
+    @Relationship(type = "EMPLOYMENT_BY", direction = Relationship.Direction.OUTGOING)
     private DepartmentEntity department;
 
-    public WorkPeriodEntity(LocalDateTime start, LocalDateTime end, DepartmentEntity department) {
+    public EmploymentEntity(LocalDateTime start, LocalDateTime end, DepartmentEntity department) {
         this.start = start;
         this.end = end;
         this.department = department;

@@ -11,8 +11,8 @@ public class UserDTO {
     private String email;
     private String firstName;
     private String lastName;
-    private String role;
-    private String department;
+    private Long permissionId;
+    private Long departmentId;
     private LocalDateTime registeredDateTime;
     private boolean disable;
     private boolean locked;

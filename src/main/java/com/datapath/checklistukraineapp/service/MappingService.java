@@ -1,16 +1,16 @@
 package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
+import com.datapath.checklistukraineapp.dao.service.PermissionDaoService;
 import com.datapath.checklistukraineapp.domain.dto.DepartmentDTO;
+import com.datapath.checklistukraineapp.domain.dto.PermissionDTO;
 import com.datapath.checklistukraineapp.domain.response.MappingPrivateResponse;
 import com.datapath.checklistukraineapp.domain.response.MappingPublicResponse;
-import com.datapath.checklistukraineapp.util.UserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Stream;
-
+import static com.datapath.checklistukraineapp.util.Constants.ADMIN_ROLE;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -18,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 public class MappingService {
 
     private final DepartmentDaoService departmentDaoService;
+    private final PermissionDaoService permissionDaoService;
 
     public MappingPublicResponse getPublicMappings() {
         MappingPublicResponse response = new MappingPublicResponse();
@@ -36,10 +37,16 @@ public class MappingService {
 
     public MappingPrivateResponse getPrivateMappings() {
         MappingPrivateResponse response = new MappingPrivateResponse();
-        response.setRoles(
-                Stream.of(UserRole.values())
-                        .filter(r -> !r.equals(UserRole.admin))
-                        .collect(toList()));
+        response.setPermissions(
+                permissionDaoService.findAll().stream()
+                        .filter(r -> !ADMIN_ROLE.equals(r.getRole()))
+                        .map(r -> {
+                            PermissionDTO dto = new PermissionDTO();
+                            BeanUtils.copyProperties(r, dto);
+                            return dto;
+                        })
+                        .collect(toList())
+        );
         return response;
     }
 }

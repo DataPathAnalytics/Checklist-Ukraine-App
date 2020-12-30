@@ -1,9 +1,11 @@
 package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
+import com.datapath.checklistukraineapp.dao.entity.EmploymentEntity;
+import com.datapath.checklistukraineapp.dao.entity.PermissionEntity;
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
-import com.datapath.checklistukraineapp.dao.entity.WorkPeriodEntity;
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
+import com.datapath.checklistukraineapp.dao.service.PermissionDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import com.datapath.checklistukraineapp.domain.dto.UserDTO;
 import com.datapath.checklistukraineapp.domain.request.users.ResetPasswordRequest;
@@ -15,7 +17,6 @@ import com.datapath.checklistukraineapp.exception.UserException;
 import com.datapath.checklistukraineapp.security.ConfirmationTokenStorageService;
 import com.datapath.checklistukraineapp.security.UsersStorageService;
 import com.datapath.checklistukraineapp.util.MessageTemplate;
-import com.datapath.checklistukraineapp.util.UserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -41,23 +42,26 @@ public class UserWebService {
     private final UserDaoService userDaoService;
     private final DepartmentDaoService departmentDaoService;
     private final BCryptPasswordEncoder passwordEncoder;
-    private ConfirmationTokenStorageService tokenStorageService;
-    private EmailSenderService emailSender;
+    private final ConfirmationTokenStorageService tokenStorageService;
+    private final EmailSenderService emailSender;
+    private final PermissionDaoService permissionService;
 
     public List<UserDTO> list() {
         return userDaoService.findAll()
                 .stream()
                 .filter(u -> !u.isRemoved())
-                .filter(u -> !UserRole.admin.getValue().equals(u.getRole()))
+                .filter(u -> !ADMIN_ROLE.equals(u.getPermission().getRole()))
                 .map(u -> {
                     UserDTO dto = new UserDTO();
                     BeanUtils.copyProperties(u, dto);
 
-                    Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(u.getWorkPeriods());
+                    Optional<EmploymentEntity> lastEmployment = getLastEmployment(u.getEmployments());
 
-                    lastWorkPeriod.ifPresent(
-                            workPeriod -> dto.setDepartment(workPeriod.getDepartment().getRegion())
+                    lastEmployment.ifPresent(
+                            employment -> dto.setDepartmentId(employment.getDepartment().getId())
                     );
+
+                    dto.setPermissionId(u.getPermission().getId());
 
                     return dto;
                 }).collect(toList());
@@ -78,9 +82,9 @@ public class UserWebService {
         user.setDisable(true);
         user.setLocked(true);
         user.setRemoved(false);
-        user.setRole(UserRole.auditor.getValue());
+        user.setPermission(permissionService.findByRole(AUDITOR_ROLE));
         user.setRegisteredDateTime(now);
-        updateDepartmentRelationship(user, now, request.getDepartment());
+        updateDepartmentRelationship(user, now, request.getDepartmentId());
 
         userDaoService.save(user);
 
@@ -103,7 +107,7 @@ public class UserWebService {
     public void update(UserUpdateRequest request) {
         UserEntity user = userDaoService.findById(request.getId());
 
-        if (UserRole.admin.getValue().equals(user.getRole())) throw new UserException("Admin updating not allowed");
+        if (ADMIN_ROLE.equals(user.getPermission().getRole())) throw new UserException("Admin updating not allowed");
 
         if (user.isLocked()) user.setLocked(false);
 
@@ -124,13 +128,16 @@ public class UserWebService {
             }
         }
 
-        if (nonNull(request.getDepartment())) {
+        if (nonNull(request.getDepartmentId())) {
             LocalDateTime now = LocalDateTime.now();
-            updateDepartmentRelationship(user, now, request.getDepartment());
+            updateDepartmentRelationship(user, now, request.getDepartmentId());
         }
 
-        if (nonNull(request.getUserRole()) && !request.getUserRole().equals(UserRole.admin)) {
-            user.setRole(request.getUserRole().getValue());
+        if (nonNull(request.getPermissionId())) {
+            PermissionEntity permission = permissionService.findById(request.getPermissionId());
+            if (!ADMIN_ROLE.equals(permission.getRole())) {
+                user.setPermission(permission);
+            }
         }
 
         userDaoService.save(user);
@@ -144,35 +151,35 @@ public class UserWebService {
         UserEntity user = userDaoService.findById(id);
         user.setRemoved(true);
 
-        Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(user.getWorkPeriods());
-        lastWorkPeriod.ifPresent(period -> period.setEnd(LocalDateTime.now()));
+        Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
+        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDateTime.now()));
 
         userDaoService.save(user);
         UsersStorageService.removeUser(user.getId());
     }
 
-    private void updateDepartmentRelationship(UserEntity user, LocalDateTime date, String departmentRegion) {
-        List<WorkPeriodEntity> workPeriods = user.getWorkPeriods();
-        DepartmentEntity department = departmentDaoService.findById(departmentRegion);
+    private void updateDepartmentRelationship(UserEntity user, LocalDateTime date, Long departmentId) {
+        List<EmploymentEntity> employments = user.getEmployments();
+        DepartmentEntity department = departmentDaoService.findById(departmentId);
 
-        if (!isEmpty(workPeriods)) {
-            Optional<WorkPeriodEntity> lastWorkPeriod = getLastWorkPeriod(user.getWorkPeriods());
+        if (!isEmpty(employments)) {
+            Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
 
-            if (!lastWorkPeriod.isPresent()) {
+            if (!lastEmployment.isPresent()) {
 
-                workPeriods.add(new WorkPeriodEntity(date, null, department));
+                employments.add(new EmploymentEntity(date, null, department));
             } else {
-                if (!lastWorkPeriod.get().getDepartment().getRegion().equals(departmentRegion)) {
-                    lastWorkPeriod.get().setEnd(date);
-                    workPeriods.add(new WorkPeriodEntity(date, null, department));
+                if (!lastEmployment.get().getDepartment().getId().equals(departmentId)) {
+                    lastEmployment.get().setEnd(date);
+                    employments.add(new EmploymentEntity(date, null, department));
                 }
             }
         } else {
-            workPeriods.add(new WorkPeriodEntity(date, null, department));
+            employments.add(new EmploymentEntity(date, null, department));
         }
     }
 
-    private Optional<WorkPeriodEntity> getLastWorkPeriod(Collection<WorkPeriodEntity> workPeriods) {
+    private Optional<EmploymentEntity> getLastEmployment(Collection<EmploymentEntity> workPeriods) {
         return workPeriods.stream()
                 .filter(d -> isNull(d.getEnd()))
                 .findFirst();

@@ -8,13 +8,14 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("Department")
+@Node("Permission")
 @NoArgsConstructor
 @AllArgsConstructor
-public class DepartmentEntity {
+public class PermissionEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String region;
+    private String role;
+    private String translate;
 }

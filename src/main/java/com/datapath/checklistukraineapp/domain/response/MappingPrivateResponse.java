@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.domain.response;
 
-import com.datapath.checklistukraineapp.util.UserRole;
+import com.datapath.checklistukraineapp.domain.dto.PermissionDTO;
 import lombok.Data;
 
 import java.util.List;
@@ -8,5 +8,5 @@ import java.util.List;
 @Data
 public class MappingPrivateResponse {
 
-    private List<UserRole> roles;
+    private List<PermissionDTO> permissions;
 }

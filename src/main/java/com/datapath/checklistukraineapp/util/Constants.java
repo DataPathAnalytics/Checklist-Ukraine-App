@@ -18,6 +18,9 @@ public final class Constants {
     private static final String RESET_PASSWORD_CHECK_URL = "/users/password/reset/check";
     private static final String RESET_PASSWORD_SAVE_URL = "/users/password/reset/save";
 
+    public static final String ADMIN_ROLE = "admin";
+    public static final String AUDITOR_ROLE = "auditor";
+
     public static final String[] PUBLIC_ENDPOINTS = {
             LOGIN_URL,
             REGISTER_URL,

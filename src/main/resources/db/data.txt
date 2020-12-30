@@ -1,5 +1,9 @@
 MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, role: 'admin', removed: false})
 
+MERGE (p:Permission {role: 'admin', translate: 'Адміністратор'})
+MERGE (p:Permission {role: 'auditor', translate: 'Аудитор'})
+MERGE (p:Permission {role: 'methodologist', translate: 'Методолог'})
+
 MERGE (d:Department {region: 'Північ'})
 MERGE (d:Department {region: 'Схід'})
 MERGE (d:Department {region: 'Південь'})

@@ -29,7 +29,7 @@ public class AuthUserDetailsService implements UserDetailsService {
                 .password(user.getPassword())
                 .disabled(user.isDisable())
                 .accountLocked(user.isLocked())
-                .authorities(new SimpleGrantedAuthority(user.getRole()))
+                .authorities(new SimpleGrantedAuthority(user.getPermission().getRole()))
                 .build();
     }
 

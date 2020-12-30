@@ -3,8 +3,8 @@ package com.datapath.checklistukraineapp.domain.dto;
 import lombok.Data;
 
 @Data
-public class DepartmentDTO {
-
+public class PermissionDTO {
     private Long id;
-    private String region;
+    private String role;
+    private String translate;
 }

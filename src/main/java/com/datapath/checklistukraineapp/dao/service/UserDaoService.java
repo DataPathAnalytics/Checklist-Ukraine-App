@@ -3,7 +3,6 @@ package com.datapath.checklistukraineapp.dao.service;
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import com.datapath.checklistukraineapp.dao.repository.UserRepository;
 import com.datapath.checklistukraineapp.exception.UserException;
-import com.datapath.checklistukraineapp.util.UserRole;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,10 +32,10 @@ public class UserDaoService {
 
     public UserEntity findById(Long id) throws UserException {
         return repository.findById(id)
-                .orElseThrow(() -> new UserException("User Not found"));
+                .orElseThrow(() -> new UserException("User not found"));
     }
 
     public UserEntity findAdmin() {
-        return repository.findFirstByRole(UserRole.admin.getValue());
+        return repository.findAdminUser();
     }
 }

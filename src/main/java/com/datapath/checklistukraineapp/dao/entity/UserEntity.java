@@ -25,12 +25,14 @@ public class UserEntity {
     private String lastName;
     private String email;
     private String password;
-    private String role;
     private boolean disable;
     private boolean locked;
     private boolean removed;
     private LocalDateTime registeredDateTime;
 
-    @Relationship(type = "WORKED_PERIOD", direction = Relationship.Direction.OUTGOING)
-    private List<WorkPeriodEntity> workPeriods = new ArrayList<>();
+    @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
+    private PermissionEntity permission;
+
+    @Relationship(type = "HAS_EMPLOYMENT_PERIOD", direction = Relationship.Direction.OUTGOING)
+    private List<EmploymentEntity> employments = new ArrayList<>();
 }

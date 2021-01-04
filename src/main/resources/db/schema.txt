@@ -5,3 +5,5 @@ CREATE CONSTRAINT department_region_cnt IF NOT EXISTS ON (d:Department) ASSERT d
 CREATE CONSTRAINT permission_role_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.role IS UNIQUE
 
 CREATE CONSTRAINT template_name_cnt IF NOT EXISTS ON (t:Template) ASSERT t.name IS UNIQUE
+
+CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASSERT q.id IS UNIQUE

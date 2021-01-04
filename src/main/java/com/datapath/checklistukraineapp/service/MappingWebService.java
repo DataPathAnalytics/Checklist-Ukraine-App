@@ -2,10 +2,11 @@ package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistukraineapp.dao.service.PermissionDaoService;
-import com.datapath.checklistukraineapp.domain.dto.DepartmentDTO;
-import com.datapath.checklistukraineapp.domain.dto.PermissionDTO;
-import com.datapath.checklistukraineapp.domain.response.MappingPrivateResponse;
-import com.datapath.checklistukraineapp.domain.response.MappingPublicResponse;
+import com.datapath.checklistukraineapp.dto.DepartmentDTO;
+import com.datapath.checklistukraineapp.dto.PermissionDTO;
+import com.datapath.checklistukraineapp.dto.response.MappingPrivateResponse;
+import com.datapath.checklistukraineapp.dto.response.MappingPublicResponse;
+import com.datapath.checklistukraineapp.util.Answer;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
-public class MappingService {
+public class MappingWebService {
 
     private final DepartmentDaoService departmentDaoService;
     private final PermissionDaoService permissionDaoService;
@@ -46,6 +47,10 @@ public class MappingService {
                             return dto;
                         })
                         .collect(toList())
+        );
+        response.setAnswers(
+                Answer.values()
+//                Stream.of(Answer.values()).map(a -> new AnswerDTO(a.getValue(), a.getName())).collect(toList())
         );
         return response;
     }

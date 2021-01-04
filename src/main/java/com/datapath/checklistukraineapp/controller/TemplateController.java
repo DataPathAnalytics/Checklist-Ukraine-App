@@ -1,7 +1,8 @@
 package com.datapath.checklistukraineapp.controller;
 
-import com.datapath.checklistukraineapp.domain.dto.TemplateDTO;
-import com.datapath.checklistukraineapp.domain.request.template.CreateTemplateRequest;
+import com.datapath.checklistukraineapp.dto.TemplateDTO;
+import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
+import com.datapath.checklistukraineapp.dto.response.TemplateResponse;
 import com.datapath.checklistukraineapp.service.TemplateWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +30,7 @@ public class TemplateController {
     }
 
     @GetMapping("{id}")
-    public TemplateDTO get(@PathVariable Long id) {
+    public TemplateResponse get(@PathVariable Long id) {
         return service.get(id);
     }
 }

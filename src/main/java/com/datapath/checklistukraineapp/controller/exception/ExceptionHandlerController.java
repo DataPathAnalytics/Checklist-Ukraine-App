@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.controller.exception;
 
-import com.datapath.checklistukraineapp.domain.response.ExceptionResponse;
+import com.datapath.checklistukraineapp.dto.response.ExceptionResponse;
 import com.datapath.checklistukraineapp.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,9 @@ public class ExceptionHandlerController {
             ResetPasswordException.class,
             PermissionException.class,
             TemplateException.class,
-            FolderException.class})
+            FolderException.class,
+            QuestionException.class,
+            QuestionSourceException.class})
     public ResponseEntity<ExceptionResponse> exception(Exception ex) {
         ExceptionResponse response = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.BAD_REQUEST);

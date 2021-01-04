@@ -2,8 +2,8 @@ package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.entity.TemplateFolderEntity;
 import com.datapath.checklistukraineapp.dao.service.TemplateFolderDaoService;
-import com.datapath.checklistukraineapp.domain.dto.FolderDTO;
-import com.datapath.checklistukraineapp.domain.request.CreateFolderRequest;
+import com.datapath.checklistukraineapp.dto.FolderDTO;
+import com.datapath.checklistukraineapp.dto.request.CreateFolderRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
 package com.datapath.checklistukraineapp.controller;
 
-import com.datapath.checklistukraineapp.domain.dto.UserDTO;
-import com.datapath.checklistukraineapp.domain.request.users.ResetPasswordRequest;
-import com.datapath.checklistukraineapp.domain.request.users.ResetPasswordSendRequest;
-import com.datapath.checklistukraineapp.domain.request.users.UserRegisterRequest;
-import com.datapath.checklistukraineapp.domain.request.users.UserUpdateRequest;
+import com.datapath.checklistukraineapp.dto.UserDTO;
+import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
+import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
+import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
+import com.datapath.checklistukraineapp.dto.request.users.UserUpdateRequest;
 import com.datapath.checklistukraineapp.service.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

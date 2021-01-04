@@ -1,7 +1,6 @@
 package com.datapath.checklistukraineapp.dao.relatioship;
 
-import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
-import com.datapath.checklistukraineapp.util.Answer;
+import com.datapath.checklistukraineapp.dao.entity.QuestionSourceEntity;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -10,15 +9,13 @@ import org.springframework.data.neo4j.core.schema.TargetNode;
 
 @Data
 @RelationshipProperties
-public class TemplateQuestionRelationship {
+public class QuestionSourceRelationship {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String groupName;
-    private Long parentQuestionId;
-    private Answer conditionAnswer;
+    private String documentParagraph;
 
     @TargetNode
-    private QuestionEntity question;
+    private QuestionSourceEntity source;
 }

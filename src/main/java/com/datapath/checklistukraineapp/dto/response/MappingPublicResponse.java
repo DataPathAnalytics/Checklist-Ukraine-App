@@ -1,6 +1,6 @@
-package com.datapath.checklistukraineapp.domain.response;
+package com.datapath.checklistukraineapp.dto.response;
 
-import com.datapath.checklistukraineapp.domain.dto.DepartmentDTO;
+import com.datapath.checklistukraineapp.dto.DepartmentDTO;
 import lombok.Data;
 
 import java.util.List;

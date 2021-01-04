@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
+import com.datapath.checklistukraineapp.dao.domain.TemplateDomain;
 import com.datapath.checklistukraineapp.dao.entity.TemplateEntity;
 import com.datapath.checklistukraineapp.dao.repository.TemplateRepository;
 import com.datapath.checklistukraineapp.exception.TemplateException;
@@ -14,8 +15,8 @@ public class TemplateDaoService {
 
     private final TemplateRepository repository;
 
-    public List<TemplateEntity> findAll() {
-        return repository.findAll();
+    public List<TemplateDomain> findAll() {
+        return repository.getTemplates();
     }
 
     public TemplateEntity findById(Long id) {

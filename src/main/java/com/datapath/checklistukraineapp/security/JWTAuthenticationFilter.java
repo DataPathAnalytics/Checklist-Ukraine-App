@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.security;
 
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
-import com.datapath.checklistukraineapp.domain.request.users.LoginRequest;
+import com.datapath.checklistukraineapp.dto.request.users.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

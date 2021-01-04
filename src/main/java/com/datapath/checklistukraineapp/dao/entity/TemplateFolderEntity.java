@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @Node("TemplateFolder")
-@EqualsAndHashCode(of = {"name", "parent"})
+@EqualsAndHashCode(of = {"name"})
 public class TemplateFolderEntity {
 
     @Id

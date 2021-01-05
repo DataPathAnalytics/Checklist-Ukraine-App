@@ -38,4 +38,8 @@ public class UserDaoService {
     public UserEntity findAdmin() {
         return repository.findAdminUser();
     }
+
+    public boolean existsNotChecked() {
+        return repository.existsNotChecked();
+    }
 }

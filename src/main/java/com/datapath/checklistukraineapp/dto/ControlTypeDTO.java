@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PermissionDTO {
-    private Integer permissionId;
+public class ControlTypeDTO {
+    private Integer controlTypeId;
     private String value;
 }

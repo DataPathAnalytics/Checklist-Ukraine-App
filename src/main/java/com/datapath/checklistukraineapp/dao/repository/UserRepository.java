@@ -12,4 +12,7 @@ public interface UserRepository extends Neo4jRepository<UserEntity, Long> {
 
     @Query(value = "match (u:User)-[hp:HAS_PERMISSION]->(p:Permission {role:'admin'}) return u limit 1")
     UserEntity findAdminUser();
+
+    @Query(value = "match (u:User) where u.locked = true return count(u) > 0")
+    boolean existsNotChecked();
 }

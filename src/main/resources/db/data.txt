@@ -1,10 +1,18 @@
 MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, role: 'admin', removed: false})
 
-MERGE (p:Permission {role: 'admin', translate: 'Адміністратор'})
-MERGE (p:Permission {role: 'auditor', translate: 'Аудитор'})
-MERGE (p:Permission {role: 'methodologist', translate: 'Методолог'})
+MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор'})
+MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор'})
+MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог'})
 
 MERGE (d:Department {region: 'Північ'})
 MERGE (d:Department {region: 'Схід'})
 MERGE (d:Department {region: 'Південь'})
 MERGE (d:Department {region: 'Захід'})
+
+MERGE (a:Answer {answerId: 1, value:'ТАК'})
+MERGE (a:Answer {answerId: 2, value:'Ні'})
+MERGE (a:Answer {answerId: 3, value:'НЗ'})
+
+MERGE (c:ControlType {controlTypeId: 1, value:'Ревізія'})
+MERGE (c:ControlType {controlTypeId: 2, value:'Аудит'})
+MERGE (c:ControlType {controlTypeId: 3, value:'Перевірка'})

@@ -2,12 +2,13 @@ package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistukraineapp.dao.entity.EmploymentEntity;
-import com.datapath.checklistukraineapp.dao.entity.PermissionEntity;
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionEntity;
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistukraineapp.dao.service.PermissionDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import com.datapath.checklistukraineapp.dto.UserDTO;
+import com.datapath.checklistukraineapp.dto.UserStateDTO;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
@@ -39,15 +40,15 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @AllArgsConstructor
 public class UserWebService {
 
-    private final UserDaoService userDaoService;
-    private final DepartmentDaoService departmentDaoService;
+    private final UserDaoService userService;
+    private final DepartmentDaoService departmentService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationTokenStorageService tokenStorageService;
     private final EmailSenderService emailSender;
     private final PermissionDaoService permissionService;
 
     public List<UserDTO> list() {
-        return userDaoService.findAll()
+        return userService.findAll()
                 .stream()
                 .filter(u -> !u.isRemoved())
                 .filter(u -> !ADMIN_ROLE.equals(u.getPermission().getRole()))
@@ -61,7 +62,7 @@ public class UserWebService {
                             employment -> dto.setDepartmentId(employment.getDepartment().getId())
                     );
 
-                    dto.setPermissionId(u.getPermission().getId());
+                    dto.setPermissionId(u.getPermission().getPermissionId());
 
                     return dto;
                 }).collect(toList());
@@ -69,7 +70,7 @@ public class UserWebService {
 
     @Transactional
     public void register(UserRegisterRequest request) {
-        UserEntity existedUser = userDaoService.findByEmail(request.getEmail());
+        UserEntity existedUser = userService.findByEmail(request.getEmail());
         if (nonNull(existedUser)) throw new UserException("This email already registered");
 
         LocalDateTime now = LocalDateTime.now();
@@ -86,9 +87,9 @@ public class UserWebService {
         user.setRegisteredDateTime(now);
         updateDepartmentRelationship(user, now, request.getDepartmentId());
 
-        userDaoService.save(user);
+        userService.save(user);
 
-        UserEntity admin = userDaoService.findAdmin();
+        UserEntity admin = userService.findAdmin();
 
         if (isNull(admin)) throw new UserException("Admin not found");
 
@@ -105,7 +106,7 @@ public class UserWebService {
 
     @Transactional
     public void update(UserUpdateRequest request) {
-        UserEntity user = userDaoService.findById(request.getId());
+        UserEntity user = userService.findById(request.getId());
 
         if (ADMIN_ROLE.equals(user.getPermission().getRole())) throw new UserException("Admin updating not allowed");
 
@@ -140,7 +141,7 @@ public class UserWebService {
             }
         }
 
-        userDaoService.save(user);
+        userService.save(user);
 
         if (nonNull(template)) emailSender.send(template);
         UsersStorageService.removeUser(user.getId());
@@ -148,19 +149,19 @@ public class UserWebService {
 
     @Transactional
     public void delete(Long id) {
-        UserEntity user = userDaoService.findById(id);
+        UserEntity user = userService.findById(id);
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
         lastEmployment.ifPresent(employment -> employment.setEnd(LocalDateTime.now()));
 
-        userDaoService.save(user);
+        userService.save(user);
         UsersStorageService.removeUser(user.getId());
     }
 
     private void updateDepartmentRelationship(UserEntity user, LocalDateTime date, Long departmentId) {
         List<EmploymentEntity> employments = user.getEmployments();
-        DepartmentEntity department = departmentDaoService.findById(departmentId);
+        DepartmentEntity department = departmentService.findById(departmentId);
 
         if (!isEmpty(employments)) {
             Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
@@ -186,7 +187,7 @@ public class UserWebService {
     }
 
     public void sendMailForResetPassword(ResetPasswordSendRequest request) {
-        UserEntity user = userDaoService.findByEmail(request.getEmail());
+        UserEntity user = userService.findByEmail(request.getEmail());
 
         if (isNull(user)) throw new UserException("User not found");
 
@@ -211,12 +212,12 @@ public class UserWebService {
     public void resetPassword(ResetPasswordRequest request) {
         if (tokenStorageService.isPresent(request.getToken())) {
             String email = tokenStorageService.getEmail(request.getToken());
-            UserEntity user = userDaoService.findByEmail(email);
+            UserEntity user = userService.findByEmail(email);
 
             if (nonNull(user)) {
                 String encodedNewPassword = passwordEncoder.encode(request.getPassword());
                 user.setPassword(encodedNewPassword);
-                userDaoService.save(user);
+                userService.save(user);
                 tokenStorageService.removed(email);
                 UsersStorageService.removeUser(user.getId());
             } else {
@@ -226,5 +227,10 @@ public class UserWebService {
         } else {
             throw new ResetPasswordException("Confirmation token is expired");
         }
+    }
+
+    public UserStateDTO getState() {
+        boolean exists = userService.existsNotChecked();
+        return new UserStateDTO(exists);
     }
 }

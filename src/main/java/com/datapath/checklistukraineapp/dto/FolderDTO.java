@@ -17,6 +17,6 @@ public class FolderDTO {
     private String name;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private Long parentId;
+    private boolean root;
     private List<Long> children = new ArrayList<>();
 }

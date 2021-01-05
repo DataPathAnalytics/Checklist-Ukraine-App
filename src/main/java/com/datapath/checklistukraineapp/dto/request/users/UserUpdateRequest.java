@@ -11,5 +11,5 @@ public class UserUpdateRequest {
     private Long id;
     private Long departmentId;
     private Boolean disable;
-    private Long permissionId;
+    private Integer permissionId;
 }

@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class PermissionDTO {
-    private Integer permissionId;
-    private String value;
+public class UserStateDTO {
+    private boolean existsNotCheckedUsers;
 }

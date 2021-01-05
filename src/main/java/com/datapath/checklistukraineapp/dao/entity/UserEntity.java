@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
+import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

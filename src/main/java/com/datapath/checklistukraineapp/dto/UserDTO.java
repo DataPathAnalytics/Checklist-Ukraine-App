@@ -11,7 +11,7 @@ public class UserDTO {
     private String email;
     private String firstName;
     private String lastName;
-    private Long permissionId;
+    private Integer permissionId;
     private Long departmentId;
     private LocalDateTime registeredDateTime;
     private boolean disable;

@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.controller;
+package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.FolderDTO;
 import com.datapath.checklistukraineapp.dto.request.CreateFolderRequest;
@@ -11,7 +11,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("folder")
+@RequestMapping("folders")
 @AllArgsConstructor
 public class FolderController {
 

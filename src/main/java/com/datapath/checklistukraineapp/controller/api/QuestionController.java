@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.controller;
+package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.QuestionDTO;
 import com.datapath.checklistukraineapp.dto.request.CreateQuestionRequest;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("question")
+@RequestMapping("questions")
 public class QuestionController {
 
     private final QuestionWebService service;

@@ -57,7 +57,7 @@ public class TemplateWebService {
             if (nonNull(q.getParentQuestionId())) {
                 QuestionEntity parentQuestion = questionService.findById(q.getParentQuestionId());
                 relationship.setParentQuestionId(parentQuestion.getId());
-                relationship.setConditionAnswer(q.getConditionAnswer());
+                relationship.setAnswerId(q.getAnswerId());
             }
 
             entity.getQuestions().add(relationship);
@@ -96,7 +96,7 @@ public class TemplateWebService {
                             dto.setQuestionId(q.getQuestion().getId());
                             dto.setGroupName(q.getGroupName());
                             dto.setParentQuestionId(q.getParentQuestionId());
-                            dto.setConditionAnswer(q.getConditionAnswer());
+                            dto.setAnswerId(q.getAnswerId());
 
                             return dto;
                         }).collect(Collectors.groupingBy(TemplateQuestionDTO::getGroupName))

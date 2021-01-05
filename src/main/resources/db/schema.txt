@@ -3,7 +3,13 @@ CREATE CONSTRAINT user_email_cnt IF NOT EXISTS ON (u:User) ASSERT u.email IS UNI
 CREATE CONSTRAINT department_region_cnt IF NOT EXISTS ON (d:Department) ASSERT d.region IS UNIQUE
 
 CREATE CONSTRAINT permission_role_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.role IS UNIQUE
+CREATE CONSTRAINT permission_id_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.permissionId IS UNIQUE
 
 CREATE CONSTRAINT template_name_cnt IF NOT EXISTS ON (t:Template) ASSERT t.name IS UNIQUE
 
 CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASSERT q.id IS UNIQUE
+
+CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS UNIQUE
+
+CREATE CONSTRAINT control_type_id_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.controlTypeId IS UNIQUE
+CREATE CONSTRAINT control_type_value_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.value IS UNIQUE

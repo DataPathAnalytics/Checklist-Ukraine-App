@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AnswerDTO {
-    private int value;
-    private String name;
+    private Integer answerId;
+    private String value;
 }

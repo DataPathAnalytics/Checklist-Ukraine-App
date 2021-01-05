@@ -1,6 +1,7 @@
-package com.datapath.checklistukraineapp.controller;
+package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.UserDTO;
+import com.datapath.checklistukraineapp.dto.UserStateDTO;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
@@ -44,6 +45,12 @@ public class UserController {
     public List<UserDTO> delete(@PathVariable Long id) {
         service.delete(id);
         return service.list();
+    }
+
+    @GetMapping("state")
+    @PreAuthorize("hasAuthority('admin')")
+    public UserStateDTO state() {
+        return service.getState();
     }
 
     @PostMapping("password/reset/mail")

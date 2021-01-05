@@ -1,7 +1,8 @@
 package com.datapath.checklistukraineapp.dto.response;
 
+import com.datapath.checklistukraineapp.dto.AnswerDTO;
+import com.datapath.checklistukraineapp.dto.ControlTypeDTO;
 import com.datapath.checklistukraineapp.dto.PermissionDTO;
-import com.datapath.checklistukraineapp.util.Answer;
 import lombok.Data;
 
 import java.util.List;
@@ -10,5 +11,6 @@ import java.util.List;
 public class MappingPrivateResponse {
 
     private List<PermissionDTO> permissions;
-    private Answer[] answers;
+    private List<AnswerDTO> answers;
+    private List<ControlTypeDTO> controlTypes;
 }

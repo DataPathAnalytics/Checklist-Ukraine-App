@@ -25,8 +25,7 @@ public class TemplateFolderEntity {
     private LocalDate dateCreated;
     private LocalDate dateModified;
 
-    @Relationship(type = "HAS_PARENT_FOLDER")
-    private TemplateFolderEntity parent;
+    private boolean root = false;
 
     @Relationship(type = "HAS_CHILD_FOLDER")
     private Set<TemplateFolderEntity> children = new HashSet<>();

@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.controller;
+package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.QuestionSourceDTO;
 import com.datapath.checklistukraineapp.service.CatalogWebService;

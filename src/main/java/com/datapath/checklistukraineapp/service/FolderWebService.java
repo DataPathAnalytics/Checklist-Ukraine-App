@@ -34,10 +34,10 @@ public class FolderWebService {
 
         if (nonNull(request.getParentId())) {
             TemplateFolderEntity parent = templateFolderService.findById(request.getParentId());
-            entity.setParent(parent);
             parent.getChildren().add(entity);
             templateFolderService.save(parent);
         } else {
+            entity.setRoot(true);
             templateFolderService.save(entity);
         }
     }
@@ -49,9 +49,6 @@ public class FolderWebService {
 
                     BeanUtils.copyProperties(f, dto);
 
-                    if (nonNull(f.getParent())) {
-                        dto.setParentId(f.getParent().getId());
-                    }
                     dto.setChildren(
                             f.getChildren().stream()
                                     .map(TemplateFolderEntity::getId)

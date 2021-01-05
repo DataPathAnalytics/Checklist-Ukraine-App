@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.controller;
+package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.TemplateDTO;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("template")
+@RequestMapping("templates")
 @AllArgsConstructor
 public class TemplateController {
 

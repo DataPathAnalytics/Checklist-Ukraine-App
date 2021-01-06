@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -41,5 +42,9 @@ public class UserDaoService {
 
     public boolean existsNotChecked() {
         return repository.existsNotChecked();
+    }
+
+    public Set<UserEntity> findByIds(List<Long> ids) {
+        return repository.findAllByIdIn(ids);
     }
 }

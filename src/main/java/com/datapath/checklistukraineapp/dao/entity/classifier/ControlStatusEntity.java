@@ -1,19 +1,15 @@
 package com.datapath.checklistukraineapp.dao.entity.classifier;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("Answer")
-@AllArgsConstructor
-@NoArgsConstructor
-public class AnswerEntity {
+@Node("ControlStatus")
+public class ControlStatusEntity {
     @Id
-    private Integer answerId;
+    private Integer controlStatusId;
     private String value;
     @Version
     private Long version;

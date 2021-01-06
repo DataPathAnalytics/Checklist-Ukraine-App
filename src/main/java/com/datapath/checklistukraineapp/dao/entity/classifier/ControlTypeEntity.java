@@ -1,6 +1,7 @@
 package com.datapath.checklistukraineapp.dao.entity.classifier;
 
 import lombok.Data;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
@@ -10,4 +11,6 @@ public class ControlTypeEntity {
     @Id
     private Integer controlTypeId;
     private String value;
+    @Version
+    private Long version;
 }

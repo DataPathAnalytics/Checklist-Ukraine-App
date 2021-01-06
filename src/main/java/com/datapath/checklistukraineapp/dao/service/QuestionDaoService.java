@@ -23,6 +23,6 @@ public class QuestionDaoService {
     }
 
     public QuestionEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new QuestionException("Question not found. Id " + id));
+        return repository.findById(id).orElseThrow(() -> new QuestionException(id));
     }
 }

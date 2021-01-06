@@ -12,7 +12,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -28,11 +27,6 @@ public class QuestionWebService {
     public void create(CreateQuestionRequest request) {
         QuestionEntity entity = new QuestionEntity();
         entity.setName(request.getName());
-
-        LocalDate now = LocalDate.now();
-
-        entity.setDateCreated(now);
-        entity.setDateModified(now);
 
         QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());
         QuestionSourceRelationship relationship = new QuestionSourceRelationship();

@@ -1,7 +1,7 @@
 package com.datapath.checklistukraineapp.controller.api;
 
-import com.datapath.checklistukraineapp.dto.response.MappingPrivateResponse;
-import com.datapath.checklistukraineapp.dto.response.MappingPublicResponse;
+import com.datapath.checklistukraineapp.dto.response.mapping.MappingPrivateResponse;
+import com.datapath.checklistukraineapp.dto.response.mapping.MappingPublicResponse;
 import com.datapath.checklistukraineapp.service.MappingWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

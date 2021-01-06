@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.dto.response;
+package com.datapath.checklistukraineapp.dto.response.mapping;
 
 import com.datapath.checklistukraineapp.dto.DepartmentDTO;
 import lombok.Data;

@@ -22,7 +22,11 @@ public class ExceptionHandlerController {
             TemplateException.class,
             FolderException.class,
             QuestionException.class,
-            QuestionSourceException.class})
+            QuestionSourceException.class,
+            ControlObjectException.class,
+            ControlTypeException.class,
+            ControlStatusException.class,
+            ControlEventException.class})
     public ResponseEntity<ExceptionResponse> exception(Exception ex) {
         ExceptionResponse response = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.BAD_REQUEST);

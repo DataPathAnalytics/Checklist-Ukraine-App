@@ -9,7 +9,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
@@ -26,11 +25,6 @@ public class FolderWebService {
 
         TemplateFolderEntity entity = new TemplateFolderEntity();
         entity.setName(request.getName());
-
-        LocalDate now = LocalDate.now();
-
-        entity.setDateCreated(now);
-        entity.setDateModified(now);
 
         if (nonNull(request.getParentId())) {
             TemplateFolderEntity parent = templateFolderService.findById(request.getParentId());

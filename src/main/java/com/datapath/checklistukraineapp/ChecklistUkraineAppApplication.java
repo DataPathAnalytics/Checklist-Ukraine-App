@@ -3,6 +3,7 @@ package com.datapath.checklistukraineapp;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.neo4j.config.EnableNeo4jAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.builders.PathSelectors;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 @EnableSwagger2
 @SpringBootApplication
 @EnableTransactionManagement
+@EnableNeo4jAuditing
 public class ChecklistUkraineAppApplication {
 
     public static void main(String[] args) {

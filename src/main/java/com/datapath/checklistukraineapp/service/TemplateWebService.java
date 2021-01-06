@@ -18,7 +18,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +42,6 @@ public class TemplateWebService {
         TemplateEntity entity = new TemplateEntity();
 
         entity.setName(request.getName());
-        entity.setDateCreated(LocalDate.now());
         entity.setAuthor(author);
         entity.setFolder(folder);
 

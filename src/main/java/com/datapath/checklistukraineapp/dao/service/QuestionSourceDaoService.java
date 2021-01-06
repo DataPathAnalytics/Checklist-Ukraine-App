@@ -19,6 +19,6 @@ public class QuestionSourceDaoService {
     }
 
     public QuestionSourceEntity findById(String id) {
-        return repository.findById(id).orElseThrow(() -> new QuestionSourceException("Question Source not found. Id " + id));
+        return repository.findById(id).orElseThrow(() -> new QuestionSourceException(id));
     }
 }

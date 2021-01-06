@@ -23,6 +23,6 @@ public class TemplateFolderDaoService {
     }
 
     public TemplateFolderEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new FolderException("Folder not found. Id " + id));
+        return repository.findById(id).orElseThrow(() -> new FolderException(id));
     }
 }

@@ -18,8 +18,8 @@ public class DepartmentDaoService {
         return repository.findAll();
     }
 
-    public DepartmentEntity findById(Long departmentId) throws DepartmentException {
+    public DepartmentEntity findById(Long departmentId) {
         return repository.findById(departmentId)
-                .orElseThrow(() -> new DepartmentException("Department not found"));
+                .orElseThrow(() -> new DepartmentException(departmentId));
     }
 }

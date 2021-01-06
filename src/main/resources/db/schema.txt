@@ -13,3 +13,8 @@ CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS
 
 CREATE CONSTRAINT control_type_id_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.controlTypeId IS UNIQUE
 CREATE CONSTRAINT control_type_value_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT control_status_id_cnt IF NOT EXISTS ON (c:ControlStatus) ASSERT c.controlStatusId IS UNIQUE
+CREATE CONSTRAINT control_status_value_cnt IF NOT EXISTS ON (c:ControlStatus) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT control_object_cnt IF NOT EXISTS ON (c:ControlObject) ASSERT c.controlObjectId IS UNIQUE

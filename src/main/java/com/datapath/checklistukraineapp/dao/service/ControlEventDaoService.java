@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -16,14 +17,38 @@ public class ControlEventDaoService {
     private final ControlEventRepository repository;
 
     public List<ControlEventDomain> findAll() {
-        return repository.findControlObjects();
+        return repository.findControlEvents();
     }
 
-    public void save(ControlEventEntity entity) {
-        repository.save(entity);
+    public Long save(ControlEventEntity entity) {
+        return repository.save(entity).getId();
     }
 
-    public ControlEventEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ControlEventException(id));
+    public ControlEventDomain findById(Long id) {
+        return repository.findControlEvent(id).orElseThrow(() -> new ControlEventException(id));
+    }
+
+    public void createRelationshipWithUser(Long eventId, List<Long> userIds) {
+        repository.createRelationshipWithUser(eventId, userIds);
+    }
+
+    public void createRelationshipWithTemplate(Long eventId, List<Long> templateIds) {
+        repository.createRelationshipWithTemplate(eventId, templateIds);
+    }
+
+    public Set<Long> getMembers(Long eventId) {
+        return repository.findMembers(eventId);
+    }
+
+    public void removeRelationshipWithStatus(Long id) {
+        repository.removeRelationshipWithStatus(id);
+    }
+
+    public void createRelationshipWithStatus(Long id, Integer controlStatusId) {
+        repository.createRelationshipWithStatus(id, controlStatusId);
+    }
+
+    public Set<Long> findLinkedUsers(Long eventId) {
+        return repository.findLinkedUsers(eventId);
     }
 }

@@ -6,6 +6,7 @@ import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserUpdateRequest;
+import com.datapath.checklistukraineapp.dto.response.UsersResponse;
 import com.datapath.checklistukraineapp.service.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,8 +23,8 @@ public class UserController {
     private final UserWebService service;
 
     @GetMapping
-    public List<UserDTO> list() {
-        return service.list();
+    public UsersResponse list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return service.list(page, size);
     }
 
     @PostMapping("register")
@@ -33,18 +34,18 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasAuthority('admin')")
-    public List<UserDTO> update(@RequestBody @Valid List<UserUpdateRequest> requests) {
+    public UsersResponse update(@RequestBody @Valid List<UserUpdateRequest> requests) {
         for (UserUpdateRequest request : requests) {
             service.update(request);
         }
-        return service.list();
+        return service.list(0, 10);
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('admin')")
-    public List<UserDTO> delete(@PathVariable Long id) {
+    public UsersResponse delete(@PathVariable Long id) {
         service.delete(id);
-        return service.list();
+        return service.list(0, 10);
     }
 
     @GetMapping("state")
@@ -66,5 +67,10 @@ public class UserController {
     @PostMapping("password/reset/save")
     public void resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         service.resetPassword(request);
+    }
+
+    @GetMapping("current")
+    public UserDTO getCurrent() {
+        return service.getCurrent();
     }
 }

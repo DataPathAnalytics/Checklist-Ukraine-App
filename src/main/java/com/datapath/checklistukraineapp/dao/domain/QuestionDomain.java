@@ -1,19 +1,18 @@
-package com.datapath.checklistukraineapp.dto;
+package com.datapath.checklistukraineapp.dao.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-public class TemplateQuestionDTO {
+public class QuestionDomain {
 
-    @NotNull
-    private Long questionId;
+    private Long id;
     private String name;
+    private LocalDate dateCreated;
+    private LocalDate dateModified;
 
     private String questionSourceId;
     private String questionSourceName;
@@ -23,4 +22,5 @@ public class TemplateQuestionDTO {
     private String groupName;
     private Long parentQuestionId;
     private Integer parentAnswerId;
+
 }

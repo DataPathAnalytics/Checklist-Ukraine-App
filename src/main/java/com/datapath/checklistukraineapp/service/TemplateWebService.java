@@ -1,5 +1,7 @@
 package com.datapath.checklistukraineapp.service;
 
+import com.datapath.checklistukraineapp.dao.domain.QuestionDomain;
+import com.datapath.checklistukraineapp.dao.domain.TemplateDomain;
 import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
 import com.datapath.checklistukraineapp.dao.entity.TemplateEntity;
 import com.datapath.checklistukraineapp.dao.entity.TemplateFolderEntity;
@@ -35,7 +37,7 @@ public class TemplateWebService {
     private final QuestionDaoService questionService;
 
     @Transactional
-    public void save(CreateTemplateRequest request) {
+    public void create(CreateTemplateRequest request) {
         UserEntity author = userService.findById(getCurrentUserId());
         TemplateFolderEntity folder = templateFolderService.findById(request.getFolderId());
 
@@ -55,7 +57,7 @@ public class TemplateWebService {
             if (nonNull(q.getParentQuestionId())) {
                 QuestionEntity parentQuestion = questionService.findById(q.getParentQuestionId());
                 relationship.setParentQuestionId(parentQuestion.getId());
-                relationship.setAnswerId(q.getAnswerId());
+                relationship.setAnswerId(q.getParentAnswerId());
             }
 
             entity.getQuestions().add(relationship);
@@ -74,28 +76,24 @@ public class TemplateWebService {
                 .collect(toList());
     }
 
+    @Transactional
     public TemplateResponse get(Long id) {
         TemplateResponse response = new TemplateResponse();
 
-        TemplateEntity entity = templateService.findById(id);
+        TemplateDomain entity = templateService.findTemplate(id);
+        List<QuestionDomain> questions = questionService.findByTemplateId(id);
 
         TemplateDTO template = new TemplateDTO();
         BeanUtils.copyProperties(entity, template);
-        template.setAuthorId(entity.getAuthor().getId());
-        template.setFolderId(entity.getFolder().getId());
 
         response.setTemplate(template);
 
         response.setQuestions(
-                entity.getQuestions().stream()
+                questions.stream()
                         .map(q -> {
                             TemplateQuestionDTO dto = new TemplateQuestionDTO();
-
-                            dto.setQuestionId(q.getQuestion().getId());
-                            dto.setGroupName(q.getGroupName());
-                            dto.setParentQuestionId(q.getParentQuestionId());
-                            dto.setAnswerId(q.getAnswerId());
-
+                            BeanUtils.copyProperties(q, dto);
+                            dto.setQuestionId(q.getId());
                             return dto;
                         }).collect(Collectors.groupingBy(TemplateQuestionDTO::getGroupName))
         );

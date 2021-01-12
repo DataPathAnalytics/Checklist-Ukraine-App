@@ -13,18 +13,21 @@ import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserUpdateRequest;
+import com.datapath.checklistukraineapp.dto.response.UsersResponse;
 import com.datapath.checklistukraineapp.exception.ResetPasswordException;
 import com.datapath.checklistukraineapp.exception.UserException;
 import com.datapath.checklistukraineapp.security.ConfirmationTokenStorageService;
 import com.datapath.checklistukraineapp.security.UsersStorageService;
 import com.datapath.checklistukraineapp.util.MessageTemplate;
+import com.datapath.checklistukraineapp.util.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -47,33 +50,22 @@ public class UserWebService {
     private final EmailSenderService emailSender;
     private final PermissionDaoService permissionService;
 
-    public List<UserDTO> list() {
-        return userService.findAll()
-                .stream()
-                .filter(u -> !u.isRemoved())
-                .filter(u -> !ADMIN_ROLE.equals(u.getPermission().getRole()))
-                .map(u -> {
-                    UserDTO dto = new UserDTO();
-                    BeanUtils.copyProperties(u, dto);
+    public UsersResponse list(int page, int size) {
+        Page<UserEntity> entities = userService.findAll(page, size);
 
-                    Optional<EmploymentEntity> lastEmployment = getLastEmployment(u.getEmployments());
-
-                    lastEmployment.ifPresent(
-                            employment -> dto.setDepartmentId(employment.getDepartment().getId())
-                    );
-
-                    dto.setPermissionId(u.getPermission().getPermissionId());
-
-                    return dto;
-                }).collect(toList());
+        return new UsersResponse(
+                entities.getTotalElements(),
+                entities.getTotalPages(),
+                entities.get()
+                        .map(this::mapEntityToDTO)
+                        .collect(toList())
+        );
     }
 
     @Transactional
     public void register(UserRegisterRequest request) {
         UserEntity existedUser = userService.findByEmail(request.getEmail());
         if (nonNull(existedUser)) throw new UserException("This email already registered");
-
-        LocalDateTime now = LocalDateTime.now();
 
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
@@ -84,8 +76,8 @@ public class UserWebService {
         user.setLocked(true);
         user.setRemoved(false);
         user.setPermission(permissionService.findByRole(AUDITOR_ROLE));
-        user.setRegisteredDateTime(now);
-        updateDepartmentRelationship(user, now, request.getDepartmentId());
+
+        updateDepartmentRelationship(user, request.getDepartmentId());
 
         userService.save(user);
 
@@ -130,8 +122,7 @@ public class UserWebService {
         }
 
         if (nonNull(request.getDepartmentId())) {
-            LocalDateTime now = LocalDateTime.now();
-            updateDepartmentRelationship(user, now, request.getDepartmentId());
+            updateDepartmentRelationship(user, request.getDepartmentId());
         }
 
         if (nonNull(request.getPermissionId())) {
@@ -153,13 +144,13 @@ public class UserWebService {
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
-        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDateTime.now()));
+        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDate.now()));
 
         userService.save(user);
         UsersStorageService.removeUser(user.getId());
     }
 
-    private void updateDepartmentRelationship(UserEntity user, LocalDateTime date, Long departmentId) {
+    private void updateDepartmentRelationship(UserEntity user, Long departmentId) {
         List<EmploymentEntity> employments = user.getEmployments();
         DepartmentEntity department = departmentService.findById(departmentId);
 
@@ -167,16 +158,16 @@ public class UserWebService {
             Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
 
             if (!lastEmployment.isPresent()) {
-
-                employments.add(new EmploymentEntity(date, null, department));
+                employments.add(new EmploymentEntity(LocalDate.now(), null, department));
             } else {
                 if (!lastEmployment.get().getDepartment().getId().equals(departmentId)) {
-                    lastEmployment.get().setEnd(date);
-                    employments.add(new EmploymentEntity(date, null, department));
+                    LocalDate now = LocalDate.now();
+                    lastEmployment.get().setEnd(now);
+                    employments.add(new EmploymentEntity(now, null, department));
                 }
             }
         } else {
-            employments.add(new EmploymentEntity(date, null, department));
+            employments.add(new EmploymentEntity(LocalDate.now(), null, department));
         }
     }
 
@@ -232,5 +223,24 @@ public class UserWebService {
     public UserStateDTO getState() {
         boolean exists = userService.existsNotChecked();
         return new UserStateDTO(exists);
+    }
+
+    public UserDTO getCurrent() {
+        Long currentUserId = UserUtils.getCurrentUserId();
+        return mapEntityToDTO(userService.findById(currentUserId));
+    }
+
+    private UserDTO mapEntityToDTO(UserEntity entity) {
+        UserDTO dto = new UserDTO();
+        BeanUtils.copyProperties(entity, dto);
+
+        Optional<EmploymentEntity> lastEmployment = getLastEmployment(entity.getEmployments());
+
+        lastEmployment.ifPresent(
+                employment -> dto.setDepartmentId(employment.getDepartment().getId())
+        );
+
+        dto.setPermissionId(entity.getPermission().getPermissionId());
+        return dto;
     }
 }

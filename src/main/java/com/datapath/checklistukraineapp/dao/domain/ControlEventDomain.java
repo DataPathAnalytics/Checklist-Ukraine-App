@@ -19,5 +19,6 @@ public class ControlEventDomain {
     private Integer controlStatusId;
     private String controlObjectId;
     private String controlObjectName;
+    private Long teamLeadId;
     private Long authorId;
 }

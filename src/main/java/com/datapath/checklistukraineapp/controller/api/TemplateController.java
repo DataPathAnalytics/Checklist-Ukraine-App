@@ -21,7 +21,7 @@ public class TemplateController {
     @PostMapping
     @PreAuthorize("hasAuthority('methodologist')")
     public void create(@RequestBody @Valid CreateTemplateRequest dto) {
-        service.save(dto);
+        service.create(dto);
     }
 
     @GetMapping

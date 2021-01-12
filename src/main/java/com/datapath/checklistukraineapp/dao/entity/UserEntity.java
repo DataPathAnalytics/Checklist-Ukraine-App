@@ -4,12 +4,13 @@ import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,8 @@ public class UserEntity {
     private boolean disable;
     private boolean locked;
     private boolean removed;
-    private LocalDateTime registeredDateTime;
+    @CreatedDate
+    private LocalDate registeredDate;
 
     @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
     private PermissionEntity permission;

@@ -19,6 +19,8 @@ public class CreateControlEventRequest {
     private Integer controlTypeId;
     @NotNull
     private String controlObjectId;
+    @NotNull
+    private Long teamLeadId;
 
     private List<Long> memberIds;
 

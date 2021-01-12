@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +21,9 @@ public class ControlEventDTO {
     private Integer controlStatusId;
     private String controlObjectId;
     private String controlObjectName;
+    private Long teamLeadId;
     private Long authorId;
 
     private List<TemplateDTO> templates;
+    private Set<Long> members;
 }

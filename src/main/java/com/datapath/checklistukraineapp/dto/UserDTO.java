@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.dto;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class UserDTO {
@@ -13,7 +13,7 @@ public class UserDTO {
     private String lastName;
     private Integer permissionId;
     private Long departmentId;
-    private LocalDateTime registeredDateTime;
+    private LocalDate registeredDate;
     private boolean disable;
     private boolean locked;
 }

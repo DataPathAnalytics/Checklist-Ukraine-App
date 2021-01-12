@@ -4,10 +4,9 @@ import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import com.datapath.checklistukraineapp.dao.repository.UserRepository;
 import com.datapath.checklistukraineapp.exception.UserException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -27,8 +26,10 @@ public class UserDaoService {
         return repository.findByEmailAndRemovedIsFalse(email);
     }
 
-    public List<UserEntity> findAll() {
-        return repository.findAll();
+    public Page<UserEntity> findAll(int page, int size) {
+        return repository.findAllByRemovedIsFalseAndRegisteredDateNotNullOrderByLockedDescRegisteredDateDescFirstNameAsc(
+                PageRequest.of(page, size)
+        );
     }
 
     public UserEntity findById(Long id) throws UserException {
@@ -42,9 +43,5 @@ public class UserDaoService {
 
     public boolean existsNotChecked() {
         return repository.existsNotChecked();
-    }
-
-    public Set<UserEntity> findByIds(List<Long> ids) {
-        return repository.findAllByIdIn(ids);
     }
 }

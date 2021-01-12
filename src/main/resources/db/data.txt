@@ -4,7 +4,7 @@ MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.p
 
 MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор', version:0})
 MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор', version:0})
-MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог, version:0'})
+MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог', version:0})
 
 MERGE (d:Department {region: 'Північ', version:0})
 MERGE (d:Department {region: 'Схід', version:0})

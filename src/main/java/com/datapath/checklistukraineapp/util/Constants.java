@@ -22,6 +22,7 @@ public final class Constants {
     public static final String AUDITOR_ROLE = "auditor";
 
     public static final Integer IN_PROCESS_CONTROL_STATUS = 1;
+    public static final Integer COMPLETED_CONTROL_STATUS = 2;
 
     public static final String[] PUBLIC_ENDPOINTS = {
             LOGIN_URL,

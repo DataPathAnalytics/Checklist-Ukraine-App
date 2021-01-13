@@ -6,14 +6,14 @@ MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністра
 MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор', version:0})
 MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог', version:0})
 
-MERGE (d:Department {region: 'Північ', version:0})
-MERGE (d:Department {region: 'Схід', version:0})
-MERGE (d:Department {region: 'Південь', version:0})
-MERGE (d:Department {region: 'Захід', version:0})
+MERGE (d:Department {region: 'Північ'})
+MERGE (d:Department {region: 'Схід'})
+MERGE (d:Department {region: 'Південь'})
+MERGE (d:Department {region: 'Захід'})
 
-MERGE (a:Answer {answerId: 1, value:'ТАК', version:0})
-MERGE (a:Answer {answerId: 2, value:'Ні', version:0})
-MERGE (a:Answer {answerId: 3, value:'НЗ', version:0})
+MERGE (a:Answer {answerId: 1, value:'ТАК'})
+MERGE (a:Answer {answerId: 2, value:'Ні'})
+MERGE (a:Answer {answerId: 3, value:'НЗ'})
 
 MERGE (c:ControlType {controlTypeId: 1, value:'Ревізія', version:0})
 MERGE (c:ControlType {controlTypeId: 2, value:'Аудит', version:0})

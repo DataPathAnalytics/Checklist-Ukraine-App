@@ -12,5 +12,6 @@ public class UsersResponse {
     private long totalCount;
     private int totalPageCount;
     private int currentPage;
+    private int pageSize;
     private List<UserDTO> users;
 }

@@ -57,6 +57,7 @@ public class UserWebService {
                 entities.getTotalElements(),
                 entities.getTotalPages(),
                 entities.getNumber(),
+                entities.getSize(),
                 entities.get()
                         .map(this::mapEntityToDTO)
                         .collect(toList())

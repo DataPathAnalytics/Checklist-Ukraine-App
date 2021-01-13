@@ -20,10 +20,12 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
+    private static final String DEFAULT_PAGE_SIZE = "3";
+
     private final UserWebService service;
 
     @GetMapping
-    public UsersResponse list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+    public UsersResponse list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size) {
         return service.list(page, size);
     }
 
@@ -38,14 +40,14 @@ public class UserController {
         for (UserUpdateRequest request : requests) {
             service.update(request);
         }
-        return service.list(0, 10);
+        return service.list(0, Integer.parseInt(DEFAULT_PAGE_SIZE));
     }
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('admin')")
     public UsersResponse delete(@PathVariable Long id) {
         service.delete(id);
-        return service.list(0, 10);
+        return service.list(0, Integer.parseInt(DEFAULT_PAGE_SIZE));
     }
 
     @GetMapping("state")

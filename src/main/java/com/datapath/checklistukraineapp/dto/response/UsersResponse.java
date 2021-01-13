@@ -11,5 +11,6 @@ import java.util.List;
 public class UsersResponse {
     private long totalCount;
     private int totalPageCount;
+    private int currentPage;
     private List<UserDTO> users;
 }

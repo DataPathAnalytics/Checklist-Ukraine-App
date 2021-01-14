@@ -19,7 +19,7 @@ public interface TemplateRepository extends Neo4jRepository<TemplateEntity, Long
     TemplateDomain getTemplate(Long id);
 
     @Query(value = "match (c:ControlEvent)-->(t:Template), (t:Template)-->(f:TemplateFolder), (t:Template)-->(u:User)" +
-            " where id(t) = $id" +
+            " where id(c) = $id" +
             " return t, id(u) as authorId, id(f) as folderId")
     List<TemplateDomain> findTemplatesForControlEvent(Long id);
 }

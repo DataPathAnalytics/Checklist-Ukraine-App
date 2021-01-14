@@ -1,7 +1,10 @@
 package com.datapath.checklistukraineapp.controller.api;
 
+import com.datapath.checklistukraineapp.dto.ChecklistDTO;
+import com.datapath.checklistukraineapp.dto.ChecklistPageDTO;
 import com.datapath.checklistukraineapp.dto.ControlEventDTO;
 import com.datapath.checklistukraineapp.dto.request.event.AddTemplateRequest;
+import com.datapath.checklistukraineapp.dto.request.event.CreateChecklistRequest;
 import com.datapath.checklistukraineapp.dto.request.event.CreateControlEventRequest;
 import com.datapath.checklistukraineapp.service.ControlEventWebService;
 import lombok.AllArgsConstructor;
@@ -37,8 +40,25 @@ public class ControlEventController {
         return service.complete(id);
     }
 
-    @PostMapping("template/add")
+    @PostMapping("templates/add")
     public ControlEventDTO addTemplate(@RequestBody @Valid AddTemplateRequest request) {
         return service.addTemplate(request);
+    }
+
+    @GetMapping("checklists")
+    public ChecklistPageDTO getChecklists(@RequestParam Long eventId,
+                                          @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "5") int size) {
+        return service.getChecklists(eventId, page, size);
+    }
+
+    @PostMapping("checklists")
+    public ControlEventDTO addChecklist(@RequestBody @Valid CreateChecklistRequest request) {
+        return service.createChecklist(request);
+    }
+
+    @GetMapping("checklists/{id}")
+    public ChecklistDTO getChecklist(@PathVariable Long id) {
+        return service.getChecklist(id);
     }
 }

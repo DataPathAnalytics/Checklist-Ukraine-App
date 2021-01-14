@@ -28,11 +28,11 @@ public class ControlEventDaoService {
         return repository.findControlEvent(id).orElseThrow(() -> new ControlEventException(id));
     }
 
-    public void createRelationshipWithUser(Long eventId, List<Long> userIds) {
+    public void createRelationshipWithUser(Long eventId, Set<Long> userIds) {
         repository.createRelationshipWithUser(eventId, userIds);
     }
 
-    public void createRelationshipWithTemplate(Long eventId, List<Long> templateIds) {
+    public void createRelationshipWithTemplate(Long eventId, Set<Long> templateIds) {
         repository.createRelationshipWithTemplate(eventId, templateIds);
     }
 
@@ -50,5 +50,9 @@ public class ControlEventDaoService {
 
     public Set<Long> findLinkedUsers(Long eventId) {
         return repository.findLinkedUsers(eventId);
+    }
+
+    public void createRelationshipWithChecklist(Long eventId, Long checklistId) {
+        repository.createRelationshipWithChecklist(eventId, checklistId);
     }
 }

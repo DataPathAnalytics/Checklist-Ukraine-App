@@ -21,7 +21,7 @@ public interface ControlEventRepository extends Neo4jRepository<ControlEventEnti
     List<ControlEventDomain> findControlEvents();
 
     @Query(value = "match (c:ControlEvent)-[:HAS_AUTHOR]->(u1:User), " +
-            "match (c:ControlEvent)-[:HAS_TEAM_LEAD]->(u2:User), " +
+            "(c:ControlEvent)-[:HAS_TEAM_LEAD]->(u2:User), " +
             "(c:ControlEvent)-->(t:ControlType), " +
             "(c:ControlEvent)-->(o:ControlObject), " +
             "(c:ControlEvent)-->(s:ControlStatus) " +
@@ -31,10 +31,10 @@ public interface ControlEventRepository extends Neo4jRepository<ControlEventEnti
     Optional<ControlEventDomain> findControlEvent(Long id);
 
     @Query(value = "match (e:ControlEvent), (u:User) where id(e) = $eventId and id(u) in $userIds create (e)-[:HAS_MEMBER]->(u)")
-    void createRelationshipWithUser(Long eventId, List<Long> userIds);
+    void createRelationshipWithUser(Long eventId, Set<Long> userIds);
 
     @Query(value = "match (e:ControlEvent), (t:Template) where id(e) = $eventId and id(t) in $templateIds create (e)-[:HAS_TEMPLATE]->(t)")
-    void createRelationshipWithTemplate(Long eventId, List<Long> templateIds);
+    void createRelationshipWithTemplate(Long eventId, Set<Long> templateIds);
 
     @Query(value = "match (e:ControlEvent)-[:HAS_MEMBER]->(u:User) where id(e)=$eventId return id(u)")
     Set<Long> findMembers(Long eventId);
@@ -47,4 +47,7 @@ public interface ControlEventRepository extends Neo4jRepository<ControlEventEnti
 
     @Query(value = "match (e:ControlEvent), (s:ControlStatus) where id(e) = $id and s.controlStatusId = $controlStatusId create (e)-[:IN_STATUS]->(s)")
     void createRelationshipWithStatus(Long id, Integer controlStatusId);
+
+    @Query(value = "match (c:ChecklistResponse), (e:ControlEvent) where id(e) = $eventId and id(c) = $checklistId create (e)-[:HAS_CHECKLIST]->(c)")
+    void createRelationshipWithChecklist(Long eventId, Long checklistId);
 }

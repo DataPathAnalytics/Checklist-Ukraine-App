@@ -26,4 +26,6 @@ public class ControlEventDTO {
 
     private List<TemplateDTO> templates;
     private Set<Long> members;
+
+    private ChecklistPageDTO checklists;
 }

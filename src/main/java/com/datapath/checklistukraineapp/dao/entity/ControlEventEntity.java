@@ -40,4 +40,6 @@ public class ControlEventEntity {
     private ControlTypeEntity type;
     @Relationship(type = "HAS_TEMPLATE")
     private Set<TemplateEntity> templates = new HashSet<>();
+    @Relationship(type = "HAS_CHECKLIST")
+    private Set<ChecklistEntity> checklists = new HashSet<>();
 }

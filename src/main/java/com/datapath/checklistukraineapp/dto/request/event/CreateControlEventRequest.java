@@ -6,7 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class CreateControlEventRequest {
     @NotNull
     private Long teamLeadId;
 
-    private List<Long> memberIds;
+    private Set<Long> memberIds = new HashSet<>();
 
-    private List<Long> templateIds;
+    private Set<Long> templateIds;
 }

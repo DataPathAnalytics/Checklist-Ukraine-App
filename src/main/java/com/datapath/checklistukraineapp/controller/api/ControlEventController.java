@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT_STR;
+import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE_STR;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("control-events")
@@ -47,8 +50,8 @@ public class ControlEventController {
 
     @GetMapping("checklists")
     public ChecklistPageDTO getChecklists(@RequestParam Long eventId,
-                                          @RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "5") int size) {
+                                          @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
+                                          @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
         return service.getChecklists(eventId, page, size);
     }
 

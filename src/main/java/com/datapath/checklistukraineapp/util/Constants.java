@@ -24,6 +24,11 @@ public final class Constants {
     public static final Integer IN_PROCESS_CONTROL_STATUS = 1;
     public static final Integer COMPLETED_CONTROL_STATUS = 2;
 
+    public final static String DEFAULT_EVENT_CHECKLIST_COUNT_STR = "5";
+    public final static String DEFAULT_EVENT_CHECKLIST_PAGE_STR = "0";
+    public final static Integer DEFAULT_EVENT_CHECKLIST_COUNT = Integer.parseInt(DEFAULT_EVENT_CHECKLIST_COUNT_STR);
+    public final static Integer DEFAULT_EVENT_CHECKLIST_PAGE = Integer.parseInt(DEFAULT_EVENT_CHECKLIST_PAGE_STR);
+
     public static final String[] PUBLIC_ENDPOINTS = {
             LOGIN_URL,
             REGISTER_URL,

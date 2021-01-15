@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.controller.api;
 
-import com.datapath.checklistukraineapp.dto.TemplateDTO;
+import com.datapath.checklistukraineapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistukraineapp.dto.response.TemplateResponse;
 import com.datapath.checklistukraineapp.service.TemplateWebService;
@@ -25,7 +25,7 @@ public class TemplateController {
     }
 
     @GetMapping
-    public List<TemplateDTO> list() {
+    public List<TemplateFolderTreeDTO> list() {
         return service.list();
     }
 

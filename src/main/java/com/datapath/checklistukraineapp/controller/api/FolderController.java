@@ -19,8 +19,8 @@ public class FolderController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('methodologist')")
-    public void create(@RequestBody @Valid CreateFolderRequest request) {
-        service.create(request);
+    public FolderDTO create(@RequestBody @Valid CreateFolderRequest request) {
+        return service.create(request);
     }
 
     @GetMapping

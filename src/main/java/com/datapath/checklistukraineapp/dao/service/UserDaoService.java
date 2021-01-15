@@ -8,6 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 @AllArgsConstructor
 public class UserDaoService {
@@ -43,5 +46,9 @@ public class UserDaoService {
 
     public boolean existsNotChecked() {
         return repository.existsNotChecked();
+    }
+
+    public List<UserEntity> findByIds(Set<Long> ids) {
+        return repository.findAllById(ids);
     }
 }

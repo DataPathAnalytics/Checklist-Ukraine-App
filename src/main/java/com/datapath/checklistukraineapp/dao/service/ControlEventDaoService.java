@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -20,39 +19,11 @@ public class ControlEventDaoService {
         return repository.findControlEvents();
     }
 
-    public Long save(ControlEventEntity entity) {
-        return repository.save(entity).getId();
+    public ControlEventEntity save(ControlEventEntity entity) {
+        return repository.save(entity);
     }
 
-    public ControlEventDomain findById(Long id) {
-        return repository.findControlEvent(id).orElseThrow(() -> new ControlEventException(id));
-    }
-
-    public void createRelationshipWithUser(Long eventId, Set<Long> userIds) {
-        repository.createRelationshipWithUser(eventId, userIds);
-    }
-
-    public void createRelationshipWithTemplate(Long eventId, Set<Long> templateIds) {
-        repository.createRelationshipWithTemplate(eventId, templateIds);
-    }
-
-    public Set<Long> getMembers(Long eventId) {
-        return repository.findMembers(eventId);
-    }
-
-    public void removeRelationshipWithStatus(Long id) {
-        repository.removeRelationshipWithStatus(id);
-    }
-
-    public void createRelationshipWithStatus(Long id, Integer controlStatusId) {
-        repository.createRelationshipWithStatus(id, controlStatusId);
-    }
-
-    public Set<Long> findLinkedUsers(Long eventId) {
-        return repository.findLinkedUsers(eventId);
-    }
-
-    public void createRelationshipWithChecklist(Long eventId, Long checklistId) {
-        repository.createRelationshipWithChecklist(eventId, checklistId);
+    public ControlEventEntity findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ControlEventException(id));
     }
 }

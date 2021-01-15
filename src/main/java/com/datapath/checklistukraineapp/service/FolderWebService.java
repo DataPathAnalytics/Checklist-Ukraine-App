@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -21,34 +20,20 @@ public class FolderWebService {
     private final TemplateFolderDaoService templateFolderService;
 
     @Transactional
-    public void create(CreateFolderRequest request) {
-
+    public FolderDTO create(CreateFolderRequest request) {
         TemplateFolderEntity entity = new TemplateFolderEntity();
         entity.setName(request.getName());
-
-        if (nonNull(request.getParentId())) {
-            TemplateFolderEntity parent = templateFolderService.findById(request.getParentId());
-            parent.getChildren().add(entity);
-            templateFolderService.save(parent);
-        } else {
-            entity.setRoot(true);
-            templateFolderService.save(entity);
-        }
+        TemplateFolderEntity savedEntity = templateFolderService.save(entity);
+        FolderDTO dto = new FolderDTO();
+        BeanUtils.copyProperties(savedEntity, dto);
+        return dto;
     }
 
     public List<FolderDTO> list() {
         return templateFolderService.findAll().stream()
                 .map(f -> {
                     FolderDTO dto = new FolderDTO();
-
                     BeanUtils.copyProperties(f, dto);
-
-                    dto.setChildren(
-                            f.getChildren().stream()
-                                    .map(TemplateFolderEntity::getId)
-                                    .collect(toList())
-                    );
-
                     return dto;
                 })
                 .collect(toList());

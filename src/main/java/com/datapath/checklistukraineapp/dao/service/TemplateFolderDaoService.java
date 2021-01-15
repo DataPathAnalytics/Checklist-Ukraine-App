@@ -14,8 +14,8 @@ public class TemplateFolderDaoService {
 
     private final TemplateFolderRepository repository;
 
-    public void save(TemplateFolderEntity entity) {
-        repository.save(entity);
+    public TemplateFolderEntity save(TemplateFolderEntity entity) {
+        return repository.save(entity);
     }
 
     public List<TemplateFolderEntity> findAll() {

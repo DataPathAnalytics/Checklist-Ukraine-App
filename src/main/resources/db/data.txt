@@ -1,10 +1,8 @@
-match (n) where exists(n.version) set n.version = 0
-
 MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, role: 'admin', removed: false})
 
-MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор', version:0})
-MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор', version:0})
-MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог', version:0})
+MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор'})
+MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор'})
+MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог'})
 
 MERGE (d:Department {region: 'Північ'})
 MERGE (d:Department {region: 'Схід'})
@@ -15,9 +13,9 @@ MERGE (a:Answer {answerId: 1, value:'ТАК'})
 MERGE (a:Answer {answerId: 2, value:'Ні'})
 MERGE (a:Answer {answerId: 3, value:'НЗ'})
 
-MERGE (c:ControlType {controlTypeId: 1, value:'Ревізія', version:0})
-MERGE (c:ControlType {controlTypeId: 2, value:'Аудит', version:0})
-MERGE (c:ControlType {controlTypeId: 3, value:'Перевірка', version:0})
+MERGE (c:ControlType {controlTypeId: 1, value:'Ревізія'})
+MERGE (c:ControlType {controlTypeId: 2, value:'Аудит'})
+MERGE (c:ControlType {controlTypeId: 3, value:'Перевірка'})
 
-MERGE (c:ControlStatus {controlStatusId: 1, value:'В процесі', version:0})
-MERGE (c:ControlStatus {controlStatusId: 2, value:'Завершено', version:0})
+MERGE (c:ControlStatus {controlStatusId: 1, value:'В процесі'})
+MERGE (c:ControlStatus {controlStatusId: 2, value:'Завершено'})

@@ -1,12 +1,13 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.domain.TemplateDomain;
 import com.datapath.checklistukraineapp.dao.entity.TemplateEntity;
 import com.datapath.checklistukraineapp.dao.repository.TemplateRepository;
+import com.datapath.checklistukraineapp.exception.TemplateException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -14,19 +15,19 @@ public class TemplateDaoService {
 
     private final TemplateRepository repository;
 
-    public List<TemplateDomain> findAll() {
-        return repository.findTemplates();
+    public List<TemplateEntity> findAll() {
+        return repository.findAll();
     }
 
-    public TemplateDomain findTemplate(Long id) {
-        return repository.getTemplate(id);
+    public TemplateEntity findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new TemplateException(id));
     }
 
-    public void save(TemplateEntity entity) {
-        repository.save(entity);
+    public List<TemplateEntity> findByIds(Set<Long> ids) {
+        return repository.findAllById(ids);
     }
 
-    public List<TemplateDomain> findByControlEvent(Long id) {
-        return repository.findTemplatesForControlEvent(id);
+    public TemplateEntity save(TemplateEntity entity) {
+        return repository.save(entity);
     }
 }

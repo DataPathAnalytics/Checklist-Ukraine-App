@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +15,4 @@ public class FolderDTO {
     private String name;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private boolean root;
-    private List<Long> children = new ArrayList<>();
 }

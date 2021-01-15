@@ -23,11 +23,7 @@ public class ChecklistDaoService {
         return repository.save(entity).getId();
     }
 
-    public void createRelationshipWithTemplate(Long checklistId, Long templateId) {
-        repository.createRelationshipWithTemplate(checklistId, templateId);
-    }
-
-    public ChecklistDomain findById(Long id) {
-        return repository.findChecklist(id).orElseThrow(() -> new ChecklistException(id));
+    public ChecklistEntity findById(Long id) {
+        return repository.findById(id).orElseThrow(() -> new ChecklistException(id));
     }
 }

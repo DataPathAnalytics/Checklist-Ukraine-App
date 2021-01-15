@@ -7,6 +7,8 @@ CREATE CONSTRAINT permission_id_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.per
 
 CREATE CONSTRAINT template_name_cnt IF NOT EXISTS ON (t:Template) ASSERT t.name IS UNIQUE
 
+CREATE CONSTRAINT template_folder_name_cnt IF NOT EXISTS ON (t:TemplateFolder) ASSERT t.name IS UNIQUE
+
 CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASSERT q.id IS UNIQUE
 
 CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS UNIQUE

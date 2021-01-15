@@ -1,6 +1,5 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.domain.QuestionDomain;
 import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
 import com.datapath.checklistukraineapp.dao.repository.QuestionRepository;
 import com.datapath.checklistukraineapp.exception.QuestionException;
@@ -25,9 +24,5 @@ public class QuestionDaoService {
 
     public QuestionEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new QuestionException(id));
-    }
-
-    public List<QuestionDomain> findByTemplateId(Long templateId) {
-        return repository.findQuestions(templateId);
     }
 }

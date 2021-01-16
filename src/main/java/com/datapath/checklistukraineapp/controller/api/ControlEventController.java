@@ -3,9 +3,10 @@ package com.datapath.checklistukraineapp.controller.api;
 import com.datapath.checklistukraineapp.dto.ChecklistDTO;
 import com.datapath.checklistukraineapp.dto.ChecklistPageDTO;
 import com.datapath.checklistukraineapp.dto.ControlEventDTO;
-import com.datapath.checklistukraineapp.dto.request.event.AddTemplateRequest;
-import com.datapath.checklistukraineapp.dto.request.event.CreateChecklistRequest;
+import com.datapath.checklistukraineapp.dto.request.event.ChecklistStatusRequest;
 import com.datapath.checklistukraineapp.dto.request.event.CreateControlEventRequest;
+import com.datapath.checklistukraineapp.dto.request.event.EventTemplateOperationRequest;
+import com.datapath.checklistukraineapp.dto.request.event.SaveChecklistRequest;
 import com.datapath.checklistukraineapp.service.ControlEventWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -43,9 +44,14 @@ public class ControlEventController {
         return service.complete(id);
     }
 
-    @PostMapping("templates/add")
-    public ControlEventDTO addTemplate(@RequestBody @Valid AddTemplateRequest request) {
+    @PostMapping("templates")
+    public ControlEventDTO addTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
         return service.addTemplate(request);
+    }
+
+    @DeleteMapping("templates")
+    public ControlEventDTO deleteTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
+        return service.deleteTemplate(request);
     }
 
     @GetMapping("checklists")
@@ -56,8 +62,13 @@ public class ControlEventController {
     }
 
     @PostMapping("checklists")
-    public ControlEventDTO addChecklist(@RequestBody @Valid CreateChecklistRequest request) {
-        return service.createChecklist(request);
+    public ChecklistDTO saveChecklist(@RequestBody @Valid SaveChecklistRequest request) {
+        return service.saveChecklist(request);
+    }
+
+    @PutMapping("checklists")
+    public ChecklistDTO changeStatus(@RequestBody @Valid ChecklistStatusRequest request) {
+        return service.changeStatus(request);
     }
 
     @GetMapping("checklists/{id}")

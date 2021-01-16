@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.dao.service;
 
 import com.datapath.checklistukraineapp.dao.entity.TemplateFolderEntity;
 import com.datapath.checklistukraineapp.dao.repository.TemplateFolderRepository;
-import com.datapath.checklistukraineapp.exception.FolderException;
+import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,6 @@ public class TemplateFolderDaoService {
     }
 
     public TemplateFolderEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new FolderException(id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("folder", id));
     }
 }

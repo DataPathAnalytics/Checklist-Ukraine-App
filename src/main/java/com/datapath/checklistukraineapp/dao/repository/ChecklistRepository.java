@@ -11,9 +11,11 @@ public interface ChecklistRepository extends Neo4jRepository<ChecklistEntity, Lo
 
     @Query(value = "match (t:Template)<--(c:ChecklistResponse)<--(e:ControlEvent), " +
             "(c:ChecklistResponse)-[:HAS_REVIEWER]->(u1:User), " +
-            "(c:ChecklistResponse)-[:HAS_AUTHOR]->(u2:User) " +
+            "(c:ChecklistResponse)-[:HAS_AUTHOR]->(u2:User), " +
+            "(c:ChecklistResponse)-[:IN_STATUS]->(cs:ChecklistStatus), " +
             "where id(e)=$eventId " +
-            "return c, id(t) as templateId, t.name as templateName, id(u1) as reviewerId, id(u2) as authorId " +
+            "return c, id(t) as templateId, t.name as templateName, id(u1) as reviewerId, " +
+            "id(u2) as authorId, cs.checklistStatusId as checklistStatusId " +
             "order by c.dateCreated, c.name")
     List<ChecklistDomain> findEventChecklists(Long eventId);
 }

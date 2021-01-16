@@ -19,3 +19,6 @@ MERGE (c:ControlType {controlTypeId: 3, value:'Перевірка'})
 
 MERGE (c:ControlStatus {controlStatusId: 1, value:'В процесі'})
 MERGE (c:ControlStatus {controlStatusId: 2, value:'Завершено'})
+
+MERGE (c:ChecklistStatus {checklistStatusId: 1, value:'В процесі'})
+MERGE (c:ChecklistStatus {checklistStatusId: 2, value:'Завершено'})

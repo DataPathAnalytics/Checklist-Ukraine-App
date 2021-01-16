@@ -39,11 +39,15 @@ public class DBInitializer implements InitializingBean {
 
             br.lines()
                     .filter(Strings::isNotEmpty)
-                    .forEach(l -> client.query(l).run());
-        } catch (DataIntegrityViolationException e) {
-            log.warn(e.getMessage());
+                    .forEach(l -> {
+                        try {
+                            client.query(l).run();
+                        } catch (DataIntegrityViolationException e) {
+                            log.warn(e.getMessage());
+                        }
+                    });
         } catch (Exception e) {
-            log.error("DB initialization failed", e);
+            log.error("DB initialization failed in file " + fileName, e);
         }
     }
 }

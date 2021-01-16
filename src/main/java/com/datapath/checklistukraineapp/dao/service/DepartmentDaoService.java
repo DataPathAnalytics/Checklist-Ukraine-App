@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.dao.service;
 
 import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistukraineapp.dao.repository.DepartmentRepository;
-import com.datapath.checklistukraineapp.exception.DepartmentException;
+import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,6 @@ public class DepartmentDaoService {
 
     public DepartmentEntity findById(Long departmentId) {
         return repository.findById(departmentId)
-                .orElseThrow(() -> new DepartmentException(departmentId));
+                .orElseThrow(() -> new EntityNotFoundException("department", departmentId));
     }
 }

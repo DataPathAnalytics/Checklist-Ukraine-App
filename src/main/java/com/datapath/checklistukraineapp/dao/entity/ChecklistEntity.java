@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
+import com.datapath.checklistukraineapp.dao.entity.classifier.ChecklistStatusEntity;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -9,6 +10,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Node("ChecklistResponse")
@@ -17,7 +20,6 @@ public class ChecklistEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String status;
     private String name;
     @CreatedDate
     private LocalDate dateCreated;
@@ -37,4 +39,8 @@ public class ChecklistEntity {
     private UserEntity author;
     @Relationship(type = "HAS_REVIEWER")
     private UserEntity reviewer;
+    @Relationship(type = "IN_STATUS")
+    private ChecklistStatusEntity status;
+    @Relationship(type = "HAS_ANSWER")
+    private Set<ChecklistAnswerEntity> answers = new HashSet<>();
 }

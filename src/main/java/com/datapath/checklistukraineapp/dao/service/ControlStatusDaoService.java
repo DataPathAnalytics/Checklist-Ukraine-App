@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.dao.service;
 
 import com.datapath.checklistukraineapp.dao.entity.classifier.ControlStatusEntity;
 import com.datapath.checklistukraineapp.dao.repository.ControlStatusRepository;
-import com.datapath.checklistukraineapp.exception.ControlStatusException;
+import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,6 @@ public class ControlStatusDaoService {
     }
 
     public ControlStatusEntity findById(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new ControlStatusException(id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("controlStatus", id));
     }
 }

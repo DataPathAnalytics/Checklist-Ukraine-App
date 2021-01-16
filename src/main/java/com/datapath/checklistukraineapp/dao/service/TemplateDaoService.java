@@ -2,7 +2,7 @@ package com.datapath.checklistukraineapp.dao.service;
 
 import com.datapath.checklistukraineapp.dao.entity.TemplateEntity;
 import com.datapath.checklistukraineapp.dao.repository.TemplateRepository;
-import com.datapath.checklistukraineapp.exception.TemplateException;
+import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class TemplateDaoService {
     }
 
     public TemplateEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new TemplateException(id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("template", id));
     }
 
     public List<TemplateEntity> findByIds(Set<Long> ids) {

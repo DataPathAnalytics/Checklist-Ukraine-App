@@ -14,19 +14,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionHandlerController {
 
     @ExceptionHandler(value = {
+            EntityNotFoundException.class,
             UserException.class,
-            DepartmentException.class,
             MailException.class,
             ResetPasswordException.class,
-            PermissionException.class,
-            TemplateException.class,
-            FolderException.class,
-            QuestionException.class,
-            QuestionSourceException.class,
-            ControlObjectException.class,
-            ControlTypeException.class,
-            ControlStatusException.class,
-            ControlEventException.class})
+            PermissionException.class})
     public ResponseEntity<ExceptionResponse> exception(Exception ex) {
         ExceptionResponse response = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.BAD_REQUEST);

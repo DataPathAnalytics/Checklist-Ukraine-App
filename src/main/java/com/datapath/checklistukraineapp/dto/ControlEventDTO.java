@@ -21,7 +21,6 @@ public class ControlEventDTO {
     private Integer controlStatusId;
     private String controlObjectId;
     private String controlObjectName;
-    private Long teamLeadId;
     private Long authorId;
 
     private List<TemplateDTO> templates;

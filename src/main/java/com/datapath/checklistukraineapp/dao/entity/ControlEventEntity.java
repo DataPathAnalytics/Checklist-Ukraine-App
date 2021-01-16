@@ -30,8 +30,6 @@ public class ControlEventEntity {
     private ControlStatusEntity status;
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;
-    @Relationship(type = "HAS_TEAM_LEAD")
-    private UserEntity teamLead;
     @Relationship(type = "HAS_MEMBER")
     private Set<UserEntity> members = new HashSet<>();
     @Relationship(type = "WHAT_CONTROL")

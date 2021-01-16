@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotNull;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddTemplateRequest {
+@NoArgsConstructor
+public class ChecklistStatusRequest {
 
     @NotNull
     private Long id;
     @NotNull
-    private Long templateId;
+    private Integer checklistStatusId;
 }

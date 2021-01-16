@@ -9,10 +9,7 @@ import com.datapath.checklistukraineapp.dao.service.QuestionDaoService;
 import com.datapath.checklistukraineapp.dao.service.TemplateDaoService;
 import com.datapath.checklistukraineapp.dao.service.TemplateFolderDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
-import com.datapath.checklistukraineapp.dto.FolderDTO;
-import com.datapath.checklistukraineapp.dto.TemplateDTO;
-import com.datapath.checklistukraineapp.dto.TemplateFolderTreeDTO;
-import com.datapath.checklistukraineapp.dto.TemplateQuestionDTO;
+import com.datapath.checklistukraineapp.dto.*;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistukraineapp.dto.response.TemplateResponse;
 import lombok.AllArgsConstructor;
@@ -27,8 +24,7 @@ import java.util.function.Function;
 
 import static com.datapath.checklistukraineapp.util.UserUtils.getCurrentUserId;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -114,7 +110,7 @@ public class TemplateWebService {
 
         response.setTemplate(template);
 
-        response.setQuestions(
+        response.setGroupQuestions(
                 entity.getQuestions().stream()
                         .map(q -> {
                             TemplateQuestionDTO dto = new TemplateQuestionDTO();
@@ -129,6 +125,10 @@ public class TemplateWebService {
                             dto.setQuestionSourceName(q.getQuestion().getSource().getSource().getName());
                             return dto;
                         }).collect(groupingBy(TemplateQuestionDTO::getGroupName))
+                        .entrySet()
+                        .stream()
+                        .map(gq -> new GroupQuestionsDTO(gq.getKey(), gq.getValue()))
+                        .collect(toList())
         );
 
         return response;

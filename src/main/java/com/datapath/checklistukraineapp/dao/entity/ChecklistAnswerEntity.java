@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
+import com.datapath.checklistukraineapp.dao.entity.classifier.AnswerEntity;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -18,4 +19,6 @@ public class ChecklistAnswerEntity {
 
     @Relationship(type = "TO_QUESTION")
     private QuestionEntity question;
+    @Relationship(type ="IN_ANSWER")
+    private AnswerEntity answer;
 }

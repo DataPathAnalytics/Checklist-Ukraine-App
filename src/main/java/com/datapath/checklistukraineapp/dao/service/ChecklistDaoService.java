@@ -3,7 +3,7 @@ package com.datapath.checklistukraineapp.dao.service;
 import com.datapath.checklistukraineapp.dao.domain.ChecklistDomain;
 import com.datapath.checklistukraineapp.dao.entity.ChecklistEntity;
 import com.datapath.checklistukraineapp.dao.repository.ChecklistRepository;
-import com.datapath.checklistukraineapp.exception.ChecklistException;
+import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +19,11 @@ public class ChecklistDaoService {
         return repository.findEventChecklists(eventId);
     }
 
-    public Long save(ChecklistEntity entity) {
-        return repository.save(entity).getId();
+    public ChecklistEntity save(ChecklistEntity entity) {
+        return repository.save(entity);
     }
 
     public ChecklistEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new ChecklistException(id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("checklist", id));
     }
 }

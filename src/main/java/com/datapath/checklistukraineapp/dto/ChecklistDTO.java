@@ -3,7 +3,6 @@ package com.datapath.checklistukraineapp.dto;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 public class ChecklistDTO {
@@ -15,6 +14,4 @@ public class ChecklistDTO {
     private String templateName;
     private Long reviewerId;
     private Long authorId;
-
-    private List<QuestionAnswerDTO> answers;
 }

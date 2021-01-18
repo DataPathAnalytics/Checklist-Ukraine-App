@@ -17,7 +17,11 @@ public class ControlEventDaoService {
     private final ControlEventRepository repository;
 
     public List<ControlEventDomain> findAllByUser(Long userId) {
-        return repository.findControlEvents(userId);
+        return repository.findUserControlEvents(userId);
+    }
+
+    public List<ControlEventDomain> findAll() {
+        return repository.findControlEvents();
     }
 
     public ControlEventEntity save(ControlEventEntity entity) {

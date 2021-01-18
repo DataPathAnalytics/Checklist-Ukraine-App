@@ -17,4 +17,7 @@ public class ChecklistAnswerDTO {
 
     private Double violationAmount;
     private String comment;
+
+    private AmountCharacteristicDTO amountCharacteristic;
+    private ViolationAmountCharacteristicDTO violationAmountCharacteristic;
 }

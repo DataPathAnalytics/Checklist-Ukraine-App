@@ -5,9 +5,10 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("ControlStatus")
-public class ControlStatusEntity {
+@Node("FinancingDirection")
+public class FinancingDirectionClassifier {
+
     @Id
-    private Integer controlStatusId;
-    private String value;
+    private Integer id;
+    private String name;
 }

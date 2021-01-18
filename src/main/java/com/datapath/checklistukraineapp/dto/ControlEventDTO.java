@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.dto;
 
+import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,5 @@ public class ControlEventDTO {
     private List<TemplateDTO> templates;
     private Set<Long> members;
 
-    private ChecklistPageDTO checklists;
+    private ChecklistPageResponse checklists;
 }

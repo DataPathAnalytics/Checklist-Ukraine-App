@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionClassifier;
 import com.datapath.checklistukraineapp.dao.repository.PermissionRepository;
 import com.datapath.checklistukraineapp.exception.PermissionException;
 import lombok.AllArgsConstructor;
@@ -14,15 +14,15 @@ public class PermissionDaoService {
 
     private final PermissionRepository repository;
 
-    public List<PermissionEntity> findAll() {
+    public List<PermissionClassifier> findAll() {
         return repository.findAll();
     }
 
-    public PermissionEntity findByRole(String role) {
+    public PermissionClassifier findByRole(String role) {
         return repository.findByRole(role).orElseThrow(() -> new PermissionException("Permission with role '" + role + "' not found"));
     }
 
-    public PermissionEntity findById(Integer id) {
+    public PermissionClassifier findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new PermissionException("Permission with id '" + id + "' not found"));
     }
 }

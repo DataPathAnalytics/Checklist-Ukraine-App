@@ -7,11 +7,13 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("Answer")
-@AllArgsConstructor
+@Node("Permission")
 @NoArgsConstructor
-public class AnswerEntity {
+@AllArgsConstructor
+public class PermissionClassifier {
+
     @Id
-    private Integer answerId;
+    private Integer permissionId;
+    private String role;
     private String value;
 }

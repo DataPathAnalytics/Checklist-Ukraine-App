@@ -19,6 +19,8 @@ public class MappingWebService {
     private final AnswerDaoService answerService;
     private final ControlTypeDaoService controlTypeService;
     private final ControlStatusDaoService controlStatusService;
+    private final FinancingTypeDaoService financingTypeService;
+    private final FinancingDirectionDaoService financingDirectionService;
 
     public MappingPublicResponse getPublicMappings() {
         MappingPublicResponse response = new MappingPublicResponse();
@@ -51,6 +53,16 @@ public class MappingWebService {
         response.setControlStatuses(
                 controlStatusService.findAll().stream()
                         .map(s -> new ControlStatusDTO(s.getControlStatusId(), s.getValue()))
+                        .collect(toList())
+        );
+        response.setFinancingTypes(
+                financingTypeService.findAll().stream()
+                        .map(ft -> new FinancingTypeDTO(ft.getId(), ft.getName()))
+                        .collect(toList())
+        );
+        response.setFinancingDirections(
+                financingDirectionService.findAll().stream()
+                        .map(fd -> new FinancingDirectionDTO(fd.getId(), fd.getName()))
                         .collect(toList())
         );
         return response;

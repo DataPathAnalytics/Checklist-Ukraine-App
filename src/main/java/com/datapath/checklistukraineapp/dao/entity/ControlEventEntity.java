@@ -1,7 +1,7 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.ControlStatusEntity;
-import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ControlStatusClassifier;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeClassifier;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -27,7 +27,7 @@ public class ControlEventEntity {
     private LocalDate dateModified;
 
     @Relationship(type = "IN_STATUS")
-    private ControlStatusEntity status;
+    private ControlStatusClassifier status;
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;
     @Relationship(type = "HAS_MEMBER")
@@ -35,7 +35,7 @@ public class ControlEventEntity {
     @Relationship(type = "WHAT_CONTROL")
     private ControlObjectEntity object;
     @Relationship(type = "IN_TYPE")
-    private ControlTypeEntity type;
+    private ControlTypeClassifier type;
     @Relationship(type = "HAS_TEMPLATE")
     private Set<TemplateEntity> templates = new HashSet<>();
     @Relationship(type = "HAS_CHECKLIST")

@@ -1,30 +1,36 @@
 package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.domain.ChecklistDomain;
+import com.datapath.checklistukraineapp.dao.domain.ControlEventDomain;
 import com.datapath.checklistukraineapp.dao.entity.*;
-import com.datapath.checklistukraineapp.dao.entity.classifier.ControlStatusEntity;
-import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ControlStatusClassifier;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeClassifier;
 import com.datapath.checklistukraineapp.dao.relatioship.TemplateQuestionRelationship;
 import com.datapath.checklistukraineapp.dao.service.*;
-import com.datapath.checklistukraineapp.dto.*;
+import com.datapath.checklistukraineapp.dto.ChecklistAnswerDTO;
+import com.datapath.checklistukraineapp.dto.ChecklistDTO;
+import com.datapath.checklistukraineapp.dto.ControlEventDTO;
 import com.datapath.checklistukraineapp.dto.request.event.ChecklistStatusRequest;
 import com.datapath.checklistukraineapp.dto.request.event.CreateControlEventRequest;
 import com.datapath.checklistukraineapp.dto.request.event.EventTemplateOperationRequest;
 import com.datapath.checklistukraineapp.dto.request.event.SaveChecklistRequest;
+import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
+import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.PermissionException;
+import com.datapath.checklistukraineapp.util.DtoEntityConverter;
 import com.datapath.checklistukraineapp.util.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import static com.datapath.checklistukraineapp.util.Constants.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -44,9 +50,19 @@ public class ControlEventWebService {
     private final ChecklistStatusDaoService checklistStatusService;
     private final AnswerDaoService answerService;
     private final CustomQueryDaoService customQueryService;
+    private final FinancingTypeDaoService financingTypeService;
+    private final FinancingDirectionDaoService financingDirectionService;
 
     public List<ControlEventDTO> list() {
-        return controlEventService.findAllByUser(UserUtils.getCurrentUserId())
+        List<ControlEventDomain> events;
+
+        if (UserUtils.hasRole(METHODOLOGIST_ROLE)) {
+            events = controlEventService.findAll();
+        } else {
+            events = controlEventService.findAllByUser(UserUtils.getCurrentUserId());
+        }
+
+        return events
                 .stream()
                 .map(c -> {
                     ControlEventDTO dto = new ControlEventDTO();
@@ -59,8 +75,8 @@ public class ControlEventWebService {
     public ControlEventDTO create(CreateControlEventRequest request) {
         Long currentUserId = UserUtils.getCurrentUserId();
         ControlObjectEntity object = controlObjectService.findById(request.getControlObjectId());
-        ControlTypeEntity type = controlTypeService.findById(request.getControlTypeId());
-        ControlStatusEntity status = controlStatusService.findById(IN_PROCESS_STATUS);
+        ControlTypeClassifier type = controlTypeService.findById(request.getControlTypeId());
+        ControlStatusClassifier status = controlStatusService.findById(IN_PROCESS_STATUS);
         UserEntity author = userService.findById(currentUserId);
 
         ControlEventEntity event = new ControlEventEntity();
@@ -78,11 +94,11 @@ public class ControlEventWebService {
             event.setMembers(new HashSet<>(userService.findByIds(request.getMemberIds())));
         }
 
-        return mapEntityToDto(controlEventService.save(event));
+        return DtoEntityConverter.mapEntityToDto(controlEventService.save(event));
     }
 
     public ControlEventDTO get(Long id) {
-        return mapEntityToDto(controlEventService.findById(id));
+        return DtoEntityConverter.mapEntityToDto(controlEventService.findById(id));
     }
 
     @Transactional
@@ -96,7 +112,7 @@ public class ControlEventWebService {
                 "ControlEvent", id, "ControlStatus", IN_COMPLETED_STATUS, "IN_STATUS"
         );
 
-        return mapEntityToDto(controlEventService.findById(id));
+        return DtoEntityConverter.mapEntityToDto(controlEventService.findById(id));
     }
 
     @Transactional
@@ -107,63 +123,21 @@ public class ControlEventWebService {
                 "ControlEvent", request.getId(), "Template", request.getTemplateId(), "HAS_TEMPLATE"
         );
 
-        return mapEntityToDto(controlEventService.findById(request.getId()));
+        return DtoEntityConverter.mapEntityToDto(controlEventService.findById(request.getId()));
     }
 
-    private ControlEventDTO mapEntityToDto(ControlEventEntity event) {
-        ControlEventDTO dto = new ControlEventDTO();
-
-        BeanUtils.copyProperties(event, dto);
-        dto.setMembers(
-                event.getMembers().stream()
-                        .map(UserEntity::getId)
-                        .collect(toSet())
-        );
-        dto.setAuthorId(event.getAuthor().getId());
-        dto.setControlStatusId(event.getStatus().getControlStatusId());
-        dto.setControlObjectName(event.getObject().getName());
-        dto.setControlObjectId(event.getObject().getControlObjectId());
-        dto.setControlTypeId(event.getType().getControlTypeId());
-        dto.setTemplates(
-                event.getTemplates().stream()
-                        .map(t -> {
-                            TemplateDTO templateDto = new TemplateDTO();
-                            BeanUtils.copyProperties(t, templateDto);
-                            templateDto.setAuthorId(t.getAuthor().getId());
-                            templateDto.setFolderId(t.getFolder().getId());
-                            return templateDto;
-                        }).collect(toList()));
-
-        ChecklistPageDTO checklistPage = new ChecklistPageDTO();
-        checklistPage.setPageSize(DEFAULT_EVENT_CHECKLIST_COUNT);
-        checklistPage.setCurrentPage(DEFAULT_EVENT_CHECKLIST_PAGE);
-        checklistPage.setTotalCount(event.getChecklists().size());
-        checklistPage.setTotalPageCount((int) Math.ceil((double) event.getChecklists().size() / DEFAULT_EVENT_CHECKLIST_COUNT));
-        checklistPage.setChecklists(
-                event.getChecklists().stream()
-                        .limit(DEFAULT_EVENT_CHECKLIST_COUNT)
-                        .sorted(Comparator.comparing(ChecklistEntity::getDateCreated)
-                                .thenComparing(ChecklistEntity::getName))
-                        .map(this::mapEntityToDto)
-                        .collect(toList())
-        );
-
-        dto.setChecklists(checklistPage);
-
-        return dto;
-    }
 
     private void checkPermission(Long id) {
         Long currentUserId = UserUtils.getCurrentUserId();
 
         Set<Long> membersIds = controlEventService.findRelatedUsers(id);
 
-        if (!membersIds.contains(currentUserId))
+        if (!membersIds.contains(currentUserId) && !UserUtils.hasRole(METHODOLOGIST_ROLE))
             throw new PermissionException("You can't modify this control event");
     }
 
-    public ChecklistPageDTO getChecklists(Long eventId, int page, int size) {
-        ChecklistPageDTO dto = new ChecklistPageDTO();
+    public ChecklistPageResponse getChecklists(Long eventId, int page, int size) {
+        ChecklistPageResponse dto = new ChecklistPageResponse();
 
         List<ChecklistDomain> checklists = checklistService.findEventChecklists(eventId);
 
@@ -186,14 +160,13 @@ public class ControlEventWebService {
     }
 
     @Transactional
-    public ChecklistDTO saveChecklist(SaveChecklistRequest request) {
+    public ChecklistResponse saveChecklist(SaveChecklistRequest request) {
         checkPermission(request.getEventId());
 
         ControlEventEntity event = controlEventService.findById(request.getEventId());
 
         ChecklistEntity entity = new ChecklistEntity();
-        entity.setId(request.getId());
-        entity.setName(request.getName());
+        BeanUtils.copyProperties(request, entity);
 
         entity.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
         entity.setStatus(checklistStatusService.findById(IN_PROCESS_STATUS));
@@ -219,6 +192,39 @@ public class ControlEventWebService {
                 );
             }
 
+            if (nonNull(answer.getAmountCharacteristic())) {
+                AmountCharacteristicEntity amountCharacteristic = new AmountCharacteristicEntity();
+                amountCharacteristic.setTotalAmount(answer.getAmountCharacteristic().getTotalValue());
+
+                answer.getAmountCharacteristic().getTypeAmounts().forEach(a -> {
+                    FinancingTypeAmountEntity financingTypeAmount = new FinancingTypeAmountEntity();
+                    financingTypeAmount.setAmount(a.getAmount());
+                    financingTypeAmount.setType(financingTypeService.findById(a.getFinancingTypeId()));
+                    amountCharacteristic.getTypeAmounts().add(financingTypeAmount);
+                });
+
+                answer.getAmountCharacteristic().getDirectionAmounts().forEach(a -> {
+                    FinancingDirectionAmountEntity financingDirectionAmount = new FinancingDirectionAmountEntity();
+                    financingDirectionAmount.setAmount(a.getAmount());
+                    financingDirectionAmount.setDirection(financingDirectionService.findById(a.getFinancingDirectionId()));
+                    amountCharacteristic.getDirectionAmounts().add(financingDirectionAmount);
+                });
+                answerEntity.setAmountCharacteristic(amountCharacteristic);
+            }
+
+            if (nonNull(answer.getViolationAmountCharacteristic())) {
+                ViolationAmountCharacteristicEntity violationAmountCharacteristic = new ViolationAmountCharacteristicEntity();
+                BeanUtils.copyProperties(answer.getViolationAmountCharacteristic(), violationAmountCharacteristic);
+
+                answer.getViolationAmountCharacteristic().getDirectionAmounts().forEach(a -> {
+                    FinancingDirectionAmountEntity financingDirectionAmount = new FinancingDirectionAmountEntity();
+                    financingDirectionAmount.setAmount(a.getAmount());
+                    financingDirectionAmount.setDirection(financingDirectionService.findById(a.getFinancingDirectionId()));
+                    violationAmountCharacteristic.getDirectionAmounts().add(financingDirectionAmount);
+                });
+                answerEntity.setViolationAmountCharacteristic(violationAmountCharacteristic);
+            }
+
             entity.getAnswers().add(answerEntity);
         }
 
@@ -228,15 +234,17 @@ public class ControlEventWebService {
                 "ChecklistResponse", entity.getId(), "Template", template.getId(), "TEMPLATED_BY"
         );
 
-        customQueryService.createRelationship(
-                "ControlEvent", event.getId(), "ChecklistResponse", entity.getId(), "HAS_CHECKLIST"
-        );
+        if (isNull(request.getId())) {
+            customQueryService.createRelationship(
+                    "ControlEvent", event.getId(), "ChecklistResponse", entity.getId(), "HAS_CHECKLIST"
+            );
+        }
 
-        return mapEntityToDto(checklistService.findById(entity.getId()));
+        return DtoEntityConverter.mapEntityToFullResponse(checklistService.findById(entity.getId()));
     }
 
-    public ChecklistDTO getChecklist(Long id) {
-        return mapEntityToDto(checklistService.findById(id));
+    public ChecklistResponse getChecklist(Long id) {
+        return DtoEntityConverter.mapEntityToFullResponse(checklistService.findById(id));
     }
 
     @Transactional
@@ -260,11 +268,11 @@ public class ControlEventWebService {
                 "ControlEvent", request.getId(), "Template", request.getTemplateId(), "HAS_TEMPLATE"
         );
 
-        return mapEntityToDto(event);
+        return DtoEntityConverter.mapEntityToDto(event);
     }
 
     @Transactional
-    public ChecklistDTO changeStatus(ChecklistStatusRequest request) {
+    public ChecklistResponse changeStatus(ChecklistStatusRequest request) {
         ChecklistEntity entity = checklistService.findById(request.getId());
 
         if (IN_PROCESS_STATUS.equals(request.getChecklistStatusId())) {
@@ -274,22 +282,6 @@ public class ControlEventWebService {
         }
         entity.setStatus(checklistStatusService.findById(request.getChecklistStatusId()));
 
-        return mapEntityToDto(checklistService.save(entity));
-    }
-
-    private ChecklistDTO mapEntityToDto(ChecklistEntity entity) {
-        ChecklistDTO dto = new ChecklistDTO();
-
-        BeanUtils.copyProperties(entity, dto);
-        dto.setAuthorId(entity.getAuthor().getId());
-        dto.setTemplateId(entity.getTemplate().getId());
-        dto.setTemplateName(entity.getTemplate().getName());
-        dto.setChecklistStatusId(entity.getStatus().getChecklistStatusId());
-
-        if (nonNull(entity.getReviewer())) {
-            dto.setReviewerId(entity.getReviewer().getId());
-        }
-
-        return dto;
+        return DtoEntityConverter.mapEntityToFullResponse(checklistService.save(entity));
     }
 }

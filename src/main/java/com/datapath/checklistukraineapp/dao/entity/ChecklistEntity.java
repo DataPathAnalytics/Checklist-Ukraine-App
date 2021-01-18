@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.ChecklistStatusEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ChecklistStatusClassifier;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -40,7 +40,7 @@ public class ChecklistEntity {
     @Relationship(type = "HAS_REVIEWER")
     private UserEntity reviewer;
     @Relationship(type = "IN_STATUS")
-    private ChecklistStatusEntity status;
+    private ChecklistStatusClassifier status;
     @Relationship(type = "HAS_ANSWER")
     private Set<ChecklistAnswerEntity> answers = new HashSet<>();
 }

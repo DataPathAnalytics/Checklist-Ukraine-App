@@ -10,4 +10,11 @@ public class UserUtils {
     public static Long getCurrentUserId() {
         return Long.parseLong(((UserAuthInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
     }
+
+    public static boolean hasRole(String role) {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities()
+                .stream()
+                .map(String::valueOf)
+                .anyMatch(role::equals);
+    }
 }

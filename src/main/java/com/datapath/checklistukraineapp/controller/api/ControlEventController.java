@@ -1,12 +1,12 @@
 package com.datapath.checklistukraineapp.controller.api;
 
-import com.datapath.checklistukraineapp.dto.ChecklistDTO;
-import com.datapath.checklistukraineapp.dto.ChecklistPageDTO;
 import com.datapath.checklistukraineapp.dto.ControlEventDTO;
 import com.datapath.checklistukraineapp.dto.request.event.ChecklistStatusRequest;
 import com.datapath.checklistukraineapp.dto.request.event.CreateControlEventRequest;
 import com.datapath.checklistukraineapp.dto.request.event.EventTemplateOperationRequest;
 import com.datapath.checklistukraineapp.dto.request.event.SaveChecklistRequest;
+import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
+import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
 import com.datapath.checklistukraineapp.service.ControlEventWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -55,24 +55,24 @@ public class ControlEventController {
     }
 
     @GetMapping("checklists")
-    public ChecklistPageDTO getChecklists(@RequestParam Long eventId,
-                                          @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
-                                          @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
+    public ChecklistPageResponse getChecklists(@RequestParam Long eventId,
+                                               @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
+                                               @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
         return service.getChecklists(eventId, page, size);
     }
 
     @PostMapping("checklists")
-    public ChecklistDTO saveChecklist(@RequestBody @Valid SaveChecklistRequest request) {
+    public ChecklistResponse saveChecklist(@RequestBody @Valid SaveChecklistRequest request) {
         return service.saveChecklist(request);
     }
 
     @PutMapping("checklists")
-    public ChecklistDTO changeStatus(@RequestBody @Valid ChecklistStatusRequest request) {
+    public ChecklistResponse changeStatus(@RequestBody @Valid ChecklistStatusRequest request) {
         return service.changeStatus(request);
     }
 
     @GetMapping("checklists/{id}")
-    public ChecklistDTO getChecklist(@PathVariable Long id) {
+    public ChecklistResponse getChecklist(@PathVariable Long id) {
         return service.getChecklist(id);
     }
 }

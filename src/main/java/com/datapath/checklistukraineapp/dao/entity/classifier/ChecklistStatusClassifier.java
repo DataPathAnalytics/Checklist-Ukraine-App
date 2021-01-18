@@ -5,9 +5,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("ControlType")
-public class ControlTypeEntity {
+@Node("ChecklistStatus")
+public class ChecklistStatusClassifier {
     @Id
-    private Integer controlTypeId;
+    private Integer checklistStatusId;
     private String value;
 }

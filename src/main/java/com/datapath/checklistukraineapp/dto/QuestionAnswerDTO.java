@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class QuestionAnswerDTO {
 
     private Long questionId;
-
-    //TODO:needs add other fields
+    private String questionName;
+    private Integer answerId;
 }

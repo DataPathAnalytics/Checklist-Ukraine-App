@@ -20,6 +20,7 @@ public final class Constants {
 
     public static final String ADMIN_ROLE = "admin";
     public static final String AUDITOR_ROLE = "auditor";
+    public static final String METHODOLOGIST_ROLE = "methodologist";
 
     public static final Integer IN_PROCESS_STATUS = 1;
     public static final Integer IN_COMPLETED_STATUS = 2;

@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.AnswerEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.AnswerClassifier;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -20,5 +20,9 @@ public class ChecklistAnswerEntity {
     @Relationship(type = "TO_QUESTION")
     private QuestionEntity question;
     @Relationship(type ="IN_ANSWER")
-    private AnswerEntity answer;
+    private AnswerClassifier answer;
+    @Relationship(type = "HAS_AMOUNT_CHARACTERISTIC")
+    private AmountCharacteristicEntity amountCharacteristic;
+    @Relationship(type = "HAS_VIOLATION_AMOUNT_CHARACTERISTIC")
+    private ViolationAmountCharacteristicEntity violationAmountCharacteristic;
 }

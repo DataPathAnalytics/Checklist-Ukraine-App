@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.ControlTypeClassifier;
 import com.datapath.checklistukraineapp.dao.repository.ControlTypeRepository;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -14,11 +14,11 @@ public class ControlTypeDaoService {
 
     private final ControlTypeRepository repository;
 
-    public List<ControlTypeEntity> findAll() {
+    public List<ControlTypeClassifier> findAll() {
         return repository.findAll();
     }
 
-    public ControlTypeEntity findById(Integer id) {
+    public ControlTypeClassifier findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("controlType", id));
     }
 }

@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionEntity;
+import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionClassifier;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,7 +34,7 @@ public class UserEntity {
     private LocalDate registeredDate;
 
     @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
-    private PermissionEntity permission;
+    private PermissionClassifier permission;
 
     @Relationship(type = "HAS_EMPLOYMENT_PERIOD", direction = Relationship.Direction.OUTGOING)
     private List<EmploymentEntity> employments = new ArrayList<>();

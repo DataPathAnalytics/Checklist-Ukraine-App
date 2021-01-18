@@ -1,19 +1,18 @@
-package com.datapath.checklistukraineapp.dto.request.event;
+package com.datapath.checklistukraineapp.dto.response.checklist;
 
-import com.datapath.checklistukraineapp.dto.ChecklistAnswerDTO;
+import com.datapath.checklistukraineapp.dto.QuestionAnswerDTO;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class SaveChecklistRequest {
+public class ChecklistResponse {
 
     private Long id;
-    @NotBlank
     private String name;
+    private LocalDate dateCreated;
+    private LocalDate dateModified;
     private LocalDate checkingPeriodStart;
     private LocalDate checkingPeriodEnd;
     private Double amount;
@@ -21,10 +20,10 @@ public class SaveChecklistRequest {
     private Double controlAmount;
     private Double violationAmount;
     private String summary;
-    @NotNull
-    private Long eventId;
-    @NotNull
+    private Integer checklistStatusId;
     private Long templateId;
+    private Long reviewerId;
+    private Long authorId;
 
-    private List<ChecklistAnswerDTO> answers;
+    private List<QuestionAnswerDTO> questionAnswerList;
 }

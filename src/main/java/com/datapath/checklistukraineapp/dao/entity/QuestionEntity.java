@@ -1,9 +1,10 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
+import com.datapath.checklistukraineapp.dao.entity.classifier.KnowledgeCategory;
+import com.datapath.checklistukraineapp.dao.entity.classifier.QuestionType;
 import com.datapath.checklistukraineapp.dao.relatioship.QuestionSourceRelationship;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
@@ -21,9 +22,18 @@ public class QuestionEntity {
     private String name;
     @CreatedDate
     private LocalDate dateCreated;
-    @LastModifiedDate
-    private LocalDate dateModified;
+
+    @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
+    private KnowledgeCategory knowledgeCategory;
+
+    @Relationship(type = "HAS_ANSWER_STRUCTURE")
+    private AnswerStructureEntity answerStructure;
+
+    @Relationship(type = "IN_TYPE")
+    private QuestionType type;
 
     @Relationship(type = "FROM_QUESTION_SOURCE")
     private QuestionSourceRelationship source;
+
+
 }

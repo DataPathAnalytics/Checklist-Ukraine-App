@@ -19,6 +19,10 @@ public class TemplateDaoService {
         return repository.findAll();
     }
 
+//    public List<TemplateEntity> findByOwnerType(OwnerType ownerType) {
+//        return repository.findAllByOwnerType(ownerType);
+//    }
+
     public TemplateEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("template", id));
     }

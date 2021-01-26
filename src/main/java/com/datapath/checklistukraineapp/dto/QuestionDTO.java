@@ -9,8 +9,18 @@ public class QuestionDTO {
 
     private Long id;
     private String name;
-    private LocalDate dateModified;
     private LocalDate dateCreated;
+
+    private Integer knowledgeCategoryId;
+    private String knowledgeCategoryValue;
+    private String knowledgeCategoryTranslate;
+
     private String questionSourceId;
+    private String questionSourceName;
+    private String questionSourceLink;
     private String documentParagraph;
+
+    private Long answerStructureId;
+    private Integer questionTypeId;
+    private String questionTypeValue;
 }

@@ -9,16 +9,26 @@ MERGE (d:Department {region: 'Схід'})
 MERGE (d:Department {region: 'Південь'})
 MERGE (d:Department {region: 'Захід'})
 
-MERGE (a:Answer {answerId: 1, value:'ТАК'})
-MERGE (a:Answer {answerId: 2, value:'Ні'})
-MERGE (a:Answer {answerId: 3, value:'НЗ'})
+MERGE (a:AnswerType {answerTypeId: 1, value:'ТАК'})
+MERGE (a:AnswerType {answerTypeId: 2, value:'Ні'})
+MERGE (a:AnswerType {answerTypeId: 3, value:'НЗ'})
 
-MERGE (c:ControlType {controlTypeId: 1, value:'Ревізія'})
-MERGE (c:ControlType {controlTypeId: 2, value:'Аудит'})
-MERGE (c:ControlType {controlTypeId: 3, value:'Перевірка'})
+MERGE (c:Authority {authorityId: 1, value:'Ревізія'})
 
-MERGE (c:ControlStatus {controlStatusId: 1, value:'В процесі'})
-MERGE (c:ControlStatus {controlStatusId: 2, value:'Завершено'})
+MERGE (c:ActivityStatus {activityStatusId: 1, value:'В процесі'})
+MERGE (c:ActivityStatus {activityStatusId: 2, value:'Завершено'})
 
-MERGE (c:ChecklistStatus {checklistStatusId: 1, value:'В процесі'})
-MERGE (c:ChecklistStatus {checklistStatusId: 2, value:'Завершено'})
+MERGE (c:SessionStatus {sessionStatusId: 1, value:'В процесі'})
+MERGE (c:SessionStatus {sessionStatusId: 2, value:'Завершено'})
+
+MERGE (c:TemplateType {templateTypeId: 1, value:'ControlActivity'})
+MERGE (c:TemplateType {templateTypeId: 2, value:'ResponseSession'})
+
+MERGE (c:QuestionType {questionTypeId: 1, value:'ControlActivity'})
+MERGE (c:QuestionType {questionTypeId: 2, value:'ResponseSession'})
+MERGE (c:QuestionType {questionTypeId: 3, value:'Answer'})
+MERGE (c:QuestionType {questionTypeId: 6, value:'AnswerFeature'})
+MERGE (c:QuestionType {questionTypeId: 4, value:'Object'})
+MERGE (c:QuestionType {questionTypeId: 5, value:'ObjectFeature'})
+
+MERGE (c:KnowledgeCategory {knowledgeCategoryId: 1, value:'Test', translate:'Тест'})

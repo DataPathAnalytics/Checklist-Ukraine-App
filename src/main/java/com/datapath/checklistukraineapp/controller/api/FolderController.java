@@ -17,14 +17,27 @@ public class FolderController {
 
     private final FolderWebService service;
 
-    @PostMapping
+    @PostMapping("template")
     @PreAuthorize("hasAuthority('methodologist')")
-    public FolderDTO create(@RequestBody @Valid CreateFolderRequest request) {
-        return service.create(request);
+    public List<FolderDTO> create(@RequestBody @Valid CreateFolderRequest request) {
+        service.createTemplateFolder(request);
+        return service.getTemplateFolders();
     }
 
-    @GetMapping
+    @GetMapping("template")
     public List<FolderDTO> list() {
-        return service.list();
+        return service.getTemplateFolders();
+    }
+
+    @PostMapping("template-config")
+    @PreAuthorize("hasAuthority('methodologist')")
+    public List<FolderDTO> createConfig(@RequestBody @Valid CreateFolderRequest request) {
+        service.createTemplateConfigFolder(request);
+        return service.getTemplateConfigFolders();
+    }
+
+    @GetMapping("template-config")
+    public List<FolderDTO> listConfig() {
+        return service.getTemplateConfigFolders();
     }
 }

@@ -1,6 +1,7 @@
 package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.QuestionDTO;
+import com.datapath.checklistukraineapp.dto.QuestionTypeDTO;
 import com.datapath.checklistukraineapp.dto.request.CreateQuestionRequest;
 import com.datapath.checklistukraineapp.service.QuestionWebService;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,11 @@ public class QuestionController {
     @GetMapping
     public List<QuestionDTO> list() {
         return service.list();
+    }
+
+    @GetMapping("template-type/{id}")
+    public List<QuestionTypeDTO> templateTypeList(@PathVariable Integer id) {
+        return service.list(id);
     }
 
     @GetMapping("{id}")

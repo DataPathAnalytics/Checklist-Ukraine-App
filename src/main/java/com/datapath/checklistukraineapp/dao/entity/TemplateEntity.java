@@ -26,9 +26,12 @@ public class TemplateEntity {
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;
 
-    @Relationship(type = "IN_TEMPLATE_FOLDER")
+    @Relationship(type = "IN_FOLDER")
     private TemplateFolderEntity folder;
 
-    @Relationship(type = "HAS_QUESTION")
-    private Set<TemplateQuestionRelationship> questions = new HashSet<>();
+    @Relationship(type = "HAS_FACT_QUESTION")
+    private Set<TemplateQuestionRelationship> factQuestions = new HashSet<>();
+
+    @Relationship(type = "HAS_ONTOLOGY_QUESTION")
+    private Set<QuestionEntity> ontologyQuestions = new HashSet<>();
 }

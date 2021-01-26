@@ -18,7 +18,8 @@ public class ExceptionHandlerController {
             UserException.class,
             MailException.class,
             ResetPasswordException.class,
-            PermissionException.class})
+            PermissionException.class,
+            ValidationException.class})
     public ResponseEntity<ExceptionResponse> exception(Exception ex) {
         ExceptionResponse response = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.BAD_REQUEST);

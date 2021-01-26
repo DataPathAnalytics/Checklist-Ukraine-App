@@ -3,10 +3,10 @@ package com.datapath.checklistukraineapp.service;
 import com.datapath.checklistukraineapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistukraineapp.dao.entity.EmploymentEntity;
 import com.datapath.checklistukraineapp.dao.entity.UserEntity;
-import com.datapath.checklistukraineapp.dao.entity.classifier.PermissionClassifier;
+import com.datapath.checklistukraineapp.dao.entity.classifier.Permission;
 import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
-import com.datapath.checklistukraineapp.dao.service.PermissionDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
+import com.datapath.checklistukraineapp.dao.service.classifier.PermissionDaoService;
 import com.datapath.checklistukraineapp.dto.UserDTO;
 import com.datapath.checklistukraineapp.dto.UserStateDTO;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
@@ -128,7 +128,7 @@ public class UserWebService {
         }
 
         if (nonNull(request.getPermissionId())) {
-            PermissionClassifier permission = permissionService.findById(request.getPermissionId());
+            Permission permission = permissionService.findById(request.getPermissionId());
             if (!ADMIN_ROLE.equals(permission.getRole())) {
                 user.setPermission(permission);
             }

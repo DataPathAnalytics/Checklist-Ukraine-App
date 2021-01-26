@@ -13,10 +13,20 @@ CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASS
 
 CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS UNIQUE
 
-CREATE CONSTRAINT control_type_id_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.controlTypeId IS UNIQUE
-CREATE CONSTRAINT control_type_value_cnt IF NOT EXISTS ON (c:ControlType) ASSERT c.value IS UNIQUE
+CREATE CONSTRAINT authority_id_cnt IF NOT EXISTS ON (c:Authority) ASSERT c.authorityId IS UNIQUE
+CREATE CONSTRAINT authority_value_cnt IF NOT EXISTS ON (c:Authority) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT control_status_id_cnt IF NOT EXISTS ON (c:ControlStatus) ASSERT c.controlStatusId IS UNIQUE
-CREATE CONSTRAINT control_status_value_cnt IF NOT EXISTS ON (c:ControlStatus) ASSERT c.value IS UNIQUE
+CREATE CONSTRAINT activity_status_id_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.activityStatusId IS UNIQUE
+CREATE CONSTRAINT activity_status_value_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT control_object_cnt IF NOT EXISTS ON (c:ControlObject) ASSERT c.controlObjectId IS UNIQUE
+CREATE CONSTRAINT session_status_id_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.sessionStatusId IS UNIQUE
+CREATE CONSTRAINT session_status_value_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT knowledge_type_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.knowledgeCategoryId IS UNIQUE
+CREATE CONSTRAINT knowledge_value_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT template_type_id_cnt IF NOT EXISTS ON (c:TemplateType) ASSERT c.templateTypeId IS UNIQUE
+CREATE CONSTRAINT template_type_value_cnt IF NOT EXISTS ON (c:TemplateType) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT question_type_id_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.questionTypeId IS UNIQUE
+CREATE CONSTRAINT question_type_value_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.value IS UNIQUE

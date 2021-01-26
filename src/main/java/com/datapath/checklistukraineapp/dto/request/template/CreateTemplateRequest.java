@@ -18,7 +18,12 @@ public class CreateTemplateRequest {
     private String name;
     @NotNull
     private Long folderId;
-
     @NotNull
-    private List<TemplateQuestionDTO> questions;
+    private Long subjectTypeId;
+    @NotNull
+    private Long ownerTypeId;
+    @NotNull
+    private List<TemplateQuestionDTO> factQuestions;
+    @NotNull
+    private List<Long> ontologyQuestions;
 }

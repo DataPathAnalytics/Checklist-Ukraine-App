@@ -14,5 +14,4 @@ public class FolderDTO {
     private Long id;
     private String name;
     private LocalDate dateCreated;
-    private LocalDate dateModified;
 }

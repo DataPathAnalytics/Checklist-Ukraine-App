@@ -13,5 +13,4 @@ public class CreateFolderRequest {
 
     @NotBlank
     private String name;
-    private Long parentId;
 }

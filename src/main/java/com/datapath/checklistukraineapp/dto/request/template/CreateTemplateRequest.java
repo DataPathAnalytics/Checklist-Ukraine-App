@@ -1,6 +1,5 @@
 package com.datapath.checklistukraineapp.dto.request.template;
 
-import com.datapath.checklistukraineapp.dto.TemplateQuestionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,11 +18,33 @@ public class CreateTemplateRequest {
     @NotNull
     private Long folderId;
     @NotNull
-    private Long subjectTypeId;
-    @NotNull
-    private Long ownerTypeId;
-    @NotNull
-    private List<TemplateQuestionDTO> factQuestions;
-    @NotNull
-    private List<Long> ontologyQuestions;
+    private Long templateConfigId;
+
+    private List<TemplateQuestion> ungroupedQuestions;
+    private List<QuestionGroup> questionGroups;
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class QuestionGroup {
+        @NotNull
+        private String name;
+        @NotNull
+        private Integer orderNumber;
+        private List<TemplateQuestion> questions;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TemplateQuestion {
+        @NotNull
+        private Long questionId;
+        private Long parentQuestionId;
+        private Integer conditionAnswerId;
+        @NotNull
+        private Integer orderNumber;
+
+        private List<TemplateQuestion> featureQuestion;
+    }
 }

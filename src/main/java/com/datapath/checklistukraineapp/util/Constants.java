@@ -22,6 +22,8 @@ public final class Constants {
     public static final String AUDITOR_ROLE = "auditor";
     public static final String METHODOLOGIST_ROLE = "methodologist";
 
+    public static final String UNGROUPED_NAME = "ungrouped";
+
     public static final Integer IN_PROCESS_STATUS = 1;
     public static final Integer IN_COMPLETED_STATUS = 2;
 
@@ -30,7 +32,7 @@ public final class Constants {
 
     public static final Integer ACTIVITY_QUESTION_TYPE = 1;
     public static final Integer SESSION_QUESTION_TYPE = 2;
-    public static final Integer ANSWER_QUESTION_TYPE = 3;
+    public static final Integer FACT_QUESTION_TYPE = 3;
     public static final Integer OBJECT_QUESTION_TYPE = 4;
     public static final Integer OBJECT_FEATURE_QUESTION_TYPE = 5;
 

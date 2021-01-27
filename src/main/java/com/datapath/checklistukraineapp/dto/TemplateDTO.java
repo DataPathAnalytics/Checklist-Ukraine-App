@@ -15,4 +15,6 @@ public class TemplateDTO {
     private LocalDate dateCreated;
     private Long authorId;
     private Long folderId;
+    private Long templateConfigId;
+    private Integer templateType;
 }

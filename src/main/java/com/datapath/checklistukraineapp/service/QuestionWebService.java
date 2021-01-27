@@ -17,10 +17,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.datapath.checklistukraineapp.util.Constants.ANSWER_QUESTION_TYPE;
+import static com.datapath.checklistukraineapp.util.Constants.FACT_QUESTION_TYPE;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
@@ -49,7 +50,7 @@ public class QuestionWebService {
         relationship.setDocumentParagraph(request.getQuestionSourceParagraph());
         entity.setSource(relationship);
 
-        if (!ANSWER_QUESTION_TYPE.equals(request.getQuestionTypeId())) {
+        if (!FACT_QUESTION_TYPE.equals(request.getQuestionTypeId())) {
             entity.setAnswerStructure(answerStructureService.findById(request.getAnswerStructureId()));
         }
 
@@ -60,8 +61,21 @@ public class QuestionWebService {
         return DtoEntityConverter.map(service.findById(id));
     }
 
-    public List<QuestionTypeDTO> list(Integer templateTypeId) {
+    public List<QuestionTypeDTO> listByTemplateType(Integer templateTypeId) {
         Map<Integer, List<QuestionDTO>> questionsByType = service.findByTypes(templateTypeService.findById(templateTypeId).getQuestionTypes())
+                .stream()
+                .map(DtoEntityConverter::map)
+                .collect(groupingBy(QuestionDTO::getQuestionTypeId));
+        return questionsByType.entrySet()
+                .stream()
+                .map(e -> new QuestionTypeDTO(e.getKey(), e.getValue()))
+                .collect(toList());
+    }
+
+    public List<QuestionTypeDTO> listByQuestionType(Integer questionTypeId) {
+        Map<Integer, List<QuestionDTO>> questionsByType = service.findByTypes(
+                Collections.singletonList(questionTypeService.findById(questionTypeId))
+        )
                 .stream()
                 .map(DtoEntityConverter::map)
                 .collect(groupingBy(QuestionDTO::getQuestionTypeId));

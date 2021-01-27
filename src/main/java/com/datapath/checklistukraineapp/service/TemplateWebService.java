@@ -1,18 +1,17 @@
 package com.datapath.checklistukraineapp.service;
 
-import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
-import com.datapath.checklistukraineapp.dao.entity.QuestionExecutionEntity;
-import com.datapath.checklistukraineapp.dao.entity.TemplateConfigEntity;
-import com.datapath.checklistukraineapp.dao.entity.TemplateEntity;
-import com.datapath.checklistukraineapp.dao.relatioship.TemplateQuestionRelationship;
+import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dao.service.*;
 import com.datapath.checklistukraineapp.dao.service.classifier.TemplateTypeDaoService;
-import com.datapath.checklistukraineapp.dto.*;
+import com.datapath.checklistukraineapp.dto.FolderDTO;
+import com.datapath.checklistukraineapp.dto.TemplateDTO;
+import com.datapath.checklistukraineapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistukraineapp.dto.response.TemplateResponse;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.ValidationException;
+import com.datapath.checklistukraineapp.util.DtoEntityConverter;
 import com.datapath.checklistukraineapp.util.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -46,126 +45,49 @@ public class TemplateWebService {
 
         entity.setName(request.getName());
         entity.setAuthor(userService.findById(getCurrentUserId()));
-//        entity.setFolder(templateFolderService.findById(request.getFolderId()));
-//        entity.setOwnerType(ownerTypeService.findById(request.getOwnerTypeId()));
-//        entity.setSubjectType(subjectTypeService.findById(request.getSubjectTypeId()));
+        entity.setFolder(folderService.findTemplateFolderById(request.getFolderId()));
+        entity.setConfig(templateConfigService.findById(request.getTemplateConfigId()));
 
-        request.getFactQuestions().forEach(q -> {
-            QuestionEntity question = questionService.findById(q.getQuestionId());
+        if (!isEmpty(request.getUngroupedQuestions())) {
+            QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
 
-            TemplateQuestionRelationship relationship = new TemplateQuestionRelationship();
-            relationship.setGroupName(q.getGroupName());
-            relationship.setQuestion(question);
+            ungroupedEntity.setName(UNGROUPED_NAME);
 
-            if (nonNull(q.getParentQuestionId())) {
-                QuestionEntity parentQuestion = questionService.findById(q.getParentQuestionId());
-                relationship.setParentQuestionId(parentQuestion.getId());
-                relationship.setAnswerId(q.getParentAnswerId());
-            }
+            request.getUngroupedQuestions().forEach(q -> {
+                QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
+                questionExecutionEntity.setOrderNumber(q.getOrderNumber());
+                questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
+                questionExecutionEntity.setConditionAnswerId(q.getConditionAnswerId());
+                questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+                ungroupedEntity.getQuestions().add(questionExecutionEntity);
+            });
 
-            entity.getFactQuestions().add(relationship);
-        });
+            entity.getGroups().add(ungroupedEntity);
+        }
 
-        entity.getOntologyQuestions().addAll(
-                questionService.findByIds(request.getOntologyQuestions())
-                        .stream()
-//                        .filter(q -> request.getSubjectTypeId().equals(q.getSubjectType().getId()))
-                        .collect(toList())
-        );
+        if (!isEmpty(request.getQuestionGroups())) {
+            request.getQuestionGroups().forEach(group -> {
+                if (!isEmpty(group.getQuestions())) {
+                    QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
+                    ungroupedEntity.setName(group.getName());
+                    ungroupedEntity.setOrderNumber(group.getOrderNumber());
 
+                    group.getQuestions().forEach(q -> {
+                        QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
+                        questionExecutionEntity.setOrderNumber(q.getOrderNumber());
+                        questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
+                        questionExecutionEntity.setConditionAnswerId(q.getConditionAnswerId());
+                        questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+                        ungroupedEntity.getQuestions().add(questionExecutionEntity);
+                    });
+                }
+            });
+        }
         templateService.save(entity);
     }
 
-    public List<TemplateFolderTreeDTO> list() {
-        Map<Long, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
-                .stream()
-                .map(t -> {
-                    TemplateDTO dto = new TemplateDTO();
-                    BeanUtils.copyProperties(t, dto);
-                    dto.setFolderId(t.getFolder().getId());
-                    dto.setAuthorId(t.getAuthor().getId());
-                    return dto;
-                })
-                .collect(groupingBy(TemplateDTO::getFolderId));
-
-        return joinTemplateWithFolder(folderTemplatesMap);
-    }
-
-    public List<TemplateFolderTreeDTO> list(Long ownerTypeId) {
-//        Map<Long, List<TemplateDTO>> folderTemplatesMap = templateService.findByOwnerType(ownerTypeService.findById(ownerTypeId))
-//                .stream()
-//                .map(t -> {
-//                    TemplateDTO dto = new TemplateDTO();
-//                    BeanUtils.copyProperties(t, dto);
-//                    dto.setFolderId(t.getFolder().getId());
-//                    dto.setAuthorId(t.getAuthor().getId());
-//                    return dto;
-//                })
-//                .collect(groupingBy(TemplateDTO::getFolderId));
-//
-//        return joinTemplateWithFolder(folderTemplatesMap);
-        return null;
-    }
-
     @Transactional
-    public TemplateResponse get(Long id) {
-        TemplateResponse response = new TemplateResponse();
-
-        TemplateEntity entity = templateService.findById(id);
-
-        TemplateDTO template = new TemplateDTO();
-        BeanUtils.copyProperties(entity, template);
-
-        response.setTemplate(template);
-
-        response.setGroupQuestions(
-                entity.getFactQuestions().stream()
-                        .map(q -> {
-                            TemplateQuestionDTO dto = new TemplateQuestionDTO();
-                            dto.setQuestionId(q.getId());
-                            dto.setGroupName(q.getGroupName());
-                            dto.setName(q.getQuestion().getName());
-                            dto.setParentAnswerId(q.getAnswerId());
-                            dto.setParentQuestionId(q.getParentQuestionId());
-                            dto.setQuestionSourceId(q.getQuestion().getSource().getSource().getId());
-                            dto.setDocumentParagraph(q.getQuestion().getSource().getDocumentParagraph());
-                            dto.setQuestionSourceLink(q.getQuestion().getSource().getSource().getLink());
-                            dto.setQuestionSourceName(q.getQuestion().getSource().getSource().getName());
-                            return dto;
-                        }).collect(groupingBy(TemplateQuestionDTO::getGroupName))
-                        .entrySet()
-                        .stream()
-                        .map(gq -> new GroupQuestionsDTO(gq.getKey(), gq.getValue()))
-                        .collect(toList())
-        );
-
-        return response;
-    }
-
-    private List<TemplateFolderTreeDTO> joinTemplateWithFolder(Map<Long, List<TemplateDTO>> folderTemplatesMap) {
-        Map<Long, FolderDTO> folders = folderService.findAllTemplateFolders()
-                .stream()
-                .map(f -> {
-                    FolderDTO dto = new FolderDTO();
-                    BeanUtils.copyProperties(f, dto);
-                    return dto;
-                }).collect(toMap(FolderDTO::getId, Function.identity()));
-
-        List<TemplateFolderTreeDTO> response = new ArrayList<>();
-
-        folders.forEach((k, v) -> {
-            List<TemplateDTO> folderTemplates = folderTemplatesMap.get(k);
-
-            if (!isEmpty(folderTemplates)) {
-                response.add(new TemplateFolderTreeDTO(v, folderTemplates));
-            }
-        });
-
-        return response;
-    }
-
-    @Transactional
-    public void createConfig(CreateTemplateConfigRequest request) {
+    public void create(CreateTemplateConfigRequest request) {
         Set<Long> questionIds = new HashSet<>();
         questionIds.add(request.getObjectQuestionId());
         questionIds.addAll(request.getFeatureQuestions()
@@ -205,7 +127,157 @@ public class TemplateWebService {
             }
         });
 
+        request.getQuestions().forEach(q -> {
+            QuestionEntity question = questionIdMap.get(q.getQuestionId());
+            if (nonNull(question)) {
+                QuestionExecutionEntity execution = new QuestionExecutionEntity();
+                execution.setQuestion(question);
+                execution.setOrderNumber(q.getOrderNumber());
+                entity.getQuestionExecutions().add(execution);
+            }
+        });
+
         templateConfigService.save(entity);
+    }
+
+    public List<TemplateFolderTreeDTO> configList(Integer templateType) {
+        List<TemplateConfigEntity> entities;
+
+        if (nonNull(templateType)) {
+            entities = templateConfigService.findAllByTemplateType(templateTypeService.findById(templateType));
+        } else {
+            entities = templateConfigService.findAll();
+        }
+
+        Map<Long, List<TemplateDTO>> folderTemplatesMap = entities.stream()
+                .map(t -> {
+                    TemplateDTO dto = new TemplateDTO();
+                    BeanUtils.copyProperties(t, dto);
+                    dto.setFolderId(t.getFolder().getId());
+                    dto.setAuthorId(t.getAuthor().getId());
+                    dto.setTemplateType(t.getType().getTemplateTypeId());
+                    return dto;
+                })
+                .collect(groupingBy(TemplateDTO::getFolderId));
+
+        Map<Long, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
+                .stream()
+                .map(f -> {
+                    FolderDTO dto = new FolderDTO();
+                    BeanUtils.copyProperties(f, dto);
+                    return dto;
+                }).collect(toMap(FolderDTO::getId, Function.identity()));
+
+        return joinFolderWithTemplates(folderTemplatesMap, folders);
+    }
+
+    public List<TemplateFolderTreeDTO> list() {
+        Map<Long, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
+                .stream()
+                .map(t -> {
+                    TemplateDTO dto = new TemplateDTO();
+                    BeanUtils.copyProperties(t, dto);
+                    dto.setFolderId(t.getFolder().getId());
+                    dto.setAuthorId(t.getAuthor().getId());
+                    return dto;
+                })
+                .collect(groupingBy(TemplateDTO::getFolderId));
+
+        Map<Long, FolderDTO> folders = folderService.findAllTemplateFolders()
+                .stream()
+                .map(f -> {
+                    FolderDTO dto = new FolderDTO();
+                    BeanUtils.copyProperties(f, dto);
+                    return dto;
+                }).collect(toMap(FolderDTO::getId, Function.identity()));
+
+        return joinFolderWithTemplates(folderTemplatesMap, folders);
+    }
+
+    public TemplateResponse get(Long id) {
+        TemplateResponse response = new TemplateResponse();
+
+//        TemplateEntity entity = templateService.findById(id);
+//
+//        TemplateDTO template = new TemplateDTO();
+//        BeanUtils.copyProperties(entity, template);
+//
+//        response.setTemplate(template);
+//
+//        response.setGroupQuestions(
+//                entity.getFactQuestions().stream()
+//                        .map(q -> {
+//                            TemplateQuestionDTO dto = new TemplateQuestionDTO();
+//                            dto.setQuestionId(q.getId());
+//                            dto.setGroupName(q.getGroupName());
+//                            dto.setName(q.getQuestion().getName());
+//                            dto.setParentAnswerId(q.getAnswerId());
+//                            dto.setParentQuestionId(q.getParentQuestionId());
+//                            dto.setQuestionSourceId(q.getQuestion().getSource().getSource().getId());
+//                            dto.setDocumentParagraph(q.getQuestion().getSource().getDocumentParagraph());
+//                            dto.setQuestionSourceLink(q.getQuestion().getSource().getSource().getLink());
+//                            dto.setQuestionSourceName(q.getQuestion().getSource().getSource().getName());
+//                            return dto;
+//                        }).collect(groupingBy(TemplateQuestionDTO::getGroupName))
+//                        .entrySet()
+//                        .stream()
+//                        .map(gq -> new GroupQuestionsDTO(gq.getKey(), gq.getValue()))
+//                        .collect(toList())
+//        );
+
+        return response;
+    }
+
+    public TemplateResponse getConfig(Long id) {
+        TemplateResponse response = new TemplateResponse();
+
+        TemplateConfigEntity entity = templateConfigService.findById(id);
+
+        response.setTemplate(DtoEntityConverter.map(entity));
+
+        QuestionEntity objectQuestion = entity.getQuestionExecutions().stream()
+                .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
+                .findFirst()
+                .orElseThrow(() -> new ValidationException("Not found required object question"))
+                .getQuestion();
+
+        response.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
+
+        response.setObjectFeatureQuestions(
+                entity.getQuestionExecutions().stream()
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                        .filter(qe -> OBJECT_FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
+                        .map(QuestionExecutionEntity::getQuestion)
+                        .map(DtoEntityConverter::map)
+                        .collect(toList())
+        );
+
+        response.setTypeQuestions(
+                entity.getQuestionExecutions().stream()
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                        .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
+                                SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
+                        .map(QuestionExecutionEntity::getQuestion)
+                        .map(DtoEntityConverter::map)
+                        .collect(toList())
+        );
+
+        return response;
+    }
+
+    private List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,
+                                                                Map<Long, FolderDTO> folders) {
+        List<TemplateFolderTreeDTO> response = new ArrayList<>();
+
+        folders.forEach((k, v) -> {
+            List<TemplateDTO> folderTemplates = folderTemplatesMap.get(k);
+
+            if (!isEmpty(folderTemplates)) {
+                response.add(new TemplateFolderTreeDTO(v, folderTemplates));
+            }
+        });
+
+        return response;
     }
 
     private void checkQuestionTypes(CreateTemplateConfigRequest request, Map<Long, QuestionEntity> questionIdMap) {
@@ -225,8 +297,8 @@ public class TemplateWebService {
     }
 
     private void checkQuestionTypes(List<CreateTemplateConfigRequest.TemplateQuestion> questions,
-                                   Map<Long, QuestionEntity> questionIdMap,
-                                   Integer checkedType) {
+                                    Map<Long, QuestionEntity> questionIdMap,
+                                    Integer checkedType) {
         boolean existsIncorrect = questions.stream()
                 .map(questionIdMap::get)
                 .filter(Objects::nonNull)

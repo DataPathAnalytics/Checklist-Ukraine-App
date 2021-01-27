@@ -26,8 +26,8 @@ MERGE (c:TemplateType {templateTypeId: 2, value:'ResponseSession'})
 
 MERGE (c:QuestionType {questionTypeId: 1, value:'ControlActivity'})
 MERGE (c:QuestionType {questionTypeId: 2, value:'ResponseSession'})
-MERGE (c:QuestionType {questionTypeId: 3, value:'Answer'})
-MERGE (c:QuestionType {questionTypeId: 6, value:'AnswerFeature'})
+MERGE (c:QuestionType {questionTypeId: 3, value:'Fact'})
+MERGE (c:QuestionType {questionTypeId: 6, value:'FactFeature'})
 MERGE (c:QuestionType {questionTypeId: 4, value:'Object'})
 MERGE (c:QuestionType {questionTypeId: 5, value:'ObjectFeature'})
 

@@ -15,7 +15,9 @@ public class CreateTemplateConfigRequest {
 
     @NotBlank
     private String name;
+    @NotNull
     private Integer templateTypeId;
+    @NotNull
     private Long folderId;
 
     @NotNull

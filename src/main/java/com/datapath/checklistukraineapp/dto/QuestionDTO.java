@@ -20,7 +20,7 @@ public class QuestionDTO {
     private String questionSourceLink;
     private String documentParagraph;
 
-    private Long answerStructureId;
+    private AnswerStructureDTO answerStructure;
     private Integer questionTypeId;
     private String questionTypeValue;
 }

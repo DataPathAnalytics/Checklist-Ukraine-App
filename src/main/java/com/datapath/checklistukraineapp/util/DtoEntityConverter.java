@@ -1,19 +1,12 @@
 package com.datapath.checklistukraineapp.util;
 
 import com.datapath.checklistukraineapp.dao.entity.*;
-import com.datapath.checklistukraineapp.dao.relatioship.TemplateQuestionRelationship;
-import com.datapath.checklistukraineapp.dto.ChecklistDTO;
-import com.datapath.checklistukraineapp.dto.ControlEventDTO;
-import com.datapath.checklistukraineapp.dto.QuestionDTO;
-import com.datapath.checklistukraineapp.dto.TemplateDTO;
+import com.datapath.checklistukraineapp.dto.*;
 import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
 import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Comparator;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT;
 import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE;
@@ -51,14 +44,14 @@ public class DtoEntityConverter {
             response.setReviewerId(entity.getReviewer().getId());
         }
 
-        Map<Long, TemplateQuestionRelationship> questionIdMap = entity.getTemplate()
-                .getFactQuestions()
-                .stream()
-                .collect(Collectors.toMap(t -> t.getQuestion().getId(), Function.identity()));
-
-        Map<Long, AnswerEntity> questionIdAnswerMap = entity.getAnswers()
-                .stream()
-                .collect(Collectors.toMap(a -> a.getQuestion().getId(), Function.identity()));
+//        Map<Long, TemplateQuestionRelationship> questionIdMap = entity.getTemplate()
+//                .getFactQuestions()
+//                .stream()
+//                .collect(Collectors.toMap(t -> t.getQuestion().getId(), Function.identity()));
+//
+//        Map<Long, AnswerEntity> questionIdAnswerMap = entity.getAnswers()
+//                .stream()
+//                .collect(Collectors.toMap(a -> a.getQuestion().getId(), Function.identity()));
 
 
 //        response.setQuestionAnswerList(
@@ -121,7 +114,6 @@ public class DtoEntityConverter {
         dto.setKnowledgeCategoryValue(entity.getKnowledgeCategory().getValue());
         dto.setKnowledgeCategoryTranslate(entity.getKnowledgeCategory().getTranslate());
 
-        dto.setAnswerStructureId(nonNull(entity.getAnswerStructure()) ? entity.getAnswerStructure().getId() : null);
         dto.setQuestionTypeId(entity.getType().getQuestionTypeId());
         dto.setQuestionTypeValue(entity.getType().getValue());
 
@@ -129,6 +121,40 @@ public class DtoEntityConverter {
         dto.setQuestionSourceName(entity.getSource().getSource().getName());
         dto.setQuestionSourceLink(entity.getSource().getSource().getLink());
         dto.setDocumentParagraph(entity.getSource().getDocumentParagraph());
+
+        if (nonNull(entity.getAnswerStructure())) {
+            dto.setAnswerStructure(map(entity.getAnswerStructure()));
+        }
+
+        return dto;
+    }
+
+    public static AnswerStructureDTO map(AnswerStructureEntity entity) {
+        AnswerStructureDTO dto = new AnswerStructureDTO();
+
+        dto.setId(entity.getId());
+        dto.setLinkType(entity.getLinkType());
+        dto.setName(entity.getName());
+        dto.setFieldDescriptions(
+                entity.getFields().stream()
+                        .map(f -> new AnswerStructureDTO.FieldDescriptionDTO(
+                                f.getName(),
+                                f.getDescription(),
+                                f.getDataSource(),
+                                f.getType())
+                        ).collect(toList())
+        );
+
+        return dto;
+    }
+
+    public static TemplateDTO map(TemplateConfigEntity entity) {
+        TemplateDTO dto = new TemplateDTO();
+
+        BeanUtils.copyProperties(entity, dto);
+        dto.setTemplateType(entity.getType().getTemplateTypeId());
+        dto.setFolderId(entity.getFolder().getId());
+        dto.setAuthorId(entity.getAuthor().getId());
 
         return dto;
     }

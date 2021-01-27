@@ -31,7 +31,12 @@ public class QuestionController {
 
     @GetMapping("template-type/{id}")
     public List<QuestionTypeDTO> templateTypeList(@PathVariable Integer id) {
-        return service.list(id);
+        return service.listByTemplateType(id);
+    }
+
+    @GetMapping("question-type/{id}")
+    public List<QuestionTypeDTO> questionTypeList(@PathVariable Integer id) {
+        return service.listByQuestionType(id);
     }
 
     @GetMapping("{id}")

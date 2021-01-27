@@ -6,21 +6,19 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
-@Node("QuestionExecution")
-public class QuestionExecutionEntity {
+@Node("QuestionGroup")
+public class QuestionGroupEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-
-    private Long parentQuestionId;
-    private Integer conditionAnswerId;
-
-    private Long parentFeatureId;
-
+    private String name;
     private Integer orderNumber;
 
-    @Relationship(type = "OF_QUESTION")
-    private QuestionEntity question;
+    @Relationship(type = "HAS_QUESTION_EXECUTION")
+    private Set<QuestionExecutionEntity> questions = new HashSet<>();
 }

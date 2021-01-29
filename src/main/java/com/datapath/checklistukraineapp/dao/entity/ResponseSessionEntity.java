@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("ChecklistResponse")
+@Node("ResponseSession")
 public class ResponseSessionEntity {
 
     @Id
@@ -25,16 +25,11 @@ public class ResponseSessionEntity {
     private LocalDate dateCreated;
     @LastModifiedDate
     private LocalDate dateModified;
-    private LocalDate checkingPeriodStart;
-    private LocalDate checkingPeriodEnd;
-    private Double amount;
-    private Double spentAmount;
-    private Double controlAmount;
-    private Double violationAmount;
-    private String summary;
 
     @Relationship(type = "TEMPLATED_BY")
     private TemplateEntity template;
+    @Relationship(type = "TEMPLATED_BY")
+    private TemplateConfigEntity templateConfig;
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;
     @Relationship(type = "HAS_REVIEWER")

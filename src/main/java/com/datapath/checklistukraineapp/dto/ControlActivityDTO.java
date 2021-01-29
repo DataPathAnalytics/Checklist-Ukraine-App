@@ -12,20 +12,21 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ControlEventDTO {
+public class ControlActivityDTO {
 
     private Long id;
     private String name;
-    private Integer controlTypeId;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private Integer controlStatusId;
-    private String controlObjectId;
-    private String controlObjectName;
+    private Integer statusId;
+    private Integer authorityId;
     private Long authorId;
-
     private List<TemplateDTO> templates;
     private Set<Long> members;
+
+    private QuestionExecutionDTO objectQuestion;
+    private List<QuestionExecutionDTO> objectFeatureQuestions;
+    private List<QuestionExecutionDTO> typeQuestions;
 
     private ChecklistPageResponse checklists;
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ControlEventDomain {
+public class ControlActivityDomain {
 
     private Long id;
     private String name;

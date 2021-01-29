@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.domain.ChecklistDomain;
+import com.datapath.checklistukraineapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistukraineapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistukraineapp.dao.repository.ResponseSessionRepository;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
@@ -15,7 +15,7 @@ public class ResponseSessionDaoService {
 
     private final ResponseSessionRepository repository;
 
-    public List<ChecklistDomain> findEventChecklists(Long eventId) {
+    public List<ResponseSessionDomain> findEventChecklists(Long eventId) {
         return repository.findEventChecklists(eventId);
     }
 

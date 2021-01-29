@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.dto.request.event;
+package com.datapath.checklistukraineapp.dto.request.activity;
 
 import com.datapath.checklistukraineapp.dto.ChecklistAnswerDTO;
 import lombok.Data;

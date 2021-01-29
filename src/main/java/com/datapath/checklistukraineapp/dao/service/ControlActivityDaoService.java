@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
-import com.datapath.checklistukraineapp.dao.domain.ControlEventDomain;
+import com.datapath.checklistukraineapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistukraineapp.dao.entity.ControlActivityEntity;
 import com.datapath.checklistukraineapp.dao.repository.ControlActivityRepository;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
@@ -16,11 +16,11 @@ public class ControlActivityDaoService {
 
     private final ControlActivityRepository repository;
 
-    public List<ControlEventDomain> findAllByUser(Long userId) {
+    public List<ControlActivityDomain> findAllByUser(Long userId) {
         return repository.findUserControlEvents(userId);
     }
 
-    public List<ControlEventDomain> findAll() {
+    public List<ControlActivityDomain> findAll() {
         return repository.findControlEvents();
     }
 

@@ -1,13 +1,13 @@
 package com.datapath.checklistukraineapp.controller.api;
 
-import com.datapath.checklistukraineapp.dto.ControlEventDTO;
-import com.datapath.checklistukraineapp.dto.request.event.ChecklistStatusRequest;
-import com.datapath.checklistukraineapp.dto.request.event.CreateControlEventRequest;
-import com.datapath.checklistukraineapp.dto.request.event.EventTemplateOperationRequest;
-import com.datapath.checklistukraineapp.dto.request.event.SaveChecklistRequest;
+import com.datapath.checklistukraineapp.dto.ControlActivityDTO;
+import com.datapath.checklistukraineapp.dto.request.activity.ChecklistStatusRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.CreateControlActivityRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.EventTemplateOperationRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.SaveChecklistRequest;
 import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
 import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
-import com.datapath.checklistukraineapp.service.ControlEventWebService;
+import com.datapath.checklistukraineapp.service.ControlActivityWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,37 +20,37 @@ import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHEC
 @RestController
 @AllArgsConstructor
 @RequestMapping("control-events")
-public class ControlEventController {
+public class ControlActivityController {
 
-    private final ControlEventWebService service;
+    private final ControlActivityWebService service;
 
     @GetMapping
-    public List<ControlEventDTO> list() {
+    public List<ControlActivityDTO> list() {
         return service.list();
     }
 
     @PostMapping
-    public ControlEventDTO create(@RequestBody @Valid CreateControlEventRequest request) {
-        return service.create(request);
+    public void create(@RequestBody @Valid CreateControlActivityRequest request) {
+        service.create(request);
     }
 
     @GetMapping("{id}")
-    public ControlEventDTO get(@PathVariable Long id) {
+    public ControlActivityDTO get(@PathVariable Long id) {
         return service.get(id);
     }
 
     @PutMapping("{id}")
-    public ControlEventDTO complete(@PathVariable Long id) {
+    public ControlActivityDTO complete(@PathVariable Long id) {
         return service.complete(id);
     }
 
-    @PostMapping("templates")
-    public ControlEventDTO addTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
+    @PostMapping("template")
+    public ControlActivityDTO addTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
         return service.addTemplate(request);
     }
 
-    @DeleteMapping("templates")
-    public ControlEventDTO deleteTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
+    @DeleteMapping("template")
+    public ControlActivityDTO deleteTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
         return service.deleteTemplate(request);
     }
 

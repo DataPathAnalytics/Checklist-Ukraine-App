@@ -34,6 +34,4 @@ public class QuestionEntity {
 
     @Relationship(type = "FROM_QUESTION_SOURCE")
     private QuestionSourceRelationship source;
-
-
 }

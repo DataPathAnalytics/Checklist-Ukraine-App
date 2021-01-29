@@ -2,17 +2,18 @@ package com.datapath.checklistukraineapp.util;
 
 import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dto.*;
-import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
 import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
+import com.datapath.checklistukraineapp.exception.ValidationException;
 import org.springframework.beans.BeanUtils;
 
-import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
-import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT;
-import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE;
+import static com.datapath.checklistukraineapp.util.Constants.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 public class DtoEntityConverter {
 
@@ -62,22 +63,20 @@ public class DtoEntityConverter {
         return response;
     }
 
-    public static ControlEventDTO map(ControlActivityEntity event) {
-        ControlEventDTO dto = new ControlEventDTO();
+    public static ControlActivityDTO map(ControlActivityEntity activity) {
+        ControlActivityDTO dto = new ControlActivityDTO();
 
-        BeanUtils.copyProperties(event, dto);
+        BeanUtils.copyProperties(activity, dto);
         dto.setMembers(
-                event.getMembers().stream()
+                activity.getMembers().stream()
                         .map(UserEntity::getId)
                         .collect(toSet())
         );
-        dto.setAuthorId(event.getAuthor().getId());
-        dto.setControlStatusId(event.getStatus().getActivityStatusId());
-//        dto.setControlObjectName(event.getObject().getName());
-//        dto.setControlObjectId(event.getObject().getControlObjectId());
-        dto.setControlTypeId(event.getType().getAuthorityId());
+        dto.setAuthorId(activity.getAuthor().getId());
+        dto.setStatusId(activity.getStatus().getActivityStatusId());
+        dto.setAuthorityId(activity.getAuthority().getAuthorityId());
         dto.setTemplates(
-                event.getTemplates().stream()
+                activity.getTemplates().stream()
                         .map(t -> {
                             TemplateDTO templateDto = new TemplateDTO();
                             BeanUtils.copyProperties(t, templateDto);
@@ -86,21 +85,50 @@ public class DtoEntityConverter {
                             return templateDto;
                         }).collect(toList()));
 
-        ChecklistPageResponse checklistPage = new ChecklistPageResponse();
-        checklistPage.setPageSize(DEFAULT_EVENT_CHECKLIST_COUNT);
-        checklistPage.setCurrentPage(DEFAULT_EVENT_CHECKLIST_PAGE);
-        checklistPage.setTotalCount(event.getChecklists().size());
-        checklistPage.setTotalPageCount((int) Math.ceil((double) event.getChecklists().size() / DEFAULT_EVENT_CHECKLIST_COUNT));
-        checklistPage.setChecklists(
-                event.getChecklists().stream()
-                        .limit(DEFAULT_EVENT_CHECKLIST_COUNT)
-                        .sorted(Comparator.comparing(ResponseSessionEntity::getDateCreated)
-                                .thenComparing(ResponseSessionEntity::getName))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        );
+        Map<Long, AnswerEntity> answerQuestionId = activity.getActivityResponse().getAnswers()
+                .stream()
+                .collect(toMap(a -> a.getQuestionExecution().getId(), Function.identity()));
 
-        dto.setChecklists(checklistPage);
+        List<QuestionExecutionDTO> featureQuestions = activity.getActivityResponse().getAnswers()
+                .stream()
+                .map(AnswerEntity::getQuestionExecution)
+                .filter(q -> OBJECT_FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .map(q -> map(q, answerQuestionId.get(q.getId())))
+                .collect(toList());
+
+        List<QuestionExecutionDTO> typeQuestions = activity.getActivityResponse().getAnswers()
+                .stream()
+                .map(AnswerEntity::getQuestionExecution)
+                .filter(q -> ACTIVITY_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .map(q -> map(q, answerQuestionId.get(q.getId())))
+                .collect(toList());
+
+        QuestionExecutionEntity objectQuestion = activity.getActivityResponse().getAnswers()
+                .stream()
+                .filter(a -> OBJECT_QUESTION_TYPE.equals(a.getQuestionExecution().getQuestion().getType().getQuestionTypeId()))
+                .findFirst()
+                .orElseThrow(() -> new ValidationException("Required object answer not found. Control activity id: " + activity.getId()))
+                .getQuestionExecution();
+
+        dto.setObjectQuestion(map(objectQuestion, answerQuestionId.get(objectQuestion.getId())));
+        dto.setObjectFeatureQuestions(featureQuestions);
+        dto.setTypeQuestions(typeQuestions);
+
+//        ChecklistPageResponse checklistPage = new ChecklistPageResponse();
+//        checklistPage.setPageSize(DEFAULT_EVENT_CHECKLIST_COUNT);
+//        checklistPage.setCurrentPage(DEFAULT_EVENT_CHECKLIST_PAGE);
+//        checklistPage.setTotalCount(activity.getChecklists().size());
+//        checklistPage.setTotalPageCount((int) Math.ceil((double) activity.getChecklists().size() / DEFAULT_EVENT_CHECKLIST_COUNT));
+//        checklistPage.setChecklists(
+//                activity.getChecklists().stream()
+//                        .limit(DEFAULT_EVENT_CHECKLIST_COUNT)
+//                        .sorted(Comparator.comparing(ResponseSessionEntity::getDateCreated)
+//                                .thenComparing(ResponseSessionEntity::getName))
+//                        .map(DtoEntityConverter::map)
+//                        .collect(toList())
+//        );
+//
+//        dto.setChecklists(checklistPage);
 
         return dto;
     }
@@ -125,6 +153,15 @@ public class DtoEntityConverter {
         if (nonNull(entity.getAnswerStructure())) {
             dto.setAnswerStructure(map(entity.getAnswerStructure()));
         }
+
+        return dto;
+    }
+
+    public static QuestionExecutionDTO map(QuestionExecutionEntity entity) {
+        QuestionExecutionDTO dto = new QuestionExecutionDTO();
+
+        BeanUtils.copyProperties(entity, dto);
+        dto.setQuestion(map(entity.getQuestion()));
 
         return dto;
     }
@@ -157,5 +194,43 @@ public class DtoEntityConverter {
         dto.setAuthorId(entity.getAuthor().getId());
 
         return dto;
+    }
+
+    public static TemplateDTO map(TemplateEntity entity) {
+        TemplateDTO dto = new TemplateDTO();
+
+        BeanUtils.copyProperties(entity, dto);
+        dto.setTemplateConfigId(entity.getConfig().getId());
+        dto.setFolderId(entity.getFolder().getId());
+        dto.setAuthorId(entity.getAuthor().getId());
+
+        return dto;
+    }
+
+    public static AnswerDTO map(AnswerEntity entity) {
+        if (isNull(entity)) return null;
+
+        AnswerDTO dto = new AnswerDTO();
+
+        if (nonNull(entity.getAnswerType())) {
+            dto.setAnswerTypeId(entity.getAnswerType().getAnswerTypeId());
+        }
+        dto.setComment(entity.getComment());
+        dto.setValues(entity.getValues());
+
+        return dto;
+    }
+
+    public static QuestionExecutionDTO map(QuestionExecutionEntity entity, AnswerEntity answerEntity) {
+        QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
+
+        QuestionExecutionDTO objectQuestionDto = new QuestionExecutionDTO();
+        objectQuestionDto.setQuestion(map(entity.getQuestion()));
+        objectQuestionDto.setAnswer(map(answerEntity));
+        objectQuestionDto.setConditionAnswerId(entity.getConditionAnswerId());
+        objectQuestionDto.setId(entity.getId());
+        objectQuestionDto.setParentFeatureId(entity.getParentFeatureId());
+        objectQuestionDto.setParentQuestionId(entity.getParentQuestionId());
+        return executionDTO;
     }
 }

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChecklistDomain {
+public class ResponseSessionDomain {
 
     private Long id;
     private String status;

@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("ControlEvent")
+@Node("ControlActivity")
 public class ControlActivityEntity {
     @Id
     @GeneratedValue
@@ -32,10 +32,12 @@ public class ControlActivityEntity {
     private UserEntity author;
     @Relationship(type = "HAS_MEMBER")
     private Set<UserEntity> members = new HashSet<>();
-    @Relationship(type = "IN_TYPE")
-    private Authority type;
+    @Relationship(type = "IN_AUTHORITY")
+    private Authority authority;
     @Relationship(type = "HAS_TEMPLATE")
     private Set<TemplateEntity> templates = new HashSet<>();
-    @Relationship(type = "HAS_CHECKLIST")
-    private Set<ResponseSessionEntity> checklists = new HashSet<>();
+    @Relationship(type = "HAS_ACTIVITY_RESPONSE")
+    private ResponseSessionEntity activityResponse;
+    @Relationship(type = "HAS_SESSION_RESPONSE")
+    private Set<ResponseSessionEntity> sessionResponses = new HashSet<>();
 }

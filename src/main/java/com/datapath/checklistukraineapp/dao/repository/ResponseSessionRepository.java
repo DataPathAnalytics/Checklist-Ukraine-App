@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.repository;
 
-import com.datapath.checklistukraineapp.dao.domain.ChecklistDomain;
+import com.datapath.checklistukraineapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistukraineapp.dao.entity.ResponseSessionEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -17,5 +17,5 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
             "return c, id(t) as templateId, t.name as templateName, id(u1) as reviewerId, " +
             "id(u2) as authorId, cs.checklistStatusId as checklistStatusId " +
             "order by c.dateCreated, c.name")
-    List<ChecklistDomain> findEventChecklists(Long eventId);
+    List<ResponseSessionDomain> findEventChecklists(Long eventId);
 }

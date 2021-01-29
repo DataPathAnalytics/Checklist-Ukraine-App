@@ -1,5 +1,6 @@
-package com.datapath.checklistukraineapp.dto.request.event;
+package com.datapath.checklistukraineapp.dto.request.activity;
 
+import com.datapath.checklistukraineapp.dto.AnswerDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,19 +8,22 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateControlEventRequest {
+public class CreateControlActivityRequest {
 
+    @NotNull
+    private Long templateConfigId;
     @NotBlank
     private String name;
     @NotNull
-    private Integer controlTypeId;
+    private Integer authorityId;
     @NotNull
-    private String controlObjectId;
+    private List<AnswerDTO> answers;
     @NotNull
     private Long teamLeadId;
 

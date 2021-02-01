@@ -9,7 +9,6 @@ import com.datapath.checklistukraineapp.dto.TemplateDTO;
 import com.datapath.checklistukraineapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
-import com.datapath.checklistukraineapp.dto.response.TemplateResponse;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.ValidationException;
 import com.datapath.checklistukraineapp.util.DtoEntityConverter;
@@ -195,14 +194,11 @@ public class TemplateWebService {
         return joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
-    public TemplateResponse get(Long id) {
-        TemplateResponse response = new TemplateResponse();
+    public TemplateDTO get(Long id) {
 
         TemplateEntity entity = templateService.findById(id);
 
-        TemplateDTO template = DtoEntityConverter.map(entity);
-
-        response.setTemplate(template);
+        TemplateDTO dto = DtoEntityConverter.map(entity);
 
         QuestionExecutionEntity objectQuestion = entity.getConfig()
                 .getQuestionExecutions()
@@ -211,9 +207,9 @@ public class TemplateWebService {
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Not found required object question"));
 
-        response.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
+        dto.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
 
-        response.setObjectFeatureQuestions(
+        dto.setObjectFeatureQuestions(
                 entity.getConfig().getQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> OBJECT_FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
@@ -221,7 +217,7 @@ public class TemplateWebService {
                         .collect(toList())
         );
 
-        response.setTypeQuestions(
+        dto.setTypeQuestions(
                 entity.getConfig().getQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
@@ -234,48 +230,46 @@ public class TemplateWebService {
                 .filter(g -> UNGROUPED_NAME.equals(g.getName()))
                 .findFirst();
 
-        ungrouped.ifPresent(questionGroupEntity -> response.setUngroupedQuestions(
+        ungrouped.ifPresent(questionGroupEntity -> dto.setUngroupedQuestions(
                 questionGroupEntity.getQuestions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(DtoEntityConverter::map)
                         .collect(toList())
         ));
 
-        response.setQuestions(
+        dto.setQuestions(
                 entity.getGroups().stream()
                         .filter(g -> !UNGROUPED_NAME.equals(g.getName()))
                         .sorted(Comparator.comparing(QuestionGroupEntity::getOrderNumber))
                         .map(g -> {
-                                    GroupQuestionsDTO dto = new GroupQuestionsDTO();
-                                    dto.setGroupName(g.getName());
-                                    dto.setQuestions(
+                                    GroupQuestionsDTO groupQuestionsDTO = new GroupQuestionsDTO();
+                                    groupQuestionsDTO.setGroupName(g.getName());
+                                    groupQuestionsDTO.setQuestions(
                                             g.getQuestions().stream()
                                                     .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                                                     .map(DtoEntityConverter::map)
                                                     .collect(toList())
                                     );
-                                    return dto;
+                                    return groupQuestionsDTO;
                                 }
                         ).collect(toList())
         );
-        return response;
+        return dto;
     }
 
-    public TemplateResponse getConfig(Long id) {
-        TemplateResponse response = new TemplateResponse();
-
+    public TemplateDTO getConfig(Long id) {
         TemplateConfigEntity entity = templateConfigService.findById(id);
 
-        response.setTemplate(DtoEntityConverter.map(entity));
+        TemplateDTO dto = DtoEntityConverter.map(entity);
 
         QuestionExecutionEntity objectQuestion = entity.getQuestionExecutions().stream()
                 .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Not found required object question"));
 
-        response.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
+        dto.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
 
-        response.setObjectFeatureQuestions(
+        dto.setObjectFeatureQuestions(
                 entity.getQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> OBJECT_FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
@@ -283,7 +277,7 @@ public class TemplateWebService {
                         .collect(toList())
         );
 
-        response.setTypeQuestions(
+        dto.setTypeQuestions(
                 entity.getQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
@@ -292,7 +286,7 @@ public class TemplateWebService {
                         .collect(toList())
         );
 
-        return response;
+        return dto;
     }
 
     private List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,

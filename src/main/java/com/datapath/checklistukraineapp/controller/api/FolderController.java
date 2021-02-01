@@ -1,7 +1,7 @@
 package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.FolderDTO;
-import com.datapath.checklistukraineapp.dto.request.CreateFolderRequest;
+import com.datapath.checklistukraineapp.dto.request.folder.CreateFolderRequest;
 import com.datapath.checklistukraineapp.service.FolderWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

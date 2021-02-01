@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.dto.response;
+package com.datapath.checklistukraineapp.dto.response.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

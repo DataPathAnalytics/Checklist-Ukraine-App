@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventTemplateOperationRequest {
+public class TemplateOperationRequest {
 
     @NotNull
     private Long id;

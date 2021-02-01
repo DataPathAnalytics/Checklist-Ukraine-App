@@ -1,31 +1,25 @@
 package com.datapath.checklistukraineapp.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ControlActivityDTO {
+public class ResponseSessionDTO {
 
     private Long id;
+    private Integer sessionStatusId;
     private String name;
     private LocalDate dateCreated;
-    private LocalDate dateModified;
-    private Integer statusId;
-    private Integer authorityId;
+    private Long templateId;
+    private String templateName;
+    private Long reviewerId;
     private Long authorId;
-    private List<TemplateDTO> templates;
-    private Set<Long> members;
 
     private QuestionExecutionDTO objectQuestion;
     private List<QuestionExecutionDTO> objectFeatureQuestions;
     private List<QuestionExecutionDTO> typeQuestions;
-
-    private SessionPageDTO sessions;
+    private List<GroupQuestionsDTO> questions;
+    private List<QuestionExecutionDTO> ungroupedQuestions;
 }

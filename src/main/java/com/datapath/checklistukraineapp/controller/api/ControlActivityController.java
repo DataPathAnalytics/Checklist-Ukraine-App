@@ -1,12 +1,12 @@
 package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.ControlActivityDTO;
-import com.datapath.checklistukraineapp.dto.request.activity.ChecklistStatusRequest;
+import com.datapath.checklistukraineapp.dto.ResponseSessionDTO;
+import com.datapath.checklistukraineapp.dto.SessionPageDTO;
 import com.datapath.checklistukraineapp.dto.request.activity.CreateControlActivityRequest;
-import com.datapath.checklistukraineapp.dto.request.activity.EventTemplateOperationRequest;
-import com.datapath.checklistukraineapp.dto.request.activity.SaveChecklistRequest;
-import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
-import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
+import com.datapath.checklistukraineapp.dto.request.activity.ResponseSessionStatusRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.SaveResponseSessionRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.TemplateOperationRequest;
 import com.datapath.checklistukraineapp.service.ControlActivityWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -45,34 +45,34 @@ public class ControlActivityController {
     }
 
     @PostMapping("template")
-    public ControlActivityDTO addTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
+    public ControlActivityDTO addTemplate(@RequestBody @Valid TemplateOperationRequest request) {
         return service.addTemplate(request);
     }
 
     @DeleteMapping("template")
-    public ControlActivityDTO deleteTemplate(@RequestBody @Valid EventTemplateOperationRequest request) {
+    public ControlActivityDTO deleteTemplate(@RequestBody @Valid TemplateOperationRequest request) {
         return service.deleteTemplate(request);
     }
 
-    @GetMapping("checklists")
-    public ChecklistPageResponse getChecklists(@RequestParam Long eventId,
-                                               @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
-                                               @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
-        return service.getChecklists(eventId, page, size);
+    @GetMapping("response-session")
+    public SessionPageDTO getSessions(@RequestParam Long eventId,
+                                      @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
+                                      @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
+        return service.getSessions(eventId, page, size);
     }
 
-    @PostMapping("checklists")
-    public ChecklistResponse saveChecklist(@RequestBody @Valid SaveChecklistRequest request) {
-        return service.saveChecklist(request);
+    @PostMapping("response-session")
+    public void saveSession(@RequestBody @Valid SaveResponseSessionRequest request) {
+        service.saveSession(request);
     }
 
-    @PutMapping("checklists")
-    public ChecklistResponse changeStatus(@RequestBody @Valid ChecklistStatusRequest request) {
-        return service.changeStatus(request);
+    @PutMapping("response-session")
+    public void changeStatus(@RequestBody @Valid ResponseSessionStatusRequest request) {
+        service.changeStatus(request);
     }
 
-    @GetMapping("checklists/{id}")
-    public ChecklistResponse getChecklist(@PathVariable Long id) {
-        return service.getChecklist(id);
+    @GetMapping("response-session/{id}")
+    public ResponseSessionDTO getSession(@PathVariable Long id) {
+        return service.getSession(id);
     }
 }

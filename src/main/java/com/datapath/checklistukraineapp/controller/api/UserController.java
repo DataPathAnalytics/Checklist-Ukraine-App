@@ -1,12 +1,12 @@
 package com.datapath.checklistukraineapp.controller.api;
 
 import com.datapath.checklistukraineapp.dto.UserDTO;
+import com.datapath.checklistukraineapp.dto.UserPageDTO;
 import com.datapath.checklistukraineapp.dto.UserStateDTO;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserUpdateRequest;
-import com.datapath.checklistukraineapp.dto.response.UsersResponse;
 import com.datapath.checklistukraineapp.service.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +25,7 @@ public class UserController {
     private final UserWebService service;
 
     @GetMapping
-    public UsersResponse list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size) {
+    public UserPageDTO list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size) {
         return service.list(page, size);
     }
 
@@ -36,7 +36,7 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasAuthority('admin')")
-    public UsersResponse update(@RequestBody @Valid List<UserUpdateRequest> requests) {
+    public UserPageDTO update(@RequestBody @Valid List<UserUpdateRequest> requests) {
         for (UserUpdateRequest request : requests) {
             service.update(request);
         }
@@ -45,7 +45,7 @@ public class UserController {
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('admin')")
-    public UsersResponse delete(@PathVariable Long id) {
+    public UserPageDTO delete(@PathVariable Long id) {
         service.delete(id);
         return service.list(0, Integer.parseInt(DEFAULT_PAGE_SIZE));
     }

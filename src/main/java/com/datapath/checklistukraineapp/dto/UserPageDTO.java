@@ -1,6 +1,5 @@
-package com.datapath.checklistukraineapp.dto.response;
+package com.datapath.checklistukraineapp.dto;
 
-import com.datapath.checklistukraineapp.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class UsersResponse {
+public class UserPageDTO {
     private long totalCount;
     private int totalPageCount;
     private int currentPage;

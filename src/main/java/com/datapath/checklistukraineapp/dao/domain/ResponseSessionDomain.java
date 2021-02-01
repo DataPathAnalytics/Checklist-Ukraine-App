@@ -12,17 +12,10 @@ import java.time.LocalDate;
 public class ResponseSessionDomain {
 
     private Long id;
-    private String status;
+    private Integer sessionStatusId;
     private String name;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private LocalDate checkingPeriodStart;
-    private LocalDate checkingPeriodEnd;
-    private Double amount;
-    private Double spentAmount;
-    private Double controlAmount;
-    private Double violationAmount;
-    private String summary;
     private Long templateId;
     private String templateName;
     private Long reviewerId;

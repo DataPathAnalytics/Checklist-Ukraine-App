@@ -2,23 +2,20 @@ package com.datapath.checklistukraineapp.service;
 
 import com.datapath.checklistukraineapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistukraineapp.dao.domain.ResponseSessionDomain;
-import com.datapath.checklistukraineapp.dao.entity.AnswerEntity;
-import com.datapath.checklistukraineapp.dao.entity.ControlActivityEntity;
-import com.datapath.checklistukraineapp.dao.entity.ResponseSessionEntity;
-import com.datapath.checklistukraineapp.dao.entity.TemplateConfigEntity;
+import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dao.service.*;
 import com.datapath.checklistukraineapp.dao.service.classifier.ActivityStatusDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.AnswerTypeDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.AuthorityDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.SessionStatusDaoService;
-import com.datapath.checklistukraineapp.dto.ChecklistDTO;
+import com.datapath.checklistukraineapp.dto.AnswerDTO;
 import com.datapath.checklistukraineapp.dto.ControlActivityDTO;
-import com.datapath.checklistukraineapp.dto.request.activity.ChecklistStatusRequest;
+import com.datapath.checklistukraineapp.dto.ResponseSessionDTO;
+import com.datapath.checklistukraineapp.dto.SessionPageDTO;
 import com.datapath.checklistukraineapp.dto.request.activity.CreateControlActivityRequest;
-import com.datapath.checklistukraineapp.dto.request.activity.EventTemplateOperationRequest;
-import com.datapath.checklistukraineapp.dto.request.activity.SaveChecklistRequest;
-import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistPageResponse;
-import com.datapath.checklistukraineapp.dto.response.checklist.ChecklistResponse;
+import com.datapath.checklistukraineapp.dto.request.activity.ResponseSessionStatusRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.SaveResponseSessionRequest;
+import com.datapath.checklistukraineapp.dto.request.activity.TemplateOperationRequest;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.PermissionException;
 import com.datapath.checklistukraineapp.util.DtoEntityConverter;
@@ -31,12 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.datapath.checklistukraineapp.util.Constants.*;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -49,8 +48,8 @@ public class ControlActivityWebService {
     private final ActivityStatusDaoService activityStatusService;
     private final TemplateDaoService templateService;
     private final TemplateConfigDaoService templateConfigService;
-    private final ResponseSessionDaoService checklistService;
-    private final SessionStatusDaoService checklistStatusService;
+    private final ResponseSessionDaoService responseSessionService;
+    private final SessionStatusDaoService sessionStatusService;
     private final AnswerTypeDaoService answerService;
     private final CustomQueryDaoService customQueryService;
 
@@ -88,14 +87,17 @@ public class ControlActivityWebService {
         request.getAnswers().forEach(a -> {
             AnswerEntity answerEntity = new AnswerEntity();
             answerEntity.setComment(a.getComment());
+
             if (nonNull(a.getAnswerTypeId())) {
                 answerEntity.setAnswerType(answerService.findById(a.getAnswerTypeId()));
             }
-            answerEntity.setQuestionExecution(
-                    config.getQuestionExecutions().stream()
-                            .filter(q -> a.getQuestionId().equals(q.getId()))
-                            .findFirst().orElseThrow(() -> new EntityNotFoundException("questionExecution", a.getQuestionId()))
-            );
+
+            QuestionExecutionEntity questionExecution = config.getQuestionExecutions().stream()
+                    .filter(q -> a.getQuestionId().equals(q.getId()))
+                    .findFirst().orElseThrow(() -> new EntityNotFoundException("questionExecution", a.getQuestionId()));
+
+            answerEntity.setParentFeatureId(questionExecution.getParentFeatureId());
+            answerEntity.setQuestionExecution(questionExecution);
             answerEntity.setValues(a.getValues());
 
             activityResponse.getAnswers().add(answerEntity);
@@ -141,21 +143,21 @@ public class ControlActivityWebService {
         checkPermission(id);
 
         customQueryService.deleteRelationship(
-                "ControlEvent", id, "ControlStatus", IN_COMPLETED_STATUS, "IN_STATUS"
+                Node.ControlActivity.name(), id, Node.ActivityStatus.name(), IN_COMPLETED_STATUS, Relationship.IN_STATUS.name()
         );
         customQueryService.createRelationship(
-                "ControlEvent", id, "ControlStatus", IN_COMPLETED_STATUS, "IN_STATUS"
+                Node.ControlActivity.name(), id, Node.ActivityStatus.name(), IN_COMPLETED_STATUS, Relationship.IN_STATUS.name()
         );
 
         return DtoEntityConverter.map(controlActivityService.findById(id));
     }
 
     @Transactional
-    public ControlActivityDTO addTemplate(EventTemplateOperationRequest request) {
+    public ControlActivityDTO addTemplate(TemplateOperationRequest request) {
         checkPermission(request.getId());
 
         customQueryService.createRelationship(
-                "ControlEvent", request.getId(), "Template", request.getTemplateId(), "HAS_TEMPLATE"
+                Node.ControlActivity.name(), request.getId(), Node.Template.name(), request.getTemplateId(), Relationship.HAS_TEMPLATE.name()
         );
 
         return DtoEntityConverter.map(controlActivityService.findById(request.getId()));
@@ -170,23 +172,23 @@ public class ControlActivityWebService {
             throw new PermissionException("You can't modify this control event");
     }
 
-    public ChecklistPageResponse getChecklists(Long eventId, int page, int size) {
-        ChecklistPageResponse dto = new ChecklistPageResponse();
+    public SessionPageDTO getSessions(Long eventId, int page, int size) {
+        SessionPageDTO dto = new SessionPageDTO();
 
-        List<ResponseSessionDomain> checklists = checklistService.findEventChecklists(eventId);
+        List<ResponseSessionDomain> checklists = responseSessionService.findResponseSessionByActivityId(eventId);
 
         dto.setTotalCount(checklists.size());
         dto.setTotalPageCount((int) Math.ceil((double) checklists.size() / size));
         dto.setCurrentPage(page);
         dto.setPageSize(size);
-        dto.setChecklists(
+        dto.setSessions(
                 checklists.stream()
                         .skip(page * size)
                         .limit(size)
                         .map(c -> {
-                            ChecklistDTO checklistDTO = new ChecklistDTO();
-                            BeanUtils.copyProperties(c, checklistDTO);
-                            return checklistDTO;
+                            ResponseSessionDTO responseSessionDTO = new ResponseSessionDTO();
+                            BeanUtils.copyProperties(c, responseSessionDTO);
+                            return responseSessionDTO;
                         }).collect(toList())
         );
 
@@ -194,95 +196,62 @@ public class ControlActivityWebService {
     }
 
     @Transactional
-    public ChecklistResponse saveChecklist(SaveChecklistRequest request) {
-        checkPermission(request.getEventId());
+    public void saveSession(SaveResponseSessionRequest request) {
+        checkPermission(request.getControlActivityId());
 
-        ControlActivityEntity event = controlActivityService.findById(request.getEventId());
+        TemplateEntity template = templateService.findById(request.getTemplateId());
 
         ResponseSessionEntity entity = new ResponseSessionEntity();
-//        BeanUtils.copyProperties(request, entity);
-//
-//        entity.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
-//        entity.setStatus(checklistStatusService.findById(IN_PROCESS_STATUS));
-//
-//        TemplateEntity template = event.getTemplates().stream()
-//                .filter(t -> request.getTemplateId().equals(t.getId()))
-//                .findFirst().orElseThrow(() -> new EntityNotFoundException("template", request.getTemplateId()));
-//
-//        for (ChecklistAnswerDTO answer : request.getAnswers()) {
-//            AnswerEntity answerEntity = new AnswerEntity();
-//
-//            answerEntity.setComment(answer.getComment());
-//            answerEntity.setViolationAmount(answer.getViolationAmount());
-//
-//            answerEntity.setAnswer(answerService.findById(answer.getAnswerId()));
-//
-//            if (nonNull(answer.getQuestionId())) {
-//                answerEntity.setQuestion(
-//                        template.getFactQuestions().stream()
-//                                .map(TemplateQuestionRelationship::getQuestion)
-//                                .filter(q -> q.getId().equals(answer.getQuestionId()))
-//                                .findFirst().orElseThrow(() -> new EntityNotFoundException("question", answer.getQuestionId()))
-//                );
-//            }
-//
-//            if (nonNull(answer.getAmountCharacteristic())) {
-//                AmountCharacteristicEntity amountCharacteristic = new AmountCharacteristicEntity();
-//                amountCharacteristic.setTotalAmount(answer.getAmountCharacteristic().getTotalValue());
-//
-//                answer.getAmountCharacteristic().getTypeAmounts().forEach(a -> {
-//                    FinancingTypeAmountEntity financingTypeAmount = new FinancingTypeAmountEntity();
-//                    financingTypeAmount.setAmount(a.getAmount());
-//                    financingTypeAmount.setType(financingTypeService.findById(a.getFinancingTypeId()));
-//                    amountCharacteristic.getTypeAmounts().add(financingTypeAmount);
-//                });
-//
-//                answer.getAmountCharacteristic().getDirectionAmounts().forEach(a -> {
-//                    FinancingDirectionAmountEntity financingDirectionAmount = new FinancingDirectionAmountEntity();
-//                    financingDirectionAmount.setAmount(a.getAmount());
-//                    financingDirectionAmount.setDirection(financingDirectionService.findById(a.getFinancingDirectionId()));
-//                    amountCharacteristic.getDirectionAmounts().add(financingDirectionAmount);
-//                });
-//                answerEntity.setAmountCharacteristic(amountCharacteristic);
-//            }
-//
-//            if (nonNull(answer.getViolationAmountCharacteristic())) {
-//                ViolationAmountCharacteristicEntity violationAmountCharacteristic = new ViolationAmountCharacteristicEntity();
-//                BeanUtils.copyProperties(answer.getViolationAmountCharacteristic(), violationAmountCharacteristic);
-//
-//                answer.getViolationAmountCharacteristic().getDirectionAmounts().forEach(a -> {
-//                    FinancingDirectionAmountEntity financingDirectionAmount = new FinancingDirectionAmountEntity();
-//                    financingDirectionAmount.setAmount(a.getAmount());
-//                    financingDirectionAmount.setDirection(financingDirectionService.findById(a.getFinancingDirectionId()));
-//                    violationAmountCharacteristic.getDirectionAmounts().add(financingDirectionAmount);
-//                });
-//                answerEntity.setViolationAmountCharacteristic(violationAmountCharacteristic);
-//            }
-//
-//            entity.getAnswers().add(answerEntity);
-//        }
-//
-//        entity = checklistService.save(entity);
-//
-//        customQueryService.createRelationship(
-//                "ChecklistResponse", entity.getId(), "Template", template.getId(), "TEMPLATED_BY"
-//        );
-//
-//        if (isNull(request.getId())) {
-//            customQueryService.createRelationship(
-//                    "ControlEvent", event.getId(), "ChecklistResponse", entity.getId(), "HAS_CHECKLIST"
-//            );
-//        }
+        entity.setId(request.getId());
+        entity.setName(request.getName());
+        entity.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
 
-        return DtoEntityConverter.mapFullResponse(checklistService.findById(entity.getId()));
+        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
+                .stream()
+                .flatMap(qg -> qg.getQuestions().stream())
+                .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
+
+        for (AnswerDTO answer : request.getAnswers()) {
+            AnswerEntity answerEntity = new AnswerEntity();
+
+            answerEntity.setComment(answer.getComment());
+            answerEntity.setValues(answer.getValues());
+
+            if (nonNull(answer.getAnswerTypeId())) {
+                answerEntity.setAnswerType(answerService.findById(answer.getAnswerTypeId()));
+            }
+
+            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(answer.getQuestionId());
+            if (isNull(questionExecution))
+                throw new EntityNotFoundException("questionExecution", answer.getQuestionId());
+
+            answerEntity.setQuestionExecution(questionExecution);
+            answerEntity.setParentFeatureId(questionExecution.getParentFeatureId());
+
+            entity.getAnswers().add(answerEntity);
+        }
+
+        entity = responseSessionService.save(entity);
+
+        customQueryService.createRelationship(
+                Node.ResponseSession.name(), entity.getId(), Node.Template.name(), template.getId(), Relationship.TEMPLATED_BY.name()
+        );
+
+        customQueryService.createRelationship(
+                Node.ControlActivity.name(), request.getControlActivityId(), Node.ResponseSession.name(), entity.getId(), Relationship.HAS_SESSION_RESPONSE.name()
+        );
+
+        customQueryService.createRelationship(
+                Node.ResponseSession.name(), entity.getId(), Node.User.name(), UserUtils.getCurrentUserId(), Relationship.HAS_AUTHOR.name()
+        );
     }
 
-    public ChecklistResponse getChecklist(Long id) {
-        return DtoEntityConverter.mapFullResponse(checklistService.findById(id));
+    public ResponseSessionDTO getSession(Long id) {
+        return DtoEntityConverter.map(responseSessionService.findById(id));
     }
 
     @Transactional
-    public ControlActivityDTO deleteTemplate(EventTemplateOperationRequest request) {
+    public ControlActivityDTO deleteTemplate(TemplateOperationRequest request) {
         checkPermission(request.getId());
 
         ControlActivityEntity activity = controlActivityService.findById(request.getId());
@@ -306,16 +275,14 @@ public class ControlActivityWebService {
     }
 
     @Transactional
-    public ChecklistResponse changeStatus(ChecklistStatusRequest request) {
-        ResponseSessionEntity entity = checklistService.findById(request.getId());
+    public void changeStatus(ResponseSessionStatusRequest request) {
+        ResponseSessionEntity entity = responseSessionService.findById(request.getId());
 
         if (IN_PROCESS_STATUS.equals(request.getChecklistStatusId())) {
             entity.setReviewer(null);
         } else if (IN_COMPLETED_STATUS.equals(request.getChecklistStatusId())) {
             entity.setReviewer(userService.findById(UserUtils.getCurrentUserId()));
         }
-        entity.setStatus(checklistStatusService.findById(request.getChecklistStatusId()));
-
-        return DtoEntityConverter.mapFullResponse(checklistService.save(entity));
+        entity.setStatus(sessionStatusService.findById(request.getChecklistStatusId()));
     }
 }

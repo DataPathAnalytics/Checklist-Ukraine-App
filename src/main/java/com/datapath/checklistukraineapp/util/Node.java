@@ -6,5 +6,6 @@ public enum Node {
     TemplateConfig,
     ControlActivity,
     Template,
-    User
+    User,
+    ActivityStatus
 }

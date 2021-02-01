@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChecklistStatusRequest {
+public class ResponseSessionStatusRequest {
 
     @NotNull
     private Long id;

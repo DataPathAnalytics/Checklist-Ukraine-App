@@ -15,8 +15,8 @@ public class ResponseSessionDaoService {
 
     private final ResponseSessionRepository repository;
 
-    public List<ResponseSessionDomain> findEventChecklists(Long eventId) {
-        return repository.findEventChecklists(eventId);
+    public List<ResponseSessionDomain> findResponseSessionByActivityId(Long activityId) {
+        return repository.findResponseSessionByActivityId(activityId);
     }
 
     public ResponseSessionEntity save(ResponseSessionEntity entity) {

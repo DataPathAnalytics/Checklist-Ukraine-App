@@ -19,6 +19,7 @@ public class AnswerEntity {
     private Long id;
     private Map<String, Object> values = new HashMap<>();
     private String comment;
+    private Long parentFeatureId;
 
     @Relationship(type = "EXECUTED_BY")
     private QuestionExecutionEntity questionExecution;

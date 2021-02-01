@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.controller.exception;
 
-import com.datapath.checklistukraineapp.dto.response.ExceptionResponse;
+import com.datapath.checklistukraineapp.dto.response.exception.ExceptionResponse;
 import com.datapath.checklistukraineapp.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

@@ -11,7 +11,7 @@ import com.datapath.checklistukraineapp.dao.service.classifier.QuestionTypeDaoSe
 import com.datapath.checklistukraineapp.dao.service.classifier.TemplateTypeDaoService;
 import com.datapath.checklistukraineapp.dto.QuestionDTO;
 import com.datapath.checklistukraineapp.dto.QuestionTypeDTO;
-import com.datapath.checklistukraineapp.dto.request.CreateQuestionRequest;
+import com.datapath.checklistukraineapp.dto.request.question.CreateQuestionRequest;
 import com.datapath.checklistukraineapp.util.DtoEntityConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

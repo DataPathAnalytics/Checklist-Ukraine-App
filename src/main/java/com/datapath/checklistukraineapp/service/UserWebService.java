@@ -8,12 +8,12 @@ import com.datapath.checklistukraineapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistukraineapp.dao.service.UserDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.PermissionDaoService;
 import com.datapath.checklistukraineapp.dto.UserDTO;
+import com.datapath.checklistukraineapp.dto.UserPageDTO;
 import com.datapath.checklistukraineapp.dto.UserStateDTO;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistukraineapp.dto.request.users.ResetPasswordSendRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserRegisterRequest;
 import com.datapath.checklistukraineapp.dto.request.users.UserUpdateRequest;
-import com.datapath.checklistukraineapp.dto.response.UsersResponse;
 import com.datapath.checklistukraineapp.exception.ResetPasswordException;
 import com.datapath.checklistukraineapp.exception.UserException;
 import com.datapath.checklistukraineapp.security.ConfirmationTokenStorageService;
@@ -50,10 +50,10 @@ public class UserWebService {
     private final EmailSenderService emailSender;
     private final PermissionDaoService permissionService;
 
-    public UsersResponse list(int page, int size) {
+    public UserPageDTO list(int page, int size) {
         Page<UserEntity> entities = userService.findAll(page, size);
 
-        return new UsersResponse(
+        return new UserPageDTO(
                 entities.getTotalElements(),
                 entities.getTotalPages(),
                 entities.getNumber(),

@@ -4,14 +4,13 @@ import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dao.service.*;
 import com.datapath.checklistukraineapp.dao.service.classifier.TemplateTypeDaoService;
 import com.datapath.checklistukraineapp.dto.FolderDTO;
-import com.datapath.checklistukraineapp.dto.GroupQuestionsDTO;
 import com.datapath.checklistukraineapp.dto.TemplateDTO;
 import com.datapath.checklistukraineapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistukraineapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.ValidationException;
-import com.datapath.checklistukraineapp.util.DtoEntityConverter;
+import com.datapath.checklistukraineapp.service.converter.structure.TemplateConverter;
 import com.datapath.checklistukraineapp.util.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +37,7 @@ public class TemplateWebService {
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
     private final TemplateTypeDaoService templateTypeService;
+    private final TemplateConverter templateConverter;
 
     @Transactional
     public void create(CreateTemplateRequest request) {
@@ -94,12 +94,16 @@ public class TemplateWebService {
                 .stream()
                 .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
                 .collect(toList()));
-        questionIds.addAll(request.getQuestions()
+        questionIds.addAll(request.getTypeQuestions()
+                .stream()
+                .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
+                .collect(toList()));
+        questionIds.addAll(request.getAuthorityQuestions()
                 .stream()
                 .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
                 .collect(toList()));
 
-        Map<Long, QuestionEntity> questionIdMap = questionService.findByIds(new ArrayList<>(questionIds))
+        Map<Long, QuestionEntity> questionIdMap = questionService.findById(new ArrayList<>(questionIds))
                 .stream()
                 .collect(toMap(QuestionEntity::getId, Function.identity()));
 
@@ -127,7 +131,17 @@ public class TemplateWebService {
             }
         });
 
-        request.getQuestions().forEach(q -> {
+        request.getTypeQuestions().forEach(q -> {
+            QuestionEntity question = questionIdMap.get(q.getQuestionId());
+            if (nonNull(question)) {
+                QuestionExecutionEntity execution = new QuestionExecutionEntity();
+                execution.setQuestion(question);
+                execution.setOrderNumber(q.getOrderNumber());
+                entity.getQuestionExecutions().add(execution);
+            }
+        });
+
+        request.getAuthorityQuestions().forEach(q -> {
             QuestionEntity question = questionIdMap.get(q.getQuestionId());
             if (nonNull(question)) {
                 QuestionExecutionEntity execution = new QuestionExecutionEntity();
@@ -195,98 +209,11 @@ public class TemplateWebService {
     }
 
     public TemplateDTO get(Long id) {
-
-        TemplateEntity entity = templateService.findById(id);
-
-        TemplateDTO dto = DtoEntityConverter.map(entity);
-
-        QuestionExecutionEntity objectQuestion = entity.getConfig()
-                .getQuestionExecutions()
-                .stream()
-                .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Not found required object question"));
-
-        dto.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
-
-        dto.setObjectFeatureQuestions(
-                entity.getConfig().getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .filter(qe -> OBJECT_FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        );
-
-        dto.setTypeQuestions(
-                entity.getConfig().getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
-                                SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        );
-
-        Optional<QuestionGroupEntity> ungrouped = entity.getGroups().stream()
-                .filter(g -> UNGROUPED_NAME.equals(g.getName()))
-                .findFirst();
-
-        ungrouped.ifPresent(questionGroupEntity -> dto.setUngroupedQuestions(
-                questionGroupEntity.getQuestions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        ));
-
-        dto.setQuestions(
-                entity.getGroups().stream()
-                        .filter(g -> !UNGROUPED_NAME.equals(g.getName()))
-                        .sorted(Comparator.comparing(QuestionGroupEntity::getOrderNumber))
-                        .map(g -> {
-                                    GroupQuestionsDTO groupQuestionsDTO = new GroupQuestionsDTO();
-                                    groupQuestionsDTO.setGroupName(g.getName());
-                                    groupQuestionsDTO.setQuestions(
-                                            g.getQuestions().stream()
-                                                    .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                                                    .map(DtoEntityConverter::map)
-                                                    .collect(toList())
-                                    );
-                                    return groupQuestionsDTO;
-                                }
-                        ).collect(toList())
-        );
-        return dto;
+        return templateConverter.map(templateService.findById(id));
     }
 
     public TemplateDTO getConfig(Long id) {
-        TemplateConfigEntity entity = templateConfigService.findById(id);
-
-        TemplateDTO dto = DtoEntityConverter.map(entity);
-
-        QuestionExecutionEntity objectQuestion = entity.getQuestionExecutions().stream()
-                .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Not found required object question"));
-
-        dto.setObjectQuestion(DtoEntityConverter.map(objectQuestion));
-
-        dto.setObjectFeatureQuestions(
-                entity.getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .filter(qe -> OBJECT_FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        );
-
-        dto.setTypeQuestions(
-                entity.getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
-                                SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
-                        .map(DtoEntityConverter::map)
-                        .collect(toList())
-        );
-
-        return dto;
+        return templateConverter.map(templateConfigService.findById(id));
     }
 
     private List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,
@@ -309,14 +236,15 @@ public class TemplateWebService {
         if (isNull(objectQuestion))
             throw new EntityNotFoundException("question", request.getObjectQuestionId());
         if (!OBJECT_QUESTION_TYPE.equals(objectQuestion.getType().getQuestionTypeId()))
-            throw new ValidationException("Invalid type of base question. Should be id " + OBJECT_QUESTION_TYPE);
+            throw new ValidationException("Invalid type of base question. Should be questionTypeId " + OBJECT_QUESTION_TYPE);
 
-        checkQuestionTypes(request.getFeatureQuestions(), questionIdMap, OBJECT_FEATURE_QUESTION_TYPE);
+        checkQuestionTypes(request.getFeatureQuestions(), questionIdMap, FEATURE_QUESTION_TYPE);
+        checkQuestionTypes(request.getAuthorityQuestions(), questionIdMap, AUTHORITY_QUESTION_TYPE);
 
         if (ACTIVITY_TEMPLATE_TYPE.equals(request.getTemplateTypeId())) {
-            checkQuestionTypes(request.getQuestions(), questionIdMap, ACTIVITY_QUESTION_TYPE);
+            checkQuestionTypes(request.getTypeQuestions(), questionIdMap, ACTIVITY_QUESTION_TYPE);
         } else if (SESSION_TEMPLATE_TYPE.equals(request.getTemplateTypeId())) {
-            checkQuestionTypes(request.getQuestions(), questionIdMap, SESSION_QUESTION_TYPE);
+            checkQuestionTypes(request.getTypeQuestions(), questionIdMap, SESSION_QUESTION_TYPE);
         } else throw new ValidationException("Invalid template type: " + request.getTemplateTypeId());
     }
 
@@ -328,6 +256,6 @@ public class TemplateWebService {
                 .filter(Objects::nonNull)
                 .anyMatch(q -> !checkedType.equals(q.getType().getQuestionTypeId()));
         if (existsIncorrect)
-            throw new ValidationException("Invalid question type. Should be id" + checkedType);
+            throw new ValidationException("Invalid question type. Should be questionTypeId " + checkedType);
     }
 }

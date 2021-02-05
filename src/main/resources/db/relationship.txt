@@ -3,6 +3,8 @@ MATCH (u:User { email:'andrey.pylypchuk@introlab-systems.com' }), (p:Permission 
 MATCH (u:TemplateType { templateTypeId: 1}), (p:QuestionType { questionTypeId:  1}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
 MATCH (u:TemplateType { templateTypeId: 1}), (p:QuestionType { questionTypeId:  4}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
 MATCH (u:TemplateType { templateTypeId: 1}), (p:QuestionType { questionTypeId:  5}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
+MATCH (u:TemplateType { templateTypeId: 1}), (p:QuestionType { questionTypeId:  6}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
 MATCH (u:TemplateType { templateTypeId: 2}), (p:QuestionType { questionTypeId:  2}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
+MATCH (u:TemplateType { templateTypeId: 2}), (p:QuestionType { questionTypeId:  3}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
 MATCH (u:TemplateType { templateTypeId: 2}), (p:QuestionType { questionTypeId:  4}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)
 MATCH (u:TemplateType { templateTypeId: 2}), (p:QuestionType { questionTypeId:  5}) MERGE (u)-[:USE_QUESTION_TYPE]->(p)

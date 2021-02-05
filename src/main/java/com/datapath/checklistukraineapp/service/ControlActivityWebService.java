@@ -1,12 +1,10 @@
 package com.datapath.checklistukraineapp.service;
 
-import com.datapath.checklistukraineapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistukraineapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dao.service.*;
 import com.datapath.checklistukraineapp.dao.service.classifier.ActivityStatusDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.AnswerTypeDaoService;
-import com.datapath.checklistukraineapp.dao.service.classifier.AuthorityDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistukraineapp.dto.AnswerDTO;
 import com.datapath.checklistukraineapp.dto.ControlActivityDTO;
@@ -18,15 +16,19 @@ import com.datapath.checklistukraineapp.dto.request.activity.SaveResponseSession
 import com.datapath.checklistukraineapp.dto.request.activity.TemplateOperationRequest;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import com.datapath.checklistukraineapp.exception.PermissionException;
-import com.datapath.checklistukraineapp.util.DtoEntityConverter;
-import com.datapath.checklistukraineapp.util.Node;
-import com.datapath.checklistukraineapp.util.Relationship;
+import com.datapath.checklistukraineapp.exception.ValidationException;
+import com.datapath.checklistukraineapp.service.converter.structure.ControlActivityConverter;
+import com.datapath.checklistukraineapp.service.converter.structure.QuestionConverter;
+import com.datapath.checklistukraineapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistukraineapp.util.UserUtils;
+import com.datapath.checklistukraineapp.util.database.Node;
+import com.datapath.checklistukraineapp.util.database.Relationship;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +46,6 @@ public class ControlActivityWebService {
 
     private final ControlActivityDaoService controlActivityService;
     private final UserDaoService userService;
-    private final AuthorityDaoService authorityService;
     private final ActivityStatusDaoService activityStatusService;
     private final TemplateDaoService templateService;
     private final TemplateConfigDaoService templateConfigService;
@@ -53,20 +54,38 @@ public class ControlActivityWebService {
     private final AnswerTypeDaoService answerService;
     private final CustomQueryDaoService customQueryService;
 
+    private final QuestionConverter questionConverter;
+    private final ControlActivityConverter controlActivityConverter;
+    private final ResponseSessionConverter responseSessionConverter;
+
     public List<ControlActivityDTO> list() {
-        List<ControlActivityDomain> activities;
+        List<ControlActivityEntity> activities;
 
         if (UserUtils.hasRole(METHODOLOGIST_ROLE)) {
             activities = controlActivityService.findAll();
         } else {
-            activities = controlActivityService.findAllByUser(UserUtils.getCurrentUserId());
+            activities = controlActivityService.findAllByUser(userService.findById(UserUtils.getCurrentUserId()));
         }
 
         return activities
                 .stream()
+                .sorted(Comparator.comparing(ControlActivityEntity::getDateCreated).reversed())
                 .map(c -> {
                     ControlActivityDTO dto = new ControlActivityDTO();
                     BeanUtils.copyProperties(c, dto);
+
+                    dto.setStatusId(c.getStatus().getActivityStatusId());
+                    dto.setAuthorId(c.getAuthor().getId());
+
+                    QuestionExecutionEntity objectQuestion = c.getActivityResponse().getTemplateConfig().getQuestionExecutions().stream()
+                            .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                            .findFirst().orElseThrow(() -> new ValidationException("Not found object question. Activity id " + c.getId()));
+
+                    AnswerEntity objectAnswer = c.getActivityResponse().getAnswers().stream()
+                            .filter(a -> objectQuestion.getId().equals(a.getQuestionExecution().getId()))
+                            .findFirst().orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
+
+                    dto.setObjectQuestion(questionConverter.map(objectQuestion, objectAnswer));
                     return dto;
                 }).collect(toList());
     }
@@ -81,7 +100,6 @@ public class ControlActivityWebService {
         activityEntity.setName(request.getName());
         activityEntity.setStatus(activityStatusService.findById(IN_PROCESS_STATUS));
         activityEntity.setAuthor(userService.findById(currentUserId));
-        activityEntity.setAuthority(authorityService.findById(request.getAuthorityId()));
 
         ResponseSessionEntity activityResponse = new ResponseSessionEntity();
         request.getAnswers().forEach(a -> {
@@ -135,7 +153,7 @@ public class ControlActivityWebService {
     }
 
     public ControlActivityDTO get(Long id) {
-        return DtoEntityConverter.map(controlActivityService.findById(id));
+        return controlActivityConverter.map(controlActivityService.findById(id));
     }
 
     @Transactional
@@ -149,7 +167,7 @@ public class ControlActivityWebService {
                 Node.ControlActivity.name(), id, Node.ActivityStatus.name(), IN_COMPLETED_STATUS, Relationship.IN_STATUS.name()
         );
 
-        return DtoEntityConverter.map(controlActivityService.findById(id));
+        return controlActivityConverter.map(controlActivityService.findById(id));
     }
 
     @Transactional
@@ -160,7 +178,7 @@ public class ControlActivityWebService {
                 Node.ControlActivity.name(), request.getId(), Node.Template.name(), request.getTemplateId(), Relationship.HAS_TEMPLATE.name()
         );
 
-        return DtoEntityConverter.map(controlActivityService.findById(request.getId()));
+        return controlActivityConverter.map(controlActivityService.findById(request.getId()));
     }
 
     private void checkPermission(Long id) {
@@ -247,7 +265,7 @@ public class ControlActivityWebService {
     }
 
     public ResponseSessionDTO getSession(Long id) {
-        return DtoEntityConverter.map(responseSessionService.findById(id));
+        return responseSessionConverter.map(responseSessionService.findById(id));
     }
 
     @Transactional
@@ -271,7 +289,7 @@ public class ControlActivityWebService {
                 Node.ControlActivity.name(), request.getId(), Node.Template.name(), request.getTemplateId(), Relationship.HAS_TEMPLATE.name()
         );
 
-        return DtoEntityConverter.map(activity);
+        return controlActivityConverter.map(activity);
     }
 
     @Transactional

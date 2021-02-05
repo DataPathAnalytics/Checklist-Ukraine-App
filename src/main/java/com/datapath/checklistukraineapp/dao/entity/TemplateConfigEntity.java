@@ -9,6 +9,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -34,5 +35,5 @@ public class TemplateConfigEntity {
     private TemplateConfigFolderEntity folder;
 
     @Relationship(type = "HAS_QUESTION_EXECUTION")
-    private Set<QuestionExecutionEntity> questionExecutions;
+    private Set<QuestionExecutionEntity> questionExecutions = new HashSet<>();
 }

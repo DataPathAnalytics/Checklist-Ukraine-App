@@ -1,6 +1,5 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.dao.entity.classifier.KnowledgeCategory;
 import com.datapath.checklistukraineapp.dao.entity.classifier.QuestionType;
 import com.datapath.checklistukraineapp.dao.relatioship.QuestionSourceRelationship;
 import lombok.Data;
@@ -24,7 +23,7 @@ public class QuestionEntity {
     private LocalDate dateCreated;
 
     @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private KnowledgeCategory knowledgeCategory;
+    private KnowledgeCategoryEntity knowledgeCategory;
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;

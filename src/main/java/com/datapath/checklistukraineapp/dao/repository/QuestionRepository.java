@@ -1,12 +1,16 @@
 package com.datapath.checklistukraineapp.dao.repository;
 
 import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
-import com.datapath.checklistukraineapp.dao.entity.classifier.QuestionType;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.neo4j.repository.query.Query;
 
 import java.util.List;
 
 public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long> {
 
-    List<QuestionEntity> findAllByTypeIn(List<QuestionType> types);
+    @Query(value = "match (q:Question)-->(qt:QuestionType)<--(tt:TemplateType) where tt.templateTypeId = $templateTypeId return id(q)")
+    List<Long> getByTemplateType(Integer templateTypeId);
+
+    @Query(value = "match (q:Question)-->(qt:QuestionType) where qt.questionTypeId = $questionTypeId return id(q)")
+    List<Long> getByQuestionType(Integer questionTypeId);
 }

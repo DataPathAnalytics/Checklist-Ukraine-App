@@ -25,4 +25,5 @@ public class TemplateDTO {
     private List<QuestionExecutionDTO> ungroupedQuestions;
     private List<GroupQuestionsDTO> questions;
     private List<QuestionExecutionDTO> typeQuestions;
+    private List<QuestionExecutionDTO> authorityQuestions;
 }

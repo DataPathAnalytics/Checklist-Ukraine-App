@@ -6,15 +6,14 @@ CREATE CONSTRAINT permission_role_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.r
 CREATE CONSTRAINT permission_id_cnt IF NOT EXISTS ON (p:Permission) ASSERT p.permissionId IS UNIQUE
 
 CREATE CONSTRAINT template_name_cnt IF NOT EXISTS ON (t:Template) ASSERT t.name IS UNIQUE
+CREATE CONSTRAINT template_config_name_cnt IF NOT EXISTS ON (t:TemplateConfig) ASSERT t.name IS UNIQUE
 
 CREATE CONSTRAINT template_folder_name_cnt IF NOT EXISTS ON (t:TemplateFolder) ASSERT t.name IS UNIQUE
+CREATE CONSTRAINT template_config_folder_name_cnt IF NOT EXISTS ON (t:TemplateConfigFolder) ASSERT t.name IS UNIQUE
 
 CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASSERT q.id IS UNIQUE
 
 CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS UNIQUE
-
-CREATE CONSTRAINT authority_id_cnt IF NOT EXISTS ON (c:Authority) ASSERT c.authorityId IS UNIQUE
-CREATE CONSTRAINT authority_value_cnt IF NOT EXISTS ON (c:Authority) ASSERT c.value IS UNIQUE
 
 CREATE CONSTRAINT activity_status_id_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.activityStatusId IS UNIQUE
 CREATE CONSTRAINT activity_status_value_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.value IS UNIQUE
@@ -22,7 +21,6 @@ CREATE CONSTRAINT activity_status_value_cnt IF NOT EXISTS ON (c:ActivityStatus) 
 CREATE CONSTRAINT session_status_id_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.sessionStatusId IS UNIQUE
 CREATE CONSTRAINT session_status_value_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT knowledge_type_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.knowledgeCategoryId IS UNIQUE
 CREATE CONSTRAINT knowledge_value_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.value IS UNIQUE
 
 CREATE CONSTRAINT template_type_id_cnt IF NOT EXISTS ON (c:TemplateType) ASSERT c.templateTypeId IS UNIQUE

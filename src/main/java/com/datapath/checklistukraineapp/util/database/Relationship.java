@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.util;
+package com.datapath.checklistukraineapp.util.database;
 
 public enum Relationship {
     TEMPLATED_BY,

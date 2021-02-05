@@ -18,7 +18,6 @@ public class ControlActivityDTO {
     private LocalDate dateCreated;
     private LocalDate dateModified;
     private Integer statusId;
-    private Integer authorityId;
     private Long authorId;
     private List<TemplateDTO> templates;
     private Set<Long> members;
@@ -26,6 +25,7 @@ public class ControlActivityDTO {
     private QuestionExecutionDTO objectQuestion;
     private List<QuestionExecutionDTO> objectFeatureQuestions;
     private List<QuestionExecutionDTO> typeQuestions;
+    private List<QuestionExecutionDTO> authorityQuestions;
 
     private SessionPageDTO sessions;
 }

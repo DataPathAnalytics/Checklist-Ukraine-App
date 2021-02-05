@@ -18,11 +18,13 @@ public class CreateQuestionRequest {
     @NotBlank
     private String name;
     @NotNull
-    private Integer knowledgeCategoryId;
+    private Long knowledgeCategoryId;
     @NotNull
     private Integer questionTypeId;
     @NotNull
     private Long answerStructureId;
+    private boolean title;
+    private boolean required;
     @NotNull
     private String questionSourceId;
     @NotNull

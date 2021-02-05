@@ -19,7 +19,7 @@ import static com.datapath.checklistukraineapp.util.Constants.DEFAULT_EVENT_CHEC
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("control-events")
+@RequestMapping("control-activities")
 public class ControlActivityController {
 
     private final ControlActivityWebService service;

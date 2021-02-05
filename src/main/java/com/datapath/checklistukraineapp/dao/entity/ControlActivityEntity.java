@@ -1,7 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
 import com.datapath.checklistukraineapp.dao.entity.classifier.ActivityStatus;
-import com.datapath.checklistukraineapp.dao.entity.classifier.Authority;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -32,8 +31,6 @@ public class ControlActivityEntity {
     private UserEntity author;
     @Relationship(type = "HAS_MEMBER")
     private Set<UserEntity> members = new HashSet<>();
-    @Relationship(type = "IN_AUTHORITY")
-    private Authority authority;
     @Relationship(type = "HAS_TEMPLATE")
     private Set<TemplateEntity> templates = new HashSet<>();
     @Relationship(type = "HAS_ACTIVITY_RESPONSE")

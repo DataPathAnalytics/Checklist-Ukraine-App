@@ -24,7 +24,8 @@ public class CreateTemplateConfigRequest {
     private Long objectQuestionId;
 
     private List<TemplateQuestion> featureQuestions;
-    private List<TemplateQuestion> questions;
+    private List<TemplateQuestion> typeQuestions;
+    private List<TemplateQuestion> authorityQuestions;
 
     @Data
     @AllArgsConstructor

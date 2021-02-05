@@ -10,7 +10,6 @@ public class MappingPrivateResponse {
 
     private List<IdValueDTO> permissions;
     private List<IdValueDTO> answerTypes;
-    private List<IdValueDTO> authorities;
     private List<IdValueDTO> activityStatuses;
     private List<IdValueDTO> sessionStatuses;
     private List<IdValueDTO> knowledgeCategories;

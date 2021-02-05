@@ -1,7 +1,6 @@
 package com.datapath.checklistukraineapp.dao.service;
 
 import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
-import com.datapath.checklistukraineapp.dao.entity.classifier.QuestionType;
 import com.datapath.checklistukraineapp.dao.repository.QuestionRepository;
 import com.datapath.checklistukraineapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -23,15 +22,19 @@ public class QuestionDaoService {
         return repository.findAll();
     }
 
-    public List<QuestionEntity> findByTypes(List<QuestionType> types) {
-        return repository.findAllByTypeIn(types);
-    }
-
     public QuestionEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("question", id));
     }
 
-    public List<QuestionEntity> findByIds(List<Long> ids) {
+    public List<QuestionEntity> findById(List<Long> ids) {
         return repository.findAllById(ids);
+    }
+
+    public List<Long> findByTemplateType(Integer templateTypeId) {
+        return repository.getByTemplateType(templateTypeId);
+    }
+
+    public List<Long> findByQuestionType(Integer templateTypeId) {
+        return repository.getByQuestionType(templateTypeId);
     }
 }

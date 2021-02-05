@@ -4,20 +4,18 @@ import com.datapath.checklistukraineapp.dao.entity.QuestionEntity;
 import com.datapath.checklistukraineapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistukraineapp.dao.relatioship.QuestionSourceRelationship;
 import com.datapath.checklistukraineapp.dao.service.AnswerStructureDaoService;
+import com.datapath.checklistukraineapp.dao.service.KnowledgeCategoryDaoService;
 import com.datapath.checklistukraineapp.dao.service.QuestionDaoService;
 import com.datapath.checklistukraineapp.dao.service.QuestionSourceDaoService;
-import com.datapath.checklistukraineapp.dao.service.classifier.KnowledgeCategoryDaoService;
 import com.datapath.checklistukraineapp.dao.service.classifier.QuestionTypeDaoService;
-import com.datapath.checklistukraineapp.dao.service.classifier.TemplateTypeDaoService;
 import com.datapath.checklistukraineapp.dto.QuestionDTO;
 import com.datapath.checklistukraineapp.dto.QuestionTypeDTO;
 import com.datapath.checklistukraineapp.dto.request.question.CreateQuestionRequest;
-import com.datapath.checklistukraineapp.util.DtoEntityConverter;
+import com.datapath.checklistukraineapp.service.converter.structure.QuestionConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -33,8 +31,8 @@ public class QuestionWebService {
     private final QuestionSourceDaoService sourceService;
     private final KnowledgeCategoryDaoService knowledgeCategoryService;
     private final AnswerStructureDaoService answerStructureService;
-    private final TemplateTypeDaoService templateTypeService;
     private final QuestionTypeDaoService questionTypeService;
+    private final QuestionConverter questionConverter;
 
     @Transactional
     public void create(CreateQuestionRequest request) {
@@ -58,13 +56,15 @@ public class QuestionWebService {
     }
 
     public QuestionDTO get(Long id) {
-        return DtoEntityConverter.map(service.findById(id));
+        return questionConverter.map(service.findById(id));
     }
 
     public List<QuestionTypeDTO> listByTemplateType(Integer templateTypeId) {
-        Map<Integer, List<QuestionDTO>> questionsByType = service.findByTypes(templateTypeService.findById(templateTypeId).getQuestionTypes())
+        List<Long> ids = service.findByTemplateType(templateTypeId);
+
+        Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
                 .stream()
-                .map(DtoEntityConverter::map)
+                .map(questionConverter::map)
                 .collect(groupingBy(QuestionDTO::getQuestionTypeId));
         return questionsByType.entrySet()
                 .stream()
@@ -73,11 +73,11 @@ public class QuestionWebService {
     }
 
     public List<QuestionTypeDTO> listByQuestionType(Integer questionTypeId) {
-        Map<Integer, List<QuestionDTO>> questionsByType = service.findByTypes(
-                Collections.singletonList(questionTypeService.findById(questionTypeId))
-        )
+        List<Long> ids = service.findByQuestionType(questionTypeId);
+
+        Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
                 .stream()
-                .map(DtoEntityConverter::map)
+                .map(questionConverter::map)
                 .collect(groupingBy(QuestionDTO::getQuestionTypeId));
         return questionsByType.entrySet()
                 .stream()
@@ -88,7 +88,7 @@ public class QuestionWebService {
     public List<QuestionDTO> list() {
         return service.findAll()
                 .stream()
-                .map(DtoEntityConverter::map)
+                .map(questionConverter::map)
                 .collect(toList());
     }
 }

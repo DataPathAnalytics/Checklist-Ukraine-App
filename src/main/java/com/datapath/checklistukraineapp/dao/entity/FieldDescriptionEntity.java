@@ -1,6 +1,6 @@
 package com.datapath.checklistukraineapp.dao.entity;
 
-import com.datapath.checklistukraineapp.util.AnswerFieldType;
+import com.datapath.checklistukraineapp.util.converter.AnswerFieldType;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -17,4 +17,7 @@ public class FieldDescriptionEntity {
     private String description;
     private AnswerFieldType type;
     private String dataSource;
+    private String defaultValue;
+    private boolean title;
+    private boolean required;
 }

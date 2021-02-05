@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.service;
+package com.datapath.checklistukraineapp.service.notification;
 
 import com.datapath.checklistukraineapp.exception.MailException;
 import com.datapath.checklistukraineapp.util.MessageTemplate;
@@ -13,10 +13,10 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-@Service
-public class EmailSenderService {
+import static com.datapath.checklistukraineapp.util.Constants.TOOL_NAME;
 
-    private static final String TOOL_NAME = "Ukraine checklist tool";
+@Service
+public class EmailNotificationService implements NotificationService {
 
     @Autowired
     private JavaMailSender javaMailSender;

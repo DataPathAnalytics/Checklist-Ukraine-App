@@ -11,7 +11,7 @@ public class QuestionDTO {
     private String name;
     private LocalDate dateCreated;
 
-    private Integer knowledgeCategoryId;
+    private Long knowledgeCategoryId;
     private String knowledgeCategoryValue;
     private String knowledgeCategoryTranslate;
 

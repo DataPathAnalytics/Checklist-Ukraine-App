@@ -1,4 +1,4 @@
-package com.datapath.checklistukraineapp.util;
+package com.datapath.checklistukraineapp.util.converter;
 
 public enum AnswerFieldType {
     STRING,

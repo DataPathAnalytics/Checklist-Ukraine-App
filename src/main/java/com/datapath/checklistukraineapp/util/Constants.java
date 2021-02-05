@@ -6,8 +6,9 @@ public final class Constants {
 
     private static final String LOGIN_URL = "/login";
     private static final String REGISTER_URL = "/users/register";
-    private static final String PUBLIC_MAPPING_URL = "/mapping/public";
+    private static final String PUBLIC_MAPPING_URL = "/mappings/public";
 
+    public static final String TOOL_NAME = "Ukraine checklist tool";
     public static final String USER_REGISTRATION_MESSAGE_SUBJECT = "User registration";
     public static final String USER_REGISTRATION_MESSAGE_TEMPLATE = "New user registered. %s %s %s";
     public static final String ACCOUNT_VERIFICATION_MESSAGE_SUBJECT = "Account verification";
@@ -34,7 +35,8 @@ public final class Constants {
     public static final Integer SESSION_QUESTION_TYPE = 2;
     public static final Integer FACT_QUESTION_TYPE = 3;
     public static final Integer OBJECT_QUESTION_TYPE = 4;
-    public static final Integer OBJECT_FEATURE_QUESTION_TYPE = 5;
+    public static final Integer FEATURE_QUESTION_TYPE = 5;
+    public static final Integer AUTHORITY_QUESTION_TYPE = 6;
 
     public final static String DEFAULT_EVENT_CHECKLIST_COUNT_STR = "5";
     public final static String DEFAULT_EVENT_CHECKLIST_PAGE_STR = "0";

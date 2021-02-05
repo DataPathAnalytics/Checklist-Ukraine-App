@@ -2,6 +2,7 @@ package com.datapath.checklistukraineapp.dao.repository;
 
 import com.datapath.checklistukraineapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistukraineapp.dao.entity.ControlActivityEntity;
+import com.datapath.checklistukraineapp.dao.entity.UserEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
@@ -9,6 +10,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface ControlActivityRepository extends Neo4jRepository<ControlActivityEntity, Long> {
+
+    List<ControlActivityEntity> findAllByAuthor(UserEntity author);
 
     @Query(value = "match (c:ControlActivity)-[:HAS_AUTHOR]->(u1:User), " +
             "(c:ControlEvent)-[:HAS_MEMBER]->(u2:User), " +

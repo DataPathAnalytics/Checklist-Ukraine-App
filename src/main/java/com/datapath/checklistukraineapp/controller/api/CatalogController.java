@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("catalog")
+@RequestMapping("catalogs")
 public class CatalogController {
 
     private final CatalogWebService service;

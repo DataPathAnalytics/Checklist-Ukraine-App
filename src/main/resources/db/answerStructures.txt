@@ -1,0 +1,43 @@
+MERGE (a:AnswerStructure {name:'AuthorityType', linkType: 'IN_AUTHORITY_TYPE'})
+MERGE (f:FieldDescription {name:'name', description:'Значение', type:'STRING', defaultValue:'Ревізія', title:false})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
+
+MERGE (a:AnswerStructure {name:'Period', linkType: 'HAS_PERIOD'})
+MERGE (f1:FieldDescription {name:'startDate', description:'Начало периода', type:'DATE', title:false})
+MERGE (f2:FieldDescription {name:'endDate', description:'Конец периода', type:'DATE', title:false})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
+
+MERGE (a:AnswerStructure {name:'Organization', linkType: 'HAS_ORGANIZATION'})
+MERGE (f1:FieldDescription {name:'id', description:'Идентификатор', type:'STRING', title:true})
+MERGE (f2:FieldDescription {name:'name', description:'Название', type:'STRING', title:true})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
+
+MERGE (a:AnswerStructure {name:'Address', linkType: 'HAS_ADDRESS'})
+MERGE (f1:FieldDescription {name:'postCode', description:'Код', type:'STRING', title:false})
+MERGE (f2:FieldDescription {name:'country', description:'Страна', type:'STRING', title:false})
+MERGE (f3:FieldDescription {name:'city', description:'Город', type:'STRING', title:false})
+MERGE (f4:FieldDescription {name:'region', description:'Регион', type:'STRING', title:true})
+MERGE (f5:FieldDescription {name:'street', description:'Улица', type:'STRING', title:true})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f3)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f4)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f5);
+
+MERGE (a:AnswerStructure {name:'SimpleStringValue', linkType: 'HAS_VALUE'})
+MERGE (f1:FieldDescription {name:'value', description:'Значение', type:'STRING', title:false})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
+
+MERGE (a:AnswerStructure {name:'SimpleNumberValue', linkType: 'HAS_VALUE'})
+MERGE (f1:FieldDescription {name:'value', description:'Значение', type:'INTEGER', title:false})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
+
+MERGE (a:AnswerStructure {name:'Contract', linkType: 'HAS_CONTRACT'})
+MERGE (f1:FieldDescription {name:'id', description:'Идентификатор', type:'STRING', title:false})
+MERGE (f2:FieldDescription {name:'date', description:'Дата', type:'DATE', title:false})
+MERGE (f3:FieldDescription {name:'number', description:'Номер', type:'STRING', title:false})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f3);

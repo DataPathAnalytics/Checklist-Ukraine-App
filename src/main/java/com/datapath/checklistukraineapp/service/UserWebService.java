@@ -18,6 +18,7 @@ import com.datapath.checklistukraineapp.exception.ResetPasswordException;
 import com.datapath.checklistukraineapp.exception.UserException;
 import com.datapath.checklistukraineapp.security.ConfirmationTokenStorageService;
 import com.datapath.checklistukraineapp.security.UsersStorageService;
+import com.datapath.checklistukraineapp.service.notification.EmailNotificationService;
 import com.datapath.checklistukraineapp.util.MessageTemplate;
 import com.datapath.checklistukraineapp.util.UserUtils;
 import lombok.AllArgsConstructor;
@@ -47,7 +48,7 @@ public class UserWebService {
     private final DepartmentDaoService departmentService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationTokenStorageService tokenStorageService;
-    private final EmailSenderService emailSender;
+    private final EmailNotificationService emailSender;
     private final PermissionDaoService permissionService;
 
     public UserPageDTO list(int page, int size) {

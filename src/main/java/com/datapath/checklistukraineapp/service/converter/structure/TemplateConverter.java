@@ -85,17 +85,17 @@ public class TemplateConverter {
 
         dto.setObjectFeatureQuestions(
                 entity.getConfig().getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
         );
 
         dto.setTypeQuestions(
                 entity.getConfig().getQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()) ||
                                 SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getQuestionTypeId()))
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
         );

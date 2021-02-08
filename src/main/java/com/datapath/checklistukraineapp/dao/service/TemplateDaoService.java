@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +26,7 @@ public class TemplateDaoService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("template", id));
     }
 
-    public List<TemplateEntity> findByIds(Set<Long> ids) {
+    public List<TemplateEntity> findByIds(List<Long> ids) {
         return repository.findAllById(ids);
     }
 

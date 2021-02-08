@@ -6,5 +6,6 @@ public enum Node {
     ControlActivity,
     Template,
     User,
-    ActivityStatus
+    ActivityStatus,
+    QuestionExecution
 }

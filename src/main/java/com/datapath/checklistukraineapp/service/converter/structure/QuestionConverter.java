@@ -27,7 +27,7 @@ public class QuestionConverter {
     public QuestionExecutionDTO map(QuestionExecutionEntity entity, AnswerEntity answerEntity) {
         QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
         executionDTO.setQuestion(map(entity.getQuestion()));
-        executionDTO.setAnswer(answerConverter.map(answerEntity));
+        executionDTO.setAnswer(answerConverter.map(answerEntity, entity.getQuestion().getAnswerStructure()));
 
         if (isNull(executionDTO.getAnswer())) {
             Map<String, Object> defaultAnswerFields = entity.getQuestion().getAnswerStructure()
@@ -44,7 +44,6 @@ public class QuestionConverter {
 
         executionDTO.setConditionAnswerId(entity.getConditionAnswerId());
         executionDTO.setId(entity.getId());
-        executionDTO.setParentFeatureId(entity.getParentFeatureId());
         executionDTO.setParentQuestionId(entity.getParentQuestionId());
         return executionDTO;
     }

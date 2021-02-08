@@ -21,8 +21,6 @@ public class CreateControlActivityRequest {
     @NotBlank
     private String name;
     @NotNull
-    private Integer authorityId;
-    @NotNull
     private List<AnswerDTO> answers;
     @NotNull
     private Long teamLeadId;

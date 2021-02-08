@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,9 +24,9 @@ public class CreateTemplateConfigRequest {
     @NotNull
     private Long objectQuestionId;
 
-    private List<TemplateQuestion> featureQuestions;
-    private List<TemplateQuestion> typeQuestions;
-    private List<TemplateQuestion> authorityQuestions;
+    private List<TemplateQuestion> featureQuestions = new ArrayList<>();
+    private List<TemplateQuestion> typeQuestions = new ArrayList<>();
+    private List<TemplateQuestion> authorityQuestions = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
@@ -33,7 +34,7 @@ public class CreateTemplateConfigRequest {
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
-        private Long parentFeatureId;
+        private Long parentQuestionId;
         private Integer orderNumber;
     }
 }

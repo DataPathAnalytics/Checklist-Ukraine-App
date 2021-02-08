@@ -1,5 +1,6 @@
 package com.datapath.checklistukraineapp.service;
 
+import com.datapath.checklistukraineapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistukraineapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistukraineapp.dao.entity.*;
 import com.datapath.checklistukraineapp.dao.service.*;
@@ -21,17 +22,17 @@ import com.datapath.checklistukraineapp.service.converter.structure.ControlActiv
 import com.datapath.checklistukraineapp.service.converter.structure.QuestionConverter;
 import com.datapath.checklistukraineapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistukraineapp.util.UserUtils;
+import com.datapath.checklistukraineapp.util.database.Field;
 import com.datapath.checklistukraineapp.util.database.Node;
 import com.datapath.checklistukraineapp.util.database.Relationship;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.datapath.checklistukraineapp.util.Constants.*;
@@ -58,30 +59,35 @@ public class ControlActivityWebService {
     private final ControlActivityConverter controlActivityConverter;
     private final ResponseSessionConverter responseSessionConverter;
 
+    private final ObjectMapper mapper;
+
+    @Transactional
     public List<ControlActivityDTO> list() {
-        List<ControlActivityEntity> activities;
+        List<ControlActivityDomain> activities;
 
         if (UserUtils.hasRole(METHODOLOGIST_ROLE)) {
-            activities = controlActivityService.findAll();
+            activities = controlActivityService.findAll(null);
         } else {
-            activities = controlActivityService.findAllByUser(userService.findById(UserUtils.getCurrentUserId()));
+            activities = controlActivityService.findAll(UserUtils.getCurrentUserId());
         }
 
         return activities
                 .stream()
-                .sorted(Comparator.comparing(ControlActivityEntity::getDateCreated).reversed())
+                .sorted(Comparator.comparing(ControlActivityDomain::getDateCreated).reversed())
                 .map(c -> {
                     ControlActivityDTO dto = new ControlActivityDTO();
                     BeanUtils.copyProperties(c, dto);
 
-                    dto.setStatusId(c.getStatus().getActivityStatusId());
-                    dto.setAuthorId(c.getAuthor().getId());
+                    dto.setStatusId(c.getStatusId());
+                    dto.setAuthorId(c.getAuthorId());
 
-                    QuestionExecutionEntity objectQuestion = c.getActivityResponse().getTemplateConfig().getQuestionExecutions().stream()
+                    ResponseSessionEntity responseSession = responseSessionService.findById(c.getActivityResponseId());
+
+                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getQuestionExecutions().stream()
                             .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
                             .findFirst().orElseThrow(() -> new ValidationException("Not found object question. Activity id " + c.getId()));
 
-                    AnswerEntity objectAnswer = c.getActivityResponse().getAnswers().stream()
+                    AnswerEntity objectAnswer = responseSession.getAnswers().stream()
                             .filter(a -> objectQuestion.getId().equals(a.getQuestionExecution().getId()))
                             .findFirst().orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
 
@@ -112,11 +118,16 @@ public class ControlActivityWebService {
 
             QuestionExecutionEntity questionExecution = config.getQuestionExecutions().stream()
                     .filter(q -> a.getQuestionId().equals(q.getId()))
-                    .findFirst().orElseThrow(() -> new EntityNotFoundException("questionExecution", a.getQuestionId()));
+                    .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
 
-            answerEntity.setParentFeatureId(questionExecution.getParentFeatureId());
+            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
             answerEntity.setQuestionExecution(questionExecution);
-            answerEntity.setValues(a.getValues());
+
+            try {
+                answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
             activityResponse.getAnswers().add(answerEntity);
         });
@@ -124,36 +135,31 @@ public class ControlActivityWebService {
         ControlActivityEntity savedEntity = controlActivityService.save(activityEntity);
 
         customQueryService.createRelationship(
-                Node.ResponseSession.name(),
-                savedEntity.getActivityResponse().getId(),
-                Node.TemplateConfig.name(),
-                request.getTemplateConfigId(),
+                Node.ResponseSession.name(), null, savedEntity.getActivityResponse().getId(),
+                Node.TemplateConfig.name(), null, request.getTemplateConfigId(),
                 Relationship.TEMPLATED_BY.name()
         );
 
         if (!isEmpty(request.getMemberIds())) {
             request.getMemberIds().forEach(id -> customQueryService.createRelationship(
-                    Node.ControlActivity.name(),
-                    savedEntity.getId(),
-                    Node.User.name(),
-                    id,
+                    Node.ControlActivity.name(), null, savedEntity.getId(),
+                    Node.User.name(), null, id,
                     Relationship.HAS_MEMBER.name()
             ));
         }
 
         if (!isEmpty(request.getTemplateIds())) {
             request.getTemplateIds().forEach(id -> customQueryService.createRelationship(
-                    Node.ControlActivity.name(),
-                    savedEntity.getId(),
-                    Node.Template.name(),
-                    id,
+                    Node.ControlActivity.name(), null, savedEntity.getId(),
+                    Node.Template.name(), null, id,
                     Relationship.HAS_TEMPLATE.name()
             ));
         }
     }
 
+    @Transactional
     public ControlActivityDTO get(Long id) {
-        return controlActivityConverter.map(controlActivityService.findById(id));
+        return controlActivityConverter.map(extractControlActivityById(id));
     }
 
     @Transactional
@@ -161,13 +167,17 @@ public class ControlActivityWebService {
         checkPermission(id);
 
         customQueryService.deleteRelationship(
-                Node.ControlActivity.name(), id, Node.ActivityStatus.name(), IN_COMPLETED_STATUS, Relationship.IN_STATUS.name()
+                Node.ControlActivity.name(), null, id,
+                Node.ActivityStatus.name(), Field.activityStatusId.name(), IN_PROCESS_STATUS,
+                Relationship.IN_STATUS.name()
         );
         customQueryService.createRelationship(
-                Node.ControlActivity.name(), id, Node.ActivityStatus.name(), IN_COMPLETED_STATUS, Relationship.IN_STATUS.name()
+                Node.ControlActivity.name(), null, id,
+                Node.ActivityStatus.name(), Field.activityStatusId.name(), IN_COMPLETED_STATUS,
+                Relationship.IN_STATUS.name()
         );
 
-        return controlActivityConverter.map(controlActivityService.findById(id));
+        return controlActivityConverter.map(extractControlActivityById(id));
     }
 
     @Transactional
@@ -175,10 +185,12 @@ public class ControlActivityWebService {
         checkPermission(request.getId());
 
         customQueryService.createRelationship(
-                Node.ControlActivity.name(), request.getId(), Node.Template.name(), request.getTemplateId(), Relationship.HAS_TEMPLATE.name()
+                Node.ControlActivity.name(), null, request.getId(),
+                Node.Template.name(), null, request.getTemplateId(),
+                Relationship.HAS_TEMPLATE.name()
         );
 
-        return controlActivityConverter.map(controlActivityService.findById(request.getId()));
+        return controlActivityConverter.map(extractControlActivityById(request.getId()));
     }
 
     private void checkPermission(Long id) {
@@ -233,7 +245,11 @@ public class ControlActivityWebService {
             AnswerEntity answerEntity = new AnswerEntity();
 
             answerEntity.setComment(answer.getComment());
-            answerEntity.setValues(answer.getValues());
+            try {
+                answerEntity.setJsonValues(mapper.writeValueAsString(answer.getValues()));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
             if (nonNull(answer.getAnswerTypeId())) {
                 answerEntity.setAnswerType(answerService.findById(answer.getAnswerTypeId()));
@@ -241,10 +257,10 @@ public class ControlActivityWebService {
 
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(answer.getQuestionId());
             if (isNull(questionExecution))
-                throw new EntityNotFoundException("questionExecution", answer.getQuestionId());
+                throw new EntityNotFoundException(Node.QuestionExecution.name(), answer.getQuestionId());
 
             answerEntity.setQuestionExecution(questionExecution);
-            answerEntity.setParentFeatureId(questionExecution.getParentFeatureId());
+            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
 
             entity.getAnswers().add(answerEntity);
         }
@@ -252,15 +268,21 @@ public class ControlActivityWebService {
         entity = responseSessionService.save(entity);
 
         customQueryService.createRelationship(
-                Node.ResponseSession.name(), entity.getId(), Node.Template.name(), template.getId(), Relationship.TEMPLATED_BY.name()
+                Node.ResponseSession.name(), null, entity.getId(),
+                Node.Template.name(), null, template.getId(),
+                Relationship.TEMPLATED_BY.name()
         );
 
         customQueryService.createRelationship(
-                Node.ControlActivity.name(), request.getControlActivityId(), Node.ResponseSession.name(), entity.getId(), Relationship.HAS_SESSION_RESPONSE.name()
+                Node.ControlActivity.name(), null, request.getControlActivityId(),
+                Node.ResponseSession.name(), null, entity.getId(),
+                Relationship.HAS_SESSION_RESPONSE.name()
         );
 
         customQueryService.createRelationship(
-                Node.ResponseSession.name(), entity.getId(), Node.User.name(), UserUtils.getCurrentUserId(), Relationship.HAS_AUTHOR.name()
+                Node.ResponseSession.name(), null, entity.getId(),
+                Node.User.name(), null, UserUtils.getCurrentUserId(),
+                Relationship.HAS_AUTHOR.name()
         );
     }
 
@@ -272,7 +294,7 @@ public class ControlActivityWebService {
     public ControlActivityDTO deleteTemplate(TemplateOperationRequest request) {
         checkPermission(request.getId());
 
-        ControlActivityEntity activity = controlActivityService.findById(request.getId());
+        ControlActivityEntity activity = extractControlActivityById(request.getId());
 
         boolean existsChecklist = activity.getSessionResponses().stream()
                 .anyMatch(c -> request.getTemplateId().equals(c.getTemplate().getId()));
@@ -286,7 +308,9 @@ public class ControlActivityWebService {
         }
 
         customQueryService.deleteRelationship(
-                Node.ControlActivity.name(), request.getId(), Node.Template.name(), request.getTemplateId(), Relationship.HAS_TEMPLATE.name()
+                Node.ControlActivity.name(), null, request.getId(),
+                Node.Template.name(), null, request.getTemplateId(),
+                Relationship.HAS_TEMPLATE.name()
         );
 
         return controlActivityConverter.map(activity);
@@ -302,5 +326,21 @@ public class ControlActivityWebService {
             entity.setReviewer(userService.findById(UserUtils.getCurrentUserId()));
         }
         entity.setStatus(sessionStatusService.findById(request.getChecklistStatusId()));
+    }
+
+    private ControlActivityEntity extractControlActivityById(Long id) {
+        ControlActivityDomain domain = controlActivityService.findById(id);
+
+        ControlActivityEntity entity = new ControlActivityEntity();
+        BeanUtils.copyProperties(domain, entity);
+
+        entity.setActivityResponse(responseSessionService.findById(domain.getActivityResponseId()));
+        entity.setAuthor(userService.findById(domain.getAuthorId()));
+        entity.setStatus(activityStatusService.findById(domain.getStatusId()));
+        entity.setTemplates(new HashSet<>(templateService.findByIds(domain.getTemplateIds())));
+        entity.setMembers(new HashSet<>(userService.findByIds(domain.getMemberIds())));
+        entity.setSessionResponses(new HashSet<>(responseSessionService.findByIds(domain.getSessionResponseIds())));
+
+        return entity;
     }
 }

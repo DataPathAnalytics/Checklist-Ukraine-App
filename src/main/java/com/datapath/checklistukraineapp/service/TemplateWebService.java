@@ -68,9 +68,9 @@ public class TemplateWebService {
         if (!isEmpty(request.getQuestionGroups())) {
             request.getQuestionGroups().forEach(group -> {
                 if (!isEmpty(group.getQuestions())) {
-                    QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
-                    ungroupedEntity.setName(group.getName());
-                    ungroupedEntity.setOrderNumber(group.getOrderNumber());
+                    QuestionGroupEntity groupedEntity = new QuestionGroupEntity();
+                    groupedEntity.setName(group.getName());
+                    groupedEntity.setOrderNumber(group.getOrderNumber());
 
                     group.getQuestions().forEach(q -> {
                         QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
@@ -78,7 +78,7 @@ public class TemplateWebService {
                         questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
                         questionExecutionEntity.setConditionAnswerId(q.getConditionAnswerId());
                         questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
-                        ungroupedEntity.getQuestions().add(questionExecutionEntity);
+                        groupedEntity.getQuestions().add(questionExecutionEntity);
                     });
                 }
             });
@@ -125,7 +125,7 @@ public class TemplateWebService {
             if (nonNull(question)) {
                 QuestionExecutionEntity execution = new QuestionExecutionEntity();
                 execution.setQuestion(question);
-                execution.setParentFeatureId(q.getParentFeatureId());
+                execution.setParentQuestionId(q.getParentQuestionId());
                 execution.setOrderNumber(q.getOrderNumber());
                 entity.getQuestionExecutions().add(execution);
             }
@@ -193,6 +193,7 @@ public class TemplateWebService {
                     BeanUtils.copyProperties(t, dto);
                     dto.setFolderId(t.getFolder().getId());
                     dto.setAuthorId(t.getAuthor().getId());
+                    dto.setTemplateConfigId(t.getConfig().getId());
                     return dto;
                 })
                 .collect(groupingBy(TemplateDTO::getFolderId));

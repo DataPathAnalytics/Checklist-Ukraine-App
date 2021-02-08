@@ -7,9 +7,6 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Data
 @Node("Answer")
 public class AnswerEntity {
@@ -17,13 +14,14 @@ public class AnswerEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private Map<String, Object> values = new HashMap<>();
+
+    private String jsonValues;
     private String comment;
-    private Long parentFeatureId;
+    private Long parentQuestionId;
 
     @Relationship(type = "EXECUTED_BY")
     private QuestionExecutionEntity questionExecution;
-    @Relationship(type ="IN_ANSWER_TYPE")
+    @Relationship(type = "IN_ANSWER_TYPE")
     private AnswerType answerType;
 
 }

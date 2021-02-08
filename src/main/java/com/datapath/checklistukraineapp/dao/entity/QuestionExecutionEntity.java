@@ -17,8 +17,6 @@ public class QuestionExecutionEntity {
     private Long parentQuestionId;
     private Integer conditionAnswerId;
 
-    private Long parentFeatureId;
-
     private Integer orderNumber;
 
     @Relationship(type = "OF_QUESTION")

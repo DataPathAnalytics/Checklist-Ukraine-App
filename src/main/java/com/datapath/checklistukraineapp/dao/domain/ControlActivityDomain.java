@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -13,11 +15,13 @@ public class ControlActivityDomain {
 
     private Long id;
     private String name;
-    private Integer controlTypeId;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private Integer controlStatusId;
-    private String controlObjectId;
-    private String controlObjectName;
+
+    private Integer statusId;
     private Long authorId;
+    private List<Long> memberIds = new ArrayList<>();
+    private List<Long> templateIds = new ArrayList<>();
+    private Long activityResponseId;
+    private List<Long> sessionResponseIds = new ArrayList<>();
 }

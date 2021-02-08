@@ -26,4 +26,8 @@ public class ResponseSessionDaoService {
     public ResponseSessionEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("checklist", id));
     }
+
+    public List<ResponseSessionEntity> findByIds(List<Long> id) {
+        return repository.findAllById(id);
+    }
 }

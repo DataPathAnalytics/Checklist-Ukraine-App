@@ -56,14 +56,17 @@ public class AnswerConverter {
         AnswerStructureDTO dto = new AnswerStructureDTO();
 
         dto.setId(entity.getId());
-        dto.setLinkType(entity.getLinkType());
         dto.setName(entity.getName());
         dto.setFieldDescriptions(
                 entity.getFields().stream()
                         .map(f -> {
                                     AnswerStructureDTO.FieldDescriptionDTO fieldDTO = new AnswerStructureDTO.FieldDescriptionDTO();
                                     fieldDTO.setName(f.getName());
-                                    fieldDTO.setDefaultValue(convertTypeService.convert(f.getDefaultValue(), f.getType()));
+
+                                    if (nonNull(f.getDefaultValue())) {
+                                        fieldDTO.setDefaultValue(convertTypeService.convert(f.getDefaultValue(), f.getType()));
+                                    }
+
                                     fieldDTO.setDescription(f.getDescription());
                                     fieldDTO.setDataSource(f.getDataSource());
                                     fieldDTO.setType(f.getType());

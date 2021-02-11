@@ -39,7 +39,7 @@ public class QuestionWebService {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setName(request.getName());
-        entity.setKnowledgeCategory(knowledgeCategoryService.findById(request.getKnowledgeCategoryId()));
+        entity.getKnowledgeCategory().addAll(knowledgeCategoryService.findByIds(request.getKnowledgeCategoryIds()));
         entity.setType(questionTypeService.findById(request.getQuestionTypeId()));
 
         QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());

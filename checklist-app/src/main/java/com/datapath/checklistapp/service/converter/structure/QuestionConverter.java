@@ -53,9 +53,9 @@ public class QuestionConverter {
 
         BeanUtils.copyProperties(entity, dto);
 
-        dto.setKnowledgeCategoryId(entity.getKnowledgeCategory().getId());
-        dto.setKnowledgeCategoryValue(entity.getKnowledgeCategory().getValue());
-        dto.setKnowledgeCategoryTranslate(entity.getKnowledgeCategory().getTranslate());
+        //todo:needs solve what to do with knowledge categories
+//        dto.setKnowledgeCategoryId(entity.getKnowledgeCategory().getId());
+//        dto.setKnowledgeCategoryName(entity.getKnowledgeCategory().getName());
 
         dto.setQuestionTypeId(entity.getType().getQuestionTypeId());
         dto.setQuestionTypeValue(entity.getType().getValue());

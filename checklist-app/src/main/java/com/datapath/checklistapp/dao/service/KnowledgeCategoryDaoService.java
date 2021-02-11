@@ -21,4 +21,8 @@ public class KnowledgeCategoryDaoService {
     public KnowledgeCategoryEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("knowledgeCategory", id));
     }
+
+    public List<KnowledgeCategoryEntity> findByIds(List<Long> ids) {
+        return repository.findAllById(ids);
+    }
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.nonNull;
 
@@ -17,14 +19,13 @@ public class CreateQuestionRequest {
 
     @NotBlank
     private String name;
-    @NotNull
-    private Long knowledgeCategoryId;
+//    @NotNull
+    private List<Long> knowledgeCategoryIds = new ArrayList<>();
     @NotNull
     private Integer questionTypeId;
-    @NotNull
+
     private Long answerStructureId;
-    private boolean title;
-    private boolean required;
+
     @NotNull
     private String questionSourceId;
     @NotNull

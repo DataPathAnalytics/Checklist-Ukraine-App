@@ -18,6 +18,10 @@ target/
 *.iws
 *.iml
 *.ipr
+/mvnw
+/mvnw.cmd
+/ukr-checklist.log
+/.mvn
 
 ### NetBeans ###
 /nbproject/private/

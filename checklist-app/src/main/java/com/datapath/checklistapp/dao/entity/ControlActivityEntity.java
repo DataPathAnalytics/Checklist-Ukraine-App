@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,9 +21,9 @@ public class ControlActivityEntity {
     private Long id;
     private String name;
     @CreatedDate
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
     @LastModifiedDate
-    private LocalDate dateModified;
+    private LocalDateTime dateModified;
 
     @Relationship(type = "IN_STATUS")
     private ActivityStatus status;

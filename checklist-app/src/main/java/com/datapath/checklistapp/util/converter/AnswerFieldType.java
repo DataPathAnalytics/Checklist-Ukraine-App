@@ -5,5 +5,6 @@ public enum AnswerFieldType {
     INTEGER,
     DOUBLE,
     DATE,
-    DATETIME
+    DATETIME,
+    LIST
 }

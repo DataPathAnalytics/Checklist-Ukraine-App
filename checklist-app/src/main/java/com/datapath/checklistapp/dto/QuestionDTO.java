@@ -2,18 +2,17 @@ package com.datapath.checklistapp.dto;
 
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class QuestionDTO {
 
     private Long id;
     private String name;
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 
     private Long knowledgeCategoryId;
-    private String knowledgeCategoryValue;
-    private String knowledgeCategoryTranslate;
+    private String knowledgeCategoryName;
 
     private String questionSourceId;
     private String questionSourceName;

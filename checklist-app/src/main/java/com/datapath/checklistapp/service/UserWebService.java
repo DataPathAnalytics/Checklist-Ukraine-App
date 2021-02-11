@@ -28,7 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -147,7 +147,7 @@ public class UserWebService {
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
-        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDate.now()));
+        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDateTime.now()));
 
         userService.save(user);
         UsersStorageService.removeUser(user.getId());
@@ -161,16 +161,16 @@ public class UserWebService {
             Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
 
             if (!lastEmployment.isPresent()) {
-                employments.add(new EmploymentEntity(LocalDate.now(), null, department));
+                employments.add(new EmploymentEntity(LocalDateTime.now(), null, department));
             } else {
                 if (!lastEmployment.get().getDepartment().getId().equals(departmentId)) {
-                    LocalDate now = LocalDate.now();
+                    LocalDateTime now = LocalDateTime.now();
                     lastEmployment.get().setEnd(now);
                     employments.add(new EmploymentEntity(now, null, department));
                 }
             }
         } else {
-            employments.add(new EmploymentEntity(LocalDate.now(), null, department));
+            employments.add(new EmploymentEntity(LocalDateTime.now(), null, department));
         }
     }
 

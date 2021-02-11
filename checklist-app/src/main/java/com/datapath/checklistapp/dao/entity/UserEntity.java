@@ -10,7 +10,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class UserEntity {
     private boolean locked;
     private boolean removed;
     @CreatedDate
-    private LocalDate registeredDate;
+    private LocalDateTime registeredDate;
 
     @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
     private Permission permission;

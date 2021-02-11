@@ -6,7 +6,7 @@ import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Node("TemplateFolder")
@@ -17,5 +17,5 @@ public class TemplateFolderEntity {
     private Long id;
     private String name;
     @CreatedDate
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 }

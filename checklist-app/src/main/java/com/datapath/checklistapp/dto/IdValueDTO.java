@@ -9,10 +9,4 @@ public class IdValueDTO {
 
     private Object id;
     private String value;
-    private String translate;
-
-    public IdValueDTO(Object id, String value) {
-        this.id = id;
-        this.value = value;
-    }
 }

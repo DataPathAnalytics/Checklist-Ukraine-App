@@ -9,7 +9,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Node("Question")
@@ -20,10 +22,10 @@ public class QuestionEntity {
     private Long id;
     private String name;
     @CreatedDate
-    private LocalDate dateCreated;
+    private LocalDateTime dateCreated;
 
     @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private KnowledgeCategoryEntity knowledgeCategory;
+    private Set<KnowledgeCategoryEntity> knowledgeCategory = new HashSet<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;

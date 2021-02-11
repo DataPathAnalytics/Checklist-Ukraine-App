@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +15,8 @@ public class ControlActivityDTO {
 
     private Long id;
     private String name;
-    private LocalDate dateCreated;
-    private LocalDate dateModified;
+    private LocalDateTime dateCreated;
+    private LocalDateTime dateModified;
     private Integer statusId;
     private Long authorId;
     private List<TemplateDTO> templates;

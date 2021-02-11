@@ -61,7 +61,7 @@ public class MappingWebService {
         );
         response.setKnowledgeCategories(
                 knowledgeCategoryService.findAll().stream()
-                        .map(k -> new IdValueDTO(k.getId(), k.getValue(), k.getTranslate()))
+                        .map(k -> new IdValueDTO(k.getId(), k.getName()))
                         .collect(toList())
         );
         response.setTemplateTypes(

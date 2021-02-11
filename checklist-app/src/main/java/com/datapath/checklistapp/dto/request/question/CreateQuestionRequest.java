@@ -19,7 +19,7 @@ public class CreateQuestionRequest {
 
     @NotBlank
     private String name;
-//    @NotNull
+    @NotNull
     private List<Long> knowledgeCategoryIds = new ArrayList<>();
     @NotNull
     private Integer questionTypeId;
@@ -33,7 +33,9 @@ public class CreateQuestionRequest {
 
     @AssertTrue
     public boolean isValid() {
-        if (questionTypeId != 3) return nonNull(answerStructureId);
+        if (questionTypeId != 3) {
+            return nonNull(answerStructureId) && knowledgeCategoryIds.size() == 1;
+        }
         return true;
     }
 }

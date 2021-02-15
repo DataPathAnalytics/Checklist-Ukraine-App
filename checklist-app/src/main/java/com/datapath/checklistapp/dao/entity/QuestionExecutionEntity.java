@@ -21,7 +21,7 @@ public class QuestionExecutionEntity {
     private Integer orderNumber;
 
     @Relationship(type = "HAS_INTERPRETATION")
-    private InterpretationRelationship interpretation;
+    private InterpretationRelationship interpretationRel;
 
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;

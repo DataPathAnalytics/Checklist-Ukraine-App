@@ -1,5 +1,5 @@
 MERGE (a:AnswerStructure {name:'AuthorityType'})
-MERGE (f:FieldDescription {name:'name', description:'Значение', type:'STRING', defaultValue:'Ревізія', title:false, required:false})
+MERGE (f:FieldDescription {name:'name', description:'Значение', type:'STRING', defaultValue:'Ревізія', title:false, required:true})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
 
 MERGE (a:AnswerStructure {name:'Period'})
@@ -9,8 +9,8 @@ MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
 MERGE (a:AnswerStructure {name:'Organization'})
-MERGE (f1:FieldDescription {name:'id', description:'Идентификатор', type:'STRING', title:true, required:false})
-MERGE (f2:FieldDescription {name:'name', description:'Название', type:'STRING', title:true, required:false})
+MERGE (f1:FieldDescription {name:'id', description:'Идентификатор', type:'STRING', title:true, required:true})
+MERGE (f2:FieldDescription {name:'name', description:'Название', type:'STRING', title:true, required:true})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 

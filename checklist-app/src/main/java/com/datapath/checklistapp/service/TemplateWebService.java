@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.entity.*;
+import com.datapath.checklistapp.dao.relatioship.InterpretationRelationship;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dao.service.classifier.TemplateTypeDaoService;
 import com.datapath.checklistapp.dto.FolderDTO;
@@ -38,6 +39,7 @@ public class TemplateWebService {
     private final QuestionDaoService questionService;
     private final TemplateTypeDaoService templateTypeService;
     private final TemplateConverter templateConverter;
+    private final InterpretationDaoService interpretationService;
 
     @Transactional
     public void create(CreateTemplateRequest request) {
@@ -57,8 +59,16 @@ public class TemplateWebService {
                 QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
                 questionExecutionEntity.setOrderNumber(q.getOrderNumber());
                 questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
-                questionExecutionEntity.setConditionAnswerId(q.getConditionAnswerId());
+                questionExecutionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
                 questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+
+                if (nonNull(q.getInterpretationId())) {
+                    InterpretationRelationship interpretationRel = new InterpretationRelationship();
+                    interpretationRel.setInterpretation(interpretationService.findById(q.getInterpretationId()));
+                    interpretationRel.setConditionAnswer(q.getInterpretationConditionAnswerId());
+                    questionExecutionEntity.setInterpretationRel(interpretationRel);
+                }
+
                 ungroupedEntity.getQuestions().add(questionExecutionEntity);
             });
 
@@ -76,8 +86,16 @@ public class TemplateWebService {
                         QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
                         questionExecutionEntity.setOrderNumber(q.getOrderNumber());
                         questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
-                        questionExecutionEntity.setConditionAnswerId(q.getConditionAnswerId());
+                        questionExecutionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
                         questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+
+                        if (nonNull(q.getInterpretationId())) {
+                            InterpretationRelationship interpretationRel = new InterpretationRelationship();
+                            interpretationRel.setInterpretation(interpretationService.findById(q.getInterpretationId()));
+                            interpretationRel.setConditionAnswer(q.getInterpretationConditionAnswerId());
+                            questionExecutionEntity.setInterpretationRel(interpretationRel);
+                        }
+
                         groupedEntity.getQuestions().add(questionExecutionEntity);
                     });
                 }

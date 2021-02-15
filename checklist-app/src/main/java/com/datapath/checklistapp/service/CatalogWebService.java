@@ -1,6 +1,9 @@
 package com.datapath.checklistapp.service;
 
+import com.datapath.checklistapp.dao.service.InterpretationDaoService;
+import com.datapath.checklistapp.dao.service.KnowledgeCategoryDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
+import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -15,6 +18,8 @@ import static java.util.stream.Collectors.toList;
 public class CatalogWebService {
 
     private final QuestionSourceDaoService questionSourceService;
+    private final KnowledgeCategoryDaoService knowledgeCategoryService;
+    private final InterpretationDaoService interpretationService;
 
     public List<QuestionSourceDTO> getQuestionSources() {
         return questionSourceService.findAll().stream()
@@ -25,6 +30,18 @@ public class CatalogWebService {
 
                     return dto;
                 })
+                .collect(toList());
+    }
+
+    public List<IdValueDTO> getKnowledgeCategories() {
+        return knowledgeCategoryService.findAll().stream()
+                .map(k -> new IdValueDTO(k.getId(), k.getName()))
+                .collect(toList());
+    }
+
+    public List<IdValueDTO> getInterpretations() {
+        return interpretationService.findAll().stream()
+                .map(i -> new IdValueDTO(i.getId(), i.getInterpretationValue()))
                 .collect(toList());
     }
 }

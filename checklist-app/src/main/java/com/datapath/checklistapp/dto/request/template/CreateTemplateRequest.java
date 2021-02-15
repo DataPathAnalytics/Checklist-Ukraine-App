@@ -41,8 +41,13 @@ public class CreateTemplateRequest {
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
+
         private Long parentQuestionId;
-        private Integer conditionAnswerId;
+        private Integer parentConditionAnswerId;
+
+        private Long interpretationId;
+        private Integer interpretationConditionAnswerId;
+
         @NotNull
         private Integer orderNumber;
     }

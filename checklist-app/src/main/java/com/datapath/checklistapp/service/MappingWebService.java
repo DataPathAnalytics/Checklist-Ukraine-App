@@ -1,7 +1,6 @@
 package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.service.DepartmentDaoService;
-import com.datapath.checklistapp.dao.service.KnowledgeCategoryDaoService;
 import com.datapath.checklistapp.dao.service.classifier.*;
 import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
@@ -22,7 +21,6 @@ public class MappingWebService {
     private final AnswerTypeDaoService answerTypeService;
     private final ActivityStatusDaoService activityStatusService;
     private final SessionStatusDaoService sessionStatusService;
-    private final KnowledgeCategoryDaoService knowledgeCategoryService;
     private final TemplateTypeDaoService templateTypeService;
     private final QuestionTypeDaoService questionTypeService;
 
@@ -57,11 +55,6 @@ public class MappingWebService {
         response.setActivityStatuses(
                 activityStatusService.findAll().stream()
                         .map(s -> new IdValueDTO(s.getActivityStatusId(), s.getValue()))
-                        .collect(toList())
-        );
-        response.setKnowledgeCategories(
-                knowledgeCategoryService.findAll().stream()
-                        .map(k -> new IdValueDTO(k.getId(), k.getName()))
                         .collect(toList())
         );
         response.setTemplateTypes(

@@ -7,5 +7,6 @@ public enum Node {
     Template,
     User,
     ActivityStatus,
-    QuestionExecution
+    QuestionExecution,
+    Interpretation
 }

@@ -12,7 +12,6 @@ public class MappingPrivateResponse {
     private List<IdValueDTO> answerTypes;
     private List<IdValueDTO> activityStatuses;
     private List<IdValueDTO> sessionStatuses;
-    private List<IdValueDTO> knowledgeCategories;
     private List<IdValueDTO> questionTypes;
     private List<IdValueDTO> templateTypes;
 }

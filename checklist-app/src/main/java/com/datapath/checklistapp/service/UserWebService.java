@@ -67,10 +67,13 @@ public class UserWebService {
 
     @Transactional
     public void register(UserRegisterRequest request) {
-        UserEntity existedUser = userService.findByEmail(request.getEmail());
-        if (nonNull(existedUser)) throw new UserException("This email already registered");
+        UserEntity user = userService.findByEmail(request.getEmail());
+        if (nonNull(user)) {
+            if (!user.isRemoved()) throw new UserException("This email already registered");
+        } else {
+            user = new UserEntity();
+        }
 
-        UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());

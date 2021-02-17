@@ -7,6 +7,7 @@ import com.datapath.checklistapp.service.QuestionWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,9 @@ public class QuestionController {
     private final QuestionWebService service;
 
     @ApiOperation(value = "create question")
-    @ApiResponse(code = 403, message = "available for user with role 'methodologist'")
+    @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
+    })
     @PostMapping
     @PreAuthorize("hasAuthority('methodologist')")
     public void create(@RequestBody @Valid CreateQuestionRequest request) {

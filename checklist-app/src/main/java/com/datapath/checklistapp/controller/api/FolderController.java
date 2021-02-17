@@ -40,7 +40,9 @@ public class FolderController {
     }
 
     @ApiOperation(value = "create template config folder", response = FolderDTO.class)
-    @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
+    @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
+    })
     @PostMapping("template-config")
     @PreAuthorize("hasAuthority('methodologist')")
     public List<FolderDTO> createConfig(@RequestBody @Valid CreateFolderRequest request) {

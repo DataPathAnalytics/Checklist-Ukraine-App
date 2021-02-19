@@ -1,5 +1,6 @@
 package com.datapath.checklistapp.controller.api;
 
+import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.service.CatalogWebService;
@@ -36,5 +37,11 @@ public class CatalogController {
     @GetMapping("interpretations")
     public List<IdValueDTO> interpretationList() {
         return service.getInterpretations();
+    }
+
+    @ApiOperation(value = "list of available answer structures", response = AnswerStructureDTO.class)
+    @GetMapping
+    public List<AnswerStructureDTO> list() {
+        return service.getAnswerStructures();
     }
 }

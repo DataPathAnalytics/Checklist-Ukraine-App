@@ -41,3 +41,6 @@ MERGE (c:KnowledgeCategory {type:'ContractInsurancePeriod', name:'ContractInsura
 MERGE (c:KnowledgeCategory {type:'SubjectType', name:'SubjectType', linkType:'HAS_SUBJECT_TYPE'})
 
 MERGE (c:QuestionSource {id:'id1', name:'TestQuestionSource', link:'www.test.com'})
+
+MERGE (i:Interpretation {interpretationValue:'Хорошо'})
+MERGE (i:Interpretation {interpretationValue:'Плохо'})

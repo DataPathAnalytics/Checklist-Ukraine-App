@@ -60,14 +60,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                 return null;
             }
 
-            ArrayList rawPermissions = tokenBody.get("permissions", ArrayList.class);
-
-            List<SimpleGrantedAuthority> permissions = new ArrayList<>();
-            rawPermissions.forEach(permission -> permissions.add(new SimpleGrantedAuthority(permission.toString())));
-
             if (user != null) {
+                ArrayList rawPermissions = tokenBody.get("permissions", ArrayList.class);
+
+                List<SimpleGrantedAuthority> permissions = new ArrayList<>();
+                rawPermissions.forEach(permission -> permissions.add(new SimpleGrantedAuthority(permission.toString())));
+
                 return new UsernamePasswordAuthenticationToken(new UserAuthInfo(id, user), null, permissions);
             }
+
             return null;
         }
         return null;

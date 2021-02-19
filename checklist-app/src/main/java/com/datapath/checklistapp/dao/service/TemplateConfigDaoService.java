@@ -30,4 +30,8 @@ public class TemplateConfigDaoService {
     public TemplateConfigEntity findById(Long id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("templateConfig", id));
     }
+
+    public List<TemplateConfigEntity> searchByName(String name) {
+        return repository.findTop20ByNameStartingWithOrderByName(name);
+    }
 }

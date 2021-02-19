@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -23,14 +24,20 @@ public class CatalogController {
 
     @ApiOperation(value = "list of available question sources", response = QuestionSourceDTO.class)
     @GetMapping("question-sources")
-    public List<QuestionSourceDTO> questionSourceList() {
+    public List<QuestionSourceDTO> questionSources() {
         return service.getQuestionSources();
     }
 
     @ApiOperation(value = "list of available knowledge categories", response = IdValueDTO.class)
     @GetMapping("knowledge-categories")
-    public List<IdValueDTO> knowledgeCategoryList() {
+    public List<IdValueDTO> knowledgeCategories() {
         return service.getKnowledgeCategories();
+    }
+
+    @ApiOperation(value = "search knowledge categories by name", response = IdValueDTO.class)
+    @GetMapping("knowledge-categories/search")
+    public List<IdValueDTO> searchKnowledgeCategories(@RequestParam String name) {
+        return service.searchKnowledgeCategories(name);
     }
 
     @ApiOperation(value = "list of available interpretations", response = IdValueDTO.class)
@@ -40,8 +47,14 @@ public class CatalogController {
     }
 
     @ApiOperation(value = "list of available answer structures", response = AnswerStructureDTO.class)
-    @GetMapping
-    public List<AnswerStructureDTO> list() {
+    @GetMapping("answer-structures")
+    public List<AnswerStructureDTO> answerStructures() {
         return service.getAnswerStructures();
+    }
+
+    @ApiOperation(value = "search answer structures by name", response = AnswerStructureDTO.class)
+    @GetMapping("answer-structures/search")
+    public List<AnswerStructureDTO> searchAnswerStructures(@RequestParam String name) {
+        return service.searchAnswerStructures(name);
     }
 }

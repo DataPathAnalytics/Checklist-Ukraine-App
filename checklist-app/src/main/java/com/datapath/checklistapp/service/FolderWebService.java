@@ -58,4 +58,24 @@ public class FolderWebService {
                         .thenComparing(FolderDTO::getName))
                 .collect(toList());
     }
+
+    public List<FolderDTO> searchTemplateConfigFolders(String name) {
+        return templateFolderService.searchTemplateConfigFolders(name).stream()
+                .map(f -> {
+                    FolderDTO dto = new FolderDTO();
+                    BeanUtils.copyProperties(f, dto);
+                    return dto;
+                })
+                .collect(toList());
+    }
+
+    public List<FolderDTO> searchTemplateFolders(String name) {
+        return templateFolderService.searchTemplateFolders(name).stream()
+                .map(f -> {
+                    FolderDTO dto = new FolderDTO();
+                    BeanUtils.copyProperties(f, dto);
+                    return dto;
+                })
+                .collect(toList());
+    }
 }

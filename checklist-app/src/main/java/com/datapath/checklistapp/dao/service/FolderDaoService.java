@@ -40,4 +40,12 @@ public class FolderDaoService {
     public TemplateConfigFolderEntity findTemplateConfigFolderById(Long id) {
         return templateConfigRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("templateConfigFolder", id));
     }
+
+    public List<TemplateConfigFolderEntity> searchTemplateConfigFolders(String name) {
+        return templateConfigRepository.findTop20ByNameStartingWithOrderByName(name);
+    }
+
+    public List<TemplateFolderEntity> searchTemplateFolders(String name) {
+        return templateRepository.findTop20ByNameStartingWithOrderByName(name);
+    }
 }

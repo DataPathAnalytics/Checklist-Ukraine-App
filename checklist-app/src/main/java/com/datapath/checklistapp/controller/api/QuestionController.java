@@ -56,4 +56,10 @@ public class QuestionController {
     public QuestionDTO get(@PathVariable Long id) {
         return service.get(id);
     }
+
+    @ApiOperation(value = "search question by name", response = QuestionDTO.class)
+    @GetMapping("search")
+    public List<QuestionDTO> search(@RequestParam String name) {
+        return service.search(name);
+    }
 }

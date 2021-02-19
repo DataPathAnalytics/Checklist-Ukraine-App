@@ -55,4 +55,16 @@ public class CatalogWebService {
                 .map(answerConverter::map)
                 .collect(toList());
     }
+
+    public List<AnswerStructureDTO> searchAnswerStructures(String name) {
+        return answerStructureService.searchByName(name).stream()
+                .map(answerConverter::map)
+                .collect(toList());
+    }
+
+    public List<IdValueDTO> searchKnowledgeCategories(String name) {
+        return knowledgeCategoryService.searchByName(name).stream()
+                .map(k -> new IdValueDTO(k.getId(), k.getName()))
+                .collect(toList());
+    }
 }

@@ -91,4 +91,11 @@ public class QuestionWebService {
                 .map(questionConverter::map)
                 .collect(toList());
     }
+
+    public List<QuestionDTO> search(String name) {
+        return service.searchByName(name)
+                .stream()
+                .map(questionConverter::map)
+                .collect(toList());
+    }
 }

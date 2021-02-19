@@ -67,4 +67,10 @@ public class TemplateController {
     public TemplateDTO get(@PathVariable Long id) {
         return service.get(id);
     }
+
+    @ApiOperation(value = "search template config by name", response = TemplateDTO.class)
+    @GetMapping("config/search")
+    public List<TemplateDTO> search(@PathVariable String name) {
+        return service.searchConfigTemplate(name);
+    }
 }

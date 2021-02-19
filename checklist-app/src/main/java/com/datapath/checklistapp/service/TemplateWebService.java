@@ -277,4 +277,16 @@ public class TemplateWebService {
         if (existsIncorrect)
             throw new ValidationException("Invalid question type. Should be questionTypeId " + checkedType);
     }
+
+    public List<TemplateDTO> searchConfigTemplate(String name) {
+        return templateConfigService.searchByName(name).stream()
+                .map(t -> {
+                    TemplateDTO dto = new TemplateDTO();
+                    BeanUtils.copyProperties(t, dto);
+                    dto.setFolderId(t.getFolder().getId());
+                    dto.setAuthorId(t.getAuthor().getId());
+                    dto.setTemplateType(t.getType().getTemplateTypeId());
+                    return dto;
+                }).collect(toList());
+    }
 }

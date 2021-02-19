@@ -37,4 +37,8 @@ public class QuestionDaoService {
     public List<Long> findByQuestionType(Integer templateTypeId) {
         return repository.getByQuestionType(templateTypeId);
     }
+
+    public List<QuestionEntity> searchByName(String name) {
+        return repository.findTop20ByNameStartingWithOrderByName(name);
+    }
 }

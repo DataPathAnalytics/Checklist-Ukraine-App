@@ -55,4 +55,16 @@ public class FolderController {
     public List<FolderDTO> listConfig() {
         return service.getTemplateConfigFolders();
     }
+
+    @ApiOperation(value = "search template config folders by name", response = FolderDTO.class)
+    @GetMapping("template-config/search")
+    public List<FolderDTO> searchConfig(@PathVariable String name) {
+        return service.searchTemplateConfigFolders(name);
+    }
+
+    @ApiOperation(value = "search template folders by name", response = FolderDTO.class)
+    @GetMapping("template/search")
+    public List<FolderDTO> search(@PathVariable String name) {
+        return service.searchTemplateFolders(name);
+    }
 }

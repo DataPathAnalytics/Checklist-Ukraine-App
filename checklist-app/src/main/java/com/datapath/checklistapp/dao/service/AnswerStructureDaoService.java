@@ -21,4 +21,8 @@ public class AnswerStructureDaoService {
     public List<AnswerStructureEntity> findAll() {
         return repository.findAll();
     }
+
+    public List<AnswerStructureEntity> searchByName(String name) {
+        return repository.findTop20ByNameStartingWithOrderByName(name);
+    }
 }

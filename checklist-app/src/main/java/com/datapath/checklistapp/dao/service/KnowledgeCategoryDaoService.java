@@ -25,4 +25,8 @@ public class KnowledgeCategoryDaoService {
     public List<KnowledgeCategoryEntity> findByIds(List<Long> ids) {
         return repository.findAllById(ids);
     }
+
+    public List<KnowledgeCategoryEntity> searchByName(String name) {
+        return repository.findTop20ByNameStartingWithOrderByName(name);
+    }
 }

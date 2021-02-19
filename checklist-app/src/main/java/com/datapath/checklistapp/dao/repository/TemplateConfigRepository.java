@@ -9,4 +9,6 @@ import java.util.List;
 public interface TemplateConfigRepository extends Neo4jRepository<TemplateConfigEntity, Long> {
 
     List<TemplateConfigEntity> findAllByType(TemplateType type);
+
+    List<TemplateConfigEntity> findTop20ByNameStartingWithOrderByName(String name);
 }

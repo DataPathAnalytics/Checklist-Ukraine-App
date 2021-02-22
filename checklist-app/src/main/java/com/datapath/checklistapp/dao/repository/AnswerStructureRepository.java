@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface AnswerStructureRepository extends Neo4jRepository<AnswerStructureEntity, Long> {
 
-    List<AnswerStructureEntity> findTop20ByNameStartingWithOrderByName(String name);
+    List<AnswerStructureEntity> findTop20ByNameMatchesRegexOrderByName(String name);
 }

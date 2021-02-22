@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.datapath.checklistapp.util.Constants.FACT_QUESTION_TYPE;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
@@ -42,11 +43,13 @@ public class QuestionWebService {
         entity.getKnowledgeCategory().addAll(knowledgeCategoryService.findByIds(request.getKnowledgeCategoryIds()));
         entity.setType(questionTypeService.findById(request.getQuestionTypeId()));
 
-        QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());
-        QuestionSourceRelationship relationship = new QuestionSourceRelationship();
-        relationship.setSource(questionSource);
-        relationship.setDocumentParagraph(request.getQuestionSourceParagraph());
-        entity.setSource(relationship);
+        if (nonNull(request.getQuestionSourceId())) {
+            QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());
+            QuestionSourceRelationship relationship = new QuestionSourceRelationship();
+            relationship.setSource(questionSource);
+            relationship.setDocumentParagraph(request.getQuestionSourceParagraph());
+            entity.setSource(relationship);
+        }
 
         if (!FACT_QUESTION_TYPE.equals(request.getQuestionTypeId())) {
             entity.setAnswerStructure(answerStructureService.findById(request.getAnswerStructureId()));

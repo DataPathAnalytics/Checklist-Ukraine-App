@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
+
 @Service
 @AllArgsConstructor
 public class FolderDaoService {
@@ -42,10 +44,10 @@ public class FolderDaoService {
     }
 
     public List<TemplateConfigFolderEntity> searchTemplateConfigFolders(String name) {
-        return templateConfigRepository.findTop20ByNameStartingWithOrderByName(name);
+        return templateConfigRepository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
     }
 
     public List<TemplateFolderEntity> searchTemplateFolders(String name) {
-        return templateRepository.findTop20ByNameStartingWithOrderByName(name);
+        return templateRepository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
     }
 }

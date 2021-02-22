@@ -43,6 +43,8 @@ public final class Constants {
     public final static Integer DEFAULT_EVENT_CHECKLIST_COUNT = Integer.parseInt(DEFAULT_EVENT_CHECKLIST_COUNT_STR);
     public final static Integer DEFAULT_EVENT_CHECKLIST_PAGE = Integer.parseInt(DEFAULT_EVENT_CHECKLIST_PAGE_STR);
 
+    public static final String SEARCH_PATTERN = "(?i)^%s.*";
+
     public static final String[] PUBLIC_ENDPOINTS = {
             LOGIN_URL,
             REGISTER_URL,

@@ -14,5 +14,5 @@ public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long
     @Query(value = "match (q:Question)-->(qt:QuestionType) where qt.questionTypeId = $questionTypeId return id(q)")
     List<Long> getByQuestionType(Integer questionTypeId);
 
-    List<QuestionEntity> findTop20ByNameStartingWithOrderByName(String name);
+    List<QuestionEntity> findTop20ByNameMatchesRegexOrderByName(String name);
 }

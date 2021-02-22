@@ -28,3 +28,5 @@ CREATE CONSTRAINT template_type_value_cnt IF NOT EXISTS ON (c:TemplateType) ASSE
 
 CREATE CONSTRAINT question_type_id_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.questionTypeId IS UNIQUE
 CREATE CONSTRAINT question_type_value_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.value IS UNIQUE
+
+CREATE CONSTRAINT answer_structure_name_cnt IF NOT EXISTS ON (c:AnswerStructure) ASSERT c.name IS UNIQUE

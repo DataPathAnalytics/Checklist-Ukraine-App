@@ -60,10 +60,12 @@ public class QuestionConverter {
         dto.setQuestionTypeId(entity.getType().getQuestionTypeId());
         dto.setQuestionTypeValue(entity.getType().getValue());
 
-        dto.setQuestionSourceId(entity.getSource().getSource().getId());
-        dto.setQuestionSourceName(entity.getSource().getSource().getName());
-        dto.setQuestionSourceLink(entity.getSource().getSource().getLink());
-        dto.setDocumentParagraph(entity.getSource().getDocumentParagraph());
+        if (nonNull(entity.getSource())) {
+            dto.setQuestionSourceId(entity.getSource().getSource().getId());
+            dto.setQuestionSourceName(entity.getSource().getSource().getName());
+            dto.setQuestionSourceLink(entity.getSource().getSource().getLink());
+            dto.setDocumentParagraph(entity.getSource().getDocumentParagraph());
+        }
 
         if (nonNull(entity.getAnswerStructure())) {
             dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));

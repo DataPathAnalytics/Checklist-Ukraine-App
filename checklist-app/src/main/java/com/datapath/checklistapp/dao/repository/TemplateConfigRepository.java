@@ -10,5 +10,5 @@ public interface TemplateConfigRepository extends Neo4jRepository<TemplateConfig
 
     List<TemplateConfigEntity> findAllByType(TemplateType type);
 
-    List<TemplateConfigEntity> findTop20ByNameStartingWithOrderByName(String name);
+    List<TemplateConfigEntity> findTop20ByNameMatchesRegexOrderByName(String name);
 }

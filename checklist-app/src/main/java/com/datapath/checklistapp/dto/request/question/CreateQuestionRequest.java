@@ -24,10 +24,7 @@ public class CreateQuestionRequest {
     private Integer questionTypeId;
 
     private Long answerStructureId;
-
-    @NotNull
     private String questionSourceId;
-    @NotNull
     private String questionSourceParagraph;
 
     @AssertTrue

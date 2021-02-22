@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
+
 @Service
 @AllArgsConstructor
 public class QuestionDaoService {
@@ -39,6 +41,6 @@ public class QuestionDaoService {
     }
 
     public List<QuestionEntity> searchByName(String name) {
-        return repository.findTop20ByNameStartingWithOrderByName(name);
+        return repository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
     }
 }

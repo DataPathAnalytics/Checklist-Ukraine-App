@@ -6,8 +6,8 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("FieldDefaultValue")
-public class FieldDefaultValueEntity {
+@Node("DefaultValue")
+public class DefaultValueEntity {
 
     @Id
     @GeneratedValue

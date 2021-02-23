@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.dto;
 
-import com.datapath.checklistapp.util.converter.AnswerFieldType;
+import com.datapath.checklistapp.util.converter.ComponentType;
+import com.datapath.checklistapp.util.converter.ValueType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,11 @@ public class AnswerStructureDTO {
     @NoArgsConstructor
     public static class FieldDescriptionDTO {
         private String name;
-        private Object defaultValue;
+        private List<Object> defaultValues;
         private String description;
         private String dataSource;
-        private AnswerFieldType type;
+        private ValueType valueType;
+        private ComponentType componentType;
         private boolean title;
         private boolean required;
     }

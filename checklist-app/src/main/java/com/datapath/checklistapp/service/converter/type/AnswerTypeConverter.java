@@ -1,10 +1,10 @@
 package com.datapath.checklistapp.service.converter.type;
 
-import com.datapath.checklistapp.util.converter.AnswerFieldType;
+import com.datapath.checklistapp.util.converter.ValueType;
 
 public interface AnswerTypeConverter<T> {
 
     T convert(String value);
 
-    AnswerFieldType type();
+    ValueType type();
 }

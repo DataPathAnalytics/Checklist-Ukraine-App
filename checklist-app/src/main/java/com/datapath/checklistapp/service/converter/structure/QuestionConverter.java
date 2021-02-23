@@ -1,22 +1,17 @@
 package com.datapath.checklistapp.service.converter.structure;
 
 import com.datapath.checklistapp.dao.entity.AnswerEntity;
-import com.datapath.checklistapp.dao.entity.FieldDescriptionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
-import com.datapath.checklistapp.dto.AnswerDTO;
+import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.QuestionExecutionDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toMap;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
@@ -29,18 +24,18 @@ public class QuestionConverter {
         executionDTO.setQuestion(map(entity.getQuestion()));
         executionDTO.setAnswer(answerConverter.map(answerEntity, entity.getQuestion().getAnswerStructure()));
 
-        if (isNull(executionDTO.getAnswer())) {
-            Map<String, Object> defaultAnswerFields = entity.getQuestion().getAnswerStructure()
-                    .getFields()
-                    .stream()
-                    .filter(s -> nonNull(s.getDefaultValue()))
-                    .collect(toMap(FieldDescriptionEntity::getName, FieldDescriptionEntity::getDefaultValue));
-            if (!isEmpty(defaultAnswerFields)) {
-                AnswerDTO answerDTO = new AnswerDTO();
-                answerDTO.setValues(defaultAnswerFields);
-                executionDTO.setAnswer(answerDTO);
-            }
-        }
+//        if (isNull(executionDTO.getAnswer())) {
+//            Map<String, Object> defaultAnswerFields = entity.getQuestion().getAnswerStructure()
+//                    .getFields()
+//                    .stream()
+//                    .filter(s -> nonNull(s.getDefaultValue()))
+//                    .collect(toMap(FieldDescriptionEntity::getName, FieldDescriptionEntity::getDefaultValue));
+//            if (!isEmpty(defaultAnswerFields)) {
+//                AnswerDTO answerDTO = new AnswerDTO();
+//                answerDTO.setValues(defaultAnswerFields);
+//                executionDTO.setAnswer(answerDTO);
+//            }
+//        }
 
         executionDTO.setConditionAnswerId(entity.getConditionAnswerId());
         executionDTO.setId(entity.getId());
@@ -53,9 +48,11 @@ public class QuestionConverter {
 
         BeanUtils.copyProperties(entity, dto);
 
-        //todo:needs solve what to do with knowledge categories
-//        dto.setKnowledgeCategoryId(entity.getKnowledgeCategory().getId());
-//        dto.setKnowledgeCategoryName(entity.getKnowledgeCategory().getName());
+        dto.setKnowledgeCategories(
+                entity.getKnowledgeCategory().stream()
+                        .map(k -> new IdValueDTO(k.getId(), k.getName()))
+                        .collect(toList())
+        );
 
         dto.setQuestionTypeId(entity.getType().getQuestionTypeId());
         dto.setQuestionTypeValue(entity.getType().getValue());

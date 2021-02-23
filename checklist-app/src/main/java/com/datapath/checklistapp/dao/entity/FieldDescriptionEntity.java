@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.util.converter.AnswerFieldType;
+import com.datapath.checklistapp.util.converter.ComponentType;
+import com.datapath.checklistapp.util.converter.ValueType;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -19,12 +20,12 @@ public class FieldDescriptionEntity {
     private Long id;
     private String name;
     private String description;
-    private AnswerFieldType type;
+    private ValueType valueType;
+    private ComponentType componentType;
     private String dataSource;
-    private String defaultValue;
     private boolean title;
     private boolean required;
 
     @Relationship(type = "HAS_DEFAULT_VALUE")
-    private Set<FieldDefaultValueEntity> defaultValues = new HashSet<>();
+    private Set<DefaultValueEntity> defaultValues = new HashSet<>();
 }

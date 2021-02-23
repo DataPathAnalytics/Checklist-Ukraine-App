@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.service.converter.type.impl;
 
 import com.datapath.checklistapp.service.converter.type.AnswerTypeConverter;
-import com.datapath.checklistapp.util.converter.AnswerFieldType;
+import com.datapath.checklistapp.util.converter.ValueType;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,7 +13,7 @@ public class AnswerStringConverter implements AnswerTypeConverter<String> {
     }
 
     @Override
-    public AnswerFieldType type() {
-        return AnswerFieldType.STRING;
+    public ValueType type() {
+        return ValueType.STRING;
     }
 }

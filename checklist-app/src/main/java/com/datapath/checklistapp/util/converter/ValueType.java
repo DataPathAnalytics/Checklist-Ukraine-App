@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.util.converter;
 
-public enum AnswerFieldType {
+public enum ValueType {
     STRING,
     INTEGER,
     DOUBLE,

@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ public class FolderController {
             @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
     })
     @PostMapping("template")
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
     public List<FolderDTO> create(@RequestBody @Valid CreateFolderRequest request) {
         service.createTemplateFolder(request);
@@ -44,6 +46,7 @@ public class FolderController {
             @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
     })
     @PostMapping("template-config")
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
     public List<FolderDTO> createConfig(@RequestBody @Valid CreateFolderRequest request) {
         service.createTemplateConfigFolder(request);

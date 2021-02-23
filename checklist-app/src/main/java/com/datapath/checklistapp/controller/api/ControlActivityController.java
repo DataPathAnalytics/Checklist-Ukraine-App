@@ -11,6 +11,7 @@ import com.datapath.checklistapp.service.ControlActivityWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -35,6 +36,7 @@ public class ControlActivityController {
 
     @ApiOperation(value = "create control activity")
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     public void create(@RequestBody @Valid CreateControlActivityRequest request) {
         service.create(request);
     }
@@ -73,6 +75,7 @@ public class ControlActivityController {
 
     @ApiOperation(value = "create/update response session")
     @PostMapping("response-session")
+    @ResponseStatus(code = HttpStatus.CREATED)
     public void saveSession(@RequestBody @Valid SaveResponseSessionRequest request) {
         service.saveSession(request);
     }

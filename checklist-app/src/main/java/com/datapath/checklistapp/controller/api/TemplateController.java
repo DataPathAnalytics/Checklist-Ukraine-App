@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class TemplateController {
             @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
     })
     @PostMapping("config")
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
     public void createConfig(@RequestBody @Valid CreateTemplateConfigRequest request) {
         service.create(request);
@@ -51,6 +53,7 @@ public class TemplateController {
             @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
     })
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
     public void create(@RequestBody @Valid CreateTemplateRequest request) {
         service.create(request);

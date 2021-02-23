@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.service.converter.type.impl;
 
 import com.datapath.checklistapp.service.converter.type.AnswerTypeConverter;
-import com.datapath.checklistapp.util.converter.AnswerFieldType;
+import com.datapath.checklistapp.util.converter.ValueType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,7 +18,7 @@ public class AnswerDateConverter implements AnswerTypeConverter<LocalDate> {
     }
 
     @Override
-    public AnswerFieldType type() {
-        return AnswerFieldType.DATE;
+    public ValueType type() {
+        return ValueType.DATE;
     }
 }

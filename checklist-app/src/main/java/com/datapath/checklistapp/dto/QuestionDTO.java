@@ -3,6 +3,7 @@ package com.datapath.checklistapp.dto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class QuestionDTO {
@@ -11,8 +12,7 @@ public class QuestionDTO {
     private String name;
     private LocalDateTime dateCreated;
 
-    private Long knowledgeCategoryId;
-    private String knowledgeCategoryName;
+    private List<IdValueDTO> knowledgeCategories;
 
     private String questionSourceId;
     private String questionSourceName;

@@ -4,18 +4,21 @@ import com.datapath.checklistapp.service.converter.type.AnswerTypeConverter;
 import com.datapath.checklistapp.util.converter.ValueType;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 import static java.util.Objects.isNull;
 
 @Service
-public class AnswerIntegerConverter implements AnswerTypeConverter<Integer> {
+public class AnswerDatetimeConverter implements AnswerTypeConverter<LocalDateTime> {
+
     @Override
-    public Integer convert(String value) {
+    public LocalDateTime convert(String value) {
         if (isNull(value)) return null;
-        return Integer.parseInt(value);
+        return LocalDateTime.parse(value);
     }
 
     @Override
     public ValueType type() {
-        return ValueType.INTEGER;
+        return ValueType.DATETIME;
     }
 }

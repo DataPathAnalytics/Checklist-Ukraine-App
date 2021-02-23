@@ -17,6 +17,7 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
@@ -40,11 +41,11 @@ public class AnswerConverter {
         } else {
             Map<String, Object> answerValues = mapper.readValue(entity.getJsonValues(), typeRef);
 
-            answerStructureEntity.getFields().forEach(f -> {
-                if (nonNull(f.getDefaultValue()) && !answerValues.containsKey(f.getName())) {
-                    answerValues.put(f.getName(), convertTypeService.convert(f.getDefaultValue(), f.getType()));
-                }
-            });
+//            answerStructureEntity.getFields().forEach(f -> {
+//                if (nonNull(f.getDefaultValue()) && !answerValues.containsKey(f.getName())) {
+//                    answerValues.put(f.getName(), convertTypeService.convert(f.getDefaultValue(), f.getType()));
+//                }
+//            });
 
             dto.setValues(answerValues);
         }
@@ -63,13 +64,18 @@ public class AnswerConverter {
                                     AnswerStructureDTO.FieldDescriptionDTO fieldDTO = new AnswerStructureDTO.FieldDescriptionDTO();
                                     fieldDTO.setName(f.getName());
 
-                                    if (nonNull(f.getDefaultValue())) {
-                                        fieldDTO.setDefaultValue(convertTypeService.convert(f.getDefaultValue(), f.getType()));
+                                    if (!isEmpty(f.getDefaultValues())) {
+                                        fieldDTO.setDefaultValues(
+                                                f.getDefaultValues().stream()
+                                                        .map(dv -> convertTypeService.convert(dv.getValue(), f.getValueType()))
+                                                        .collect(toList())
+                                        );
                                     }
 
                                     fieldDTO.setDescription(f.getDescription());
                                     fieldDTO.setDataSource(f.getDataSource());
-                                    fieldDTO.setType(f.getType());
+                                    fieldDTO.setValueType(f.getValueType());
+                                    fieldDTO.setComponentType(f.getComponentType());
                                     fieldDTO.setRequired(f.isRequired());
                                     fieldDTO.setTitle(f.isTitle());
                                     return fieldDTO;

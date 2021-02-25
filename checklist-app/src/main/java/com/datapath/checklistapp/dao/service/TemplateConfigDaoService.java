@@ -3,8 +3,11 @@ package com.datapath.checklistapp.dao.service;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
 import com.datapath.checklistapp.dao.entity.classifier.TemplateType;
 import com.datapath.checklistapp.dao.repository.TemplateConfigRepository;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,7 +36,10 @@ public class TemplateConfigDaoService {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("templateConfig", id));
     }
 
-    public List<TemplateConfigEntity> searchByName(String name) {
-        return repository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
+    public Page<TemplateConfigEntity> searchByName(SearchRequest request) {
+        return repository.findByNameMatchesRegexOrderByName(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

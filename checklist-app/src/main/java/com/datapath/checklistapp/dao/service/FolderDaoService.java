@@ -4,8 +4,11 @@ import com.datapath.checklistapp.dao.entity.TemplateConfigFolderEntity;
 import com.datapath.checklistapp.dao.entity.TemplateFolderEntity;
 import com.datapath.checklistapp.dao.repository.TemplateConfigFolderRepository;
 import com.datapath.checklistapp.dao.repository.TemplateFolderRepository;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,11 +46,17 @@ public class FolderDaoService {
         return templateConfigRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("templateConfigFolder", id));
     }
 
-    public List<TemplateConfigFolderEntity> searchTemplateConfigFolders(String name) {
-        return templateConfigRepository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
+    public Page<TemplateConfigFolderEntity> searchTemplateConfigFolders(SearchRequest request) {
+        return templateConfigRepository.findByNameMatchesRegexOrderByName(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 
-    public List<TemplateFolderEntity> searchTemplateFolders(String name) {
-        return templateRepository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
+    public Page<TemplateFolderEntity> searchTemplateFolders(SearchRequest request) {
+        return templateRepository.findByNameMatchesRegexOrderByName(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

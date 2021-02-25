@@ -3,6 +3,8 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.QuestionTypeDTO;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.QuestionWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,8 +62,8 @@ public class QuestionController {
     }
 
     @ApiOperation(value = "search question by name", response = QuestionDTO.class)
-    @GetMapping("search")
-    public List<QuestionDTO> search(@RequestParam String name) {
-        return service.search(name);
+    @PostMapping("search")
+    public SearchResponse<QuestionDTO> search(@RequestBody SearchRequest request) {
+        return service.search(request);
     }
 }

@@ -3,14 +3,13 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.CatalogWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,10 +33,10 @@ public class CatalogController {
         return service.getKnowledgeCategories();
     }
 
-    @ApiOperation(value = "search knowledge categories by name", response = IdValueDTO.class)
-    @GetMapping("knowledge-categories/search")
-    public List<IdValueDTO> searchKnowledgeCategories(@RequestParam String name) {
-        return service.searchKnowledgeCategories(name);
+    @ApiOperation(value = "search knowledge categories by name", response = SearchResponse.class)
+    @PostMapping("knowledge-categories/search")
+    public SearchResponse<IdValueDTO> searchKnowledgeCategories(@RequestBody SearchRequest request) {
+        return service.searchKnowledgeCategories(request);
     }
 
     @ApiOperation(value = "list of available interpretations", response = IdValueDTO.class)
@@ -53,8 +52,8 @@ public class CatalogController {
     }
 
     @ApiOperation(value = "search answer structures by name", response = AnswerStructureDTO.class)
-    @GetMapping("answer-structures/search")
-    public List<AnswerStructureDTO> searchAnswerStructures(@RequestParam String name) {
-        return service.searchAnswerStructures(name);
+    @PostMapping("answer-structures/search")
+    public SearchResponse<AnswerStructureDTO> searchAnswerStructures(@RequestBody SearchRequest request) {
+        return service.searchAnswerStructures(request);
     }
 }

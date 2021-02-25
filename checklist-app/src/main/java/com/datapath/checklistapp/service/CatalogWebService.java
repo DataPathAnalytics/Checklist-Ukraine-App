@@ -1,5 +1,7 @@
 package com.datapath.checklistapp.service;
 
+import com.datapath.checklistapp.dao.entity.AnswerStructureEntity;
+import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.InterpretationDaoService;
 import com.datapath.checklistapp.dao.service.KnowledgeCategoryDaoService;
@@ -7,9 +9,12 @@ import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.converter.structure.AnswerConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -56,15 +61,29 @@ public class CatalogWebService {
                 .collect(toList());
     }
 
-    public List<AnswerStructureDTO> searchAnswerStructures(String name) {
-        return answerStructureService.searchByName(name).stream()
-                .map(answerConverter::map)
-                .collect(toList());
+    public SearchResponse<AnswerStructureDTO> searchAnswerStructures(SearchRequest request) {
+        Page<AnswerStructureEntity> page = answerStructureService.searchByName(request);
+
+        return new SearchResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(answerConverter::map)
+                        .collect(toList())
+        );
     }
 
-    public List<IdValueDTO> searchKnowledgeCategories(String name) {
-        return knowledgeCategoryService.searchByName(name).stream()
-                .map(k -> new IdValueDTO(k.getId(), k.getName()))
-                .collect(toList());
+    public SearchResponse<IdValueDTO> searchKnowledgeCategories(SearchRequest request) {
+        Page<KnowledgeCategoryEntity> page = knowledgeCategoryService.searchByName(request);
+
+        return new SearchResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(k -> new IdValueDTO(k.getId(), k.getName()))
+                        .collect(toList())
+        );
     }
 }

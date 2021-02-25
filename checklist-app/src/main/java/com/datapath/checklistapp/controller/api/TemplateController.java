@@ -2,8 +2,10 @@ package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.TemplateWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -72,8 +74,8 @@ public class TemplateController {
     }
 
     @ApiOperation(value = "search template config by name", response = TemplateDTO.class)
-    @GetMapping("config/search")
-    public List<TemplateDTO> search(@PathVariable String name) {
-        return service.searchConfigTemplate(name);
+    @PostMapping("config/search")
+    public SearchResponse<TemplateDTO> search(@RequestBody SearchRequest request) {
+        return service.searchConfigTemplate(request);
     }
 }

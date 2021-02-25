@@ -2,6 +2,8 @@ package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.request.folder.CreateFolderRequest;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.FolderWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -60,14 +62,14 @@ public class FolderController {
     }
 
     @ApiOperation(value = "search template config folders by name", response = FolderDTO.class)
-    @GetMapping("template-config/search")
-    public List<FolderDTO> searchConfig(@PathVariable String name) {
-        return service.searchTemplateConfigFolders(name);
+    @PostMapping("template-config/search")
+    public SearchResponse<FolderDTO> searchConfig(@RequestBody SearchRequest request) {
+        return service.searchTemplateConfigFolders(request);
     }
 
     @ApiOperation(value = "search template folders by name", response = FolderDTO.class)
-    @GetMapping("template/search")
-    public List<FolderDTO> search(@PathVariable String name) {
-        return service.searchTemplateFolders(name);
+    @PostMapping("template/search")
+    public SearchResponse<FolderDTO> search(@RequestBody SearchRequest request) {
+        return service.searchTemplateFolders(request);
     }
 }

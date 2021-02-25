@@ -11,8 +11,11 @@ import com.datapath.checklistapp.dao.service.classifier.QuestionTypeDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.QuestionTypeDTO;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -95,10 +98,16 @@ public class QuestionWebService {
                 .collect(toList());
     }
 
-    public List<QuestionDTO> search(String name) {
-        return service.searchByName(name)
-                .stream()
-                .map(questionConverter::map)
-                .collect(toList());
+    public SearchResponse<QuestionDTO> search(SearchRequest request) {
+        Page<QuestionEntity> page = service.searchByName(request);
+
+        return new SearchResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(questionConverter::map)
+                        .collect(toList())
+        );
     }
 }

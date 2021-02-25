@@ -7,14 +7,17 @@ import com.datapath.checklistapp.dao.service.classifier.TemplateTypeDaoService;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
+import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import com.datapath.checklistapp.util.UserUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -278,15 +281,22 @@ public class TemplateWebService {
             throw new ValidationException("Invalid question type. Should be questionTypeId " + checkedType);
     }
 
-    public List<TemplateDTO> searchConfigTemplate(String name) {
-        return templateConfigService.searchByName(name).stream()
-                .map(t -> {
-                    TemplateDTO dto = new TemplateDTO();
-                    BeanUtils.copyProperties(t, dto);
-                    dto.setFolderId(t.getFolder().getId());
-                    dto.setAuthorId(t.getAuthor().getId());
-                    dto.setTemplateType(t.getType().getTemplateTypeId());
-                    return dto;
-                }).collect(toList());
+    public SearchResponse<TemplateDTO> searchConfigTemplate(SearchRequest request) {
+        Page<TemplateConfigEntity> page = templateConfigService.searchByName(request);
+
+        return new SearchResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(t -> {
+                            TemplateDTO dto = new TemplateDTO();
+                            BeanUtils.copyProperties(t, dto);
+                            dto.setFolderId(t.getFolder().getId());
+                            dto.setAuthorId(t.getAuthor().getId());
+                            dto.setTemplateType(t.getType().getTemplateTypeId());
+                            return dto;
+                        }).collect(toList())
+        );
     }
 }

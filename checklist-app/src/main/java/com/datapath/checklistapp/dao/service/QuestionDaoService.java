@@ -2,8 +2,11 @@ package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.repository.QuestionRepository;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +43,10 @@ public class QuestionDaoService {
         return repository.getByQuestionType(templateTypeId);
     }
 
-    public List<QuestionEntity> searchByName(String name) {
-        return repository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
+    public Page<QuestionEntity> searchByName(SearchRequest request) {
+        return repository.findByNameMatchesRegexOrderByName(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

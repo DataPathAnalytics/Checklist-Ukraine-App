@@ -2,8 +2,11 @@ package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
 import com.datapath.checklistapp.dao.repository.KnowledgeCategoryRepository;
+import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,7 +31,10 @@ public class KnowledgeCategoryDaoService {
         return repository.findAllById(ids);
     }
 
-    public List<KnowledgeCategoryEntity> searchByName(String name) {
-        return repository.findTop20ByNameMatchesRegexOrderByName(String.format(SEARCH_PATTERN, name));
+    public Page<KnowledgeCategoryEntity> searchByName(SearchRequest request) {
+        return repository.findByNameMatchesRegexOrderByName(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

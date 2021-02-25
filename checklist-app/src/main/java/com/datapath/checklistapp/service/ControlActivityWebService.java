@@ -84,7 +84,7 @@ public class ControlActivityWebService {
                     ResponseSessionEntity responseSession = responseSessionService.findById(c.getActivityResponseId());
 
                     QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getQuestionExecutions().stream()
-                            .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                            .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                             .findFirst().orElseThrow(() -> new ValidationException("Not found object question. Activity id " + c.getId()));
 
                     AnswerEntity objectAnswer = responseSession.getAnswers().stream()

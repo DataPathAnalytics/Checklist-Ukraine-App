@@ -20,6 +20,8 @@ public class QuestionExecutionEntity {
 
     private Integer orderNumber;
 
+    private boolean required;
+
     @Relationship(type = "HAS_INTERPRETATION")
     private InterpretationRelationship interpretationRel;
 

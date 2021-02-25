@@ -18,7 +18,7 @@ public class TemplateDTO {
     private Long authorId;
     private Long folderId;
     private Long templateConfigId;
-    private Integer templateType;
+    private Integer templateConfigTypeId;
 
     private QuestionExecutionDTO objectQuestion;
     private List<QuestionExecutionDTO> objectFeatureQuestions;

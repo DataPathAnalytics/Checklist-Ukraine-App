@@ -53,19 +53,19 @@ public class ResponseSessionConverter {
 
         QuestionExecutionEntity objectQuestion = entity.getTemplate().getConfig().getQuestionExecutions()
                 .stream()
-                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Required object question not found. Response session id: " + entity.getId()));
 
         List<QuestionExecutionDTO> featureQuestions = entity.getTemplate().getConfig().getQuestionExecutions()
                 .stream()
-                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
         List<QuestionExecutionDTO> typeQuestions = entity.getTemplate().getConfig().getQuestionExecutions()
                 .stream()
-                .filter(q -> SESSION_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> SESSION_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 

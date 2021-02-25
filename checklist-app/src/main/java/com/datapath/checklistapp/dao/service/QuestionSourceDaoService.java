@@ -3,6 +3,7 @@ package com.datapath.checklistapp.dao.service;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.repository.QuestionSourceRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
+import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,6 @@ public class QuestionSourceDaoService {
     }
 
     public QuestionSourceEntity findById(String id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("questionSource", id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.QuestionSource.name(), id));
     }
 }

@@ -65,8 +65,8 @@ public class QuestionWebService {
         return questionConverter.map(service.findById(id));
     }
 
-    public List<QuestionTypeDTO> listByTemplateType(Integer templateTypeId) {
-        List<Long> ids = service.findByTemplateType(templateTypeId);
+    public List<QuestionTypeDTO> listByTemplateConfigType(Integer id) {
+        List<Long> ids = service.findByTemplateConfigType(id);
 
         Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
                 .stream()
@@ -78,8 +78,8 @@ public class QuestionWebService {
                 .collect(toList());
     }
 
-    public List<QuestionTypeDTO> listByQuestionType(Integer questionTypeId) {
-        List<Long> ids = service.findByQuestionType(questionTypeId);
+    public List<QuestionTypeDTO> listByQuestionType(Integer id) {
+        List<Long> ids = service.findByQuestionType(id);
 
         Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
                 .stream()

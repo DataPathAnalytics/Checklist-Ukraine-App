@@ -21,7 +21,7 @@ public class MappingWebService {
     private final AnswerTypeDaoService answerTypeService;
     private final ActivityStatusDaoService activityStatusService;
     private final SessionStatusDaoService sessionStatusService;
-    private final TemplateTypeDaoService templateTypeService;
+    private final TemplateConfigTypeDaoService templateTypeService;
     private final QuestionTypeDaoService questionTypeService;
 
     public MappingPublicResponse getPublicMappings() {
@@ -57,14 +57,14 @@ public class MappingWebService {
                         .map(s -> new IdValueDTO(s.getActivityStatusId(), s.getValue()))
                         .collect(toList())
         );
-        response.setTemplateTypes(
+        response.setTemplateConfigTypes(
                 templateTypeService.findAll().stream()
-                        .map(e -> new IdValueDTO(e.getTemplateTypeId(), e.getValue()))
+                        .map(e -> new IdValueDTO(e.getTypeId(), e.getValue()))
                         .collect(toList())
         );
         response.setQuestionTypes(
                 questionTypeService.findAll().stream()
-                        .map(e -> new IdValueDTO(e.getQuestionTypeId(), e.getValue()))
+                        .map(e -> new IdValueDTO(e.getTypeId(), e.getValue()))
                         .collect(toList())
         );
         return response;

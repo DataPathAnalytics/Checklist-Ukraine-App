@@ -8,5 +8,17 @@ public enum Node {
     User,
     ActivityStatus,
     QuestionExecution,
-    Interpretation
+    Interpretation,
+    Answer,
+    QuestionType,
+    SessionStatus,
+    TemplateConfigType,
+    Permission,
+    AnswerStructure,
+    Department,
+    TemplateFolder,
+    TemplateConfigFolder,
+    KnowledgeCategory,
+    Question,
+    QuestionSource
 }

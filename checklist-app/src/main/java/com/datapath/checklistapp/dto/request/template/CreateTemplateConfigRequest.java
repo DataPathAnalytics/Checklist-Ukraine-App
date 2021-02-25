@@ -17,7 +17,7 @@ public class CreateTemplateConfigRequest {
     @NotBlank
     private String name;
     @NotNull
-    private Integer templateTypeId;
+    private Integer templateConfigTypeId;
     @NotNull
     private Long folderId;
 
@@ -36,5 +36,6 @@ public class CreateTemplateConfigRequest {
         private Long questionId;
         private Long parentQuestionId;
         private Integer orderNumber;
+        private boolean required;
     }
 }

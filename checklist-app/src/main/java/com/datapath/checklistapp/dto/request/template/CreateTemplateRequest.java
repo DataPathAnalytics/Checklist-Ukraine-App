@@ -48,6 +48,8 @@ public class CreateTemplateRequest {
         private Long interpretationId;
         private Integer interpretationConditionAnswerId;
 
+        private boolean required;
+
         @NotNull
         private Integer orderNumber;
     }

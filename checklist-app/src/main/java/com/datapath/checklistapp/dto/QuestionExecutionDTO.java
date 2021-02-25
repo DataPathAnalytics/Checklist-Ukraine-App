@@ -10,4 +10,5 @@ public class QuestionExecutionDTO {
     private Integer conditionAnswerId;
     private QuestionDTO question;
     private AnswerDTO answer;
+    private boolean required;
 }

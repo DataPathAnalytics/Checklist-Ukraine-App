@@ -54,7 +54,7 @@ public class QuestionConverter {
                         .collect(toList())
         );
 
-        dto.setQuestionTypeId(entity.getType().getQuestionTypeId());
+        dto.setQuestionTypeId(entity.getType().getTypeId());
         dto.setQuestionTypeValue(entity.getType().getValue());
 
         if (nonNull(entity.getSource())) {

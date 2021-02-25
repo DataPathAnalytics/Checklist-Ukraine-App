@@ -55,7 +55,7 @@ public class ControlActivityConverter {
                 .getTemplateConfig()
                 .getQuestionExecutions()
                 .stream()
-                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
@@ -63,7 +63,7 @@ public class ControlActivityConverter {
                 .getTemplateConfig()
                 .getQuestionExecutions()
                 .stream()
-                .filter(q -> ACTIVITY_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> ACTIVITY_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
@@ -71,7 +71,7 @@ public class ControlActivityConverter {
                 .getTemplateConfig()
                 .getQuestionExecutions()
                 .stream()
-                .filter(q -> AUTHORITY_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> AUTHORITY_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
@@ -79,7 +79,7 @@ public class ControlActivityConverter {
                 .getTemplateConfig()
                 .getQuestionExecutions()
                 .stream()
-                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getQuestionTypeId()))
+                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Required object question not found. Control activity id: " + activity.getId()));
 

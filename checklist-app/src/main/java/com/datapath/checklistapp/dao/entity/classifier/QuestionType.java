@@ -9,6 +9,6 @@ import org.springframework.data.neo4j.core.schema.Node;
 public class QuestionType {
 
     @Id
-    private Integer questionTypeId;
+    private Integer typeId;
     private String value;
 }

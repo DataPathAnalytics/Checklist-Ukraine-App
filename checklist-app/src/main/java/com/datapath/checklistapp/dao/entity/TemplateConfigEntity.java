@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.dao.entity.classifier.TemplateType;
+import com.datapath.checklistapp.dao.entity.classifier.TemplateConfigType;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -26,7 +26,7 @@ public class TemplateConfigEntity {
     private LocalDateTime dateCreated;
 
     @Relationship(type = "IN_TYPE")
-    private TemplateType type;
+    private TemplateConfigType type;
 
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;

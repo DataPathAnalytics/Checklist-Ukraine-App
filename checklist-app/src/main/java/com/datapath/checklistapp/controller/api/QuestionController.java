@@ -43,15 +43,15 @@ public class QuestionController {
         return service.list();
     }
 
-    @ApiOperation(value = "list of questions by template type", response = QuestionTypeDTO.class)
-    @GetMapping("template-type/{id}")
-    public List<QuestionTypeDTO> templateTypeList(@PathVariable Integer id) {
-        return service.listByTemplateType(id);
+    @ApiOperation(value = "list of questions by template config type", response = QuestionTypeDTO.class)
+    @GetMapping("template-config-type/{id}")
+    public List<QuestionTypeDTO> listByTemplateConfigType(@PathVariable Integer id) {
+        return service.listByTemplateConfigType(id);
     }
 
     @ApiOperation(value = "list of questions by question type", response = QuestionTypeDTO.class)
     @GetMapping("question-type/{id}")
-    public List<QuestionTypeDTO> questionTypeList(@PathVariable Integer id) {
+    public List<QuestionTypeDTO> listByQuestionType(@PathVariable Integer id) {
         return service.listByQuestionType(id);
     }
 

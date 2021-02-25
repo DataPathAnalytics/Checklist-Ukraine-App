@@ -23,10 +23,10 @@ CREATE CONSTRAINT session_status_value_cnt IF NOT EXISTS ON (c:SessionStatus) AS
 
 CREATE CONSTRAINT knowledge_value_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT template_type_id_cnt IF NOT EXISTS ON (c:TemplateType) ASSERT c.templateTypeId IS UNIQUE
-CREATE CONSTRAINT template_type_value_cnt IF NOT EXISTS ON (c:TemplateType) ASSERT c.value IS UNIQUE
+CREATE CONSTRAINT template_config_type_type_id_cnt IF NOT EXISTS ON (c:TemplateConfigType) ASSERT c.typeId IS UNIQUE
+CREATE CONSTRAINT template_config_type_value_cnt IF NOT EXISTS ON (c:TemplateConfigType) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT question_type_id_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.questionTypeId IS UNIQUE
+CREATE CONSTRAINT question_type_type_id_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.typeId IS UNIQUE
 CREATE CONSTRAINT question_type_value_cnt IF NOT EXISTS ON (c:QuestionType) ASSERT c.value IS UNIQUE
 
 CREATE CONSTRAINT answer_structure_name_cnt IF NOT EXISTS ON (c:AnswerStructure) ASSERT c.name IS UNIQUE

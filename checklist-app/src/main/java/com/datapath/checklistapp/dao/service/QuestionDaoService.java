@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.repository.QuestionRepository;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
+import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,19 +29,19 @@ public class QuestionDaoService {
     }
 
     public QuestionEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("question", id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.Question.name(), id));
     }
 
     public List<QuestionEntity> findById(List<Long> ids) {
         return repository.findAllById(ids);
     }
 
-    public List<Long> findByTemplateType(Integer templateTypeId) {
-        return repository.getByTemplateType(templateTypeId);
+    public List<Long> findByTemplateConfigType(Integer id) {
+        return repository.getByTemplateConfigType(id);
     }
 
-    public List<Long> findByQuestionType(Integer templateTypeId) {
-        return repository.getByQuestionType(templateTypeId);
+    public List<Long> findByQuestionType(Integer id) {
+        return repository.getByQuestionType(id);
     }
 
     public Page<QuestionEntity> searchByName(SearchRequest request) {

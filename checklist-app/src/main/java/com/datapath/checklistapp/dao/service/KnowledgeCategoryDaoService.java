@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
 import com.datapath.checklistapp.dao.repository.KnowledgeCategoryRepository;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
+import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,8 @@ public class KnowledgeCategoryDaoService {
     }
 
     public KnowledgeCategoryEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("knowledgeCategory", id));
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(Node.KnowledgeCategory.name(), id));
     }
 
     public List<KnowledgeCategoryEntity> findByIds(List<Long> ids) {

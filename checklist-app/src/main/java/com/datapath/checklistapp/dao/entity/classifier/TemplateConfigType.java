@@ -10,10 +10,10 @@ import java.util.List;
 
 @Data
 @Node
-public class TemplateType {
+public class TemplateConfigType {
 
     @Id
-    private Integer templateTypeId;
+    private Integer typeId;
     private String value;
 
     @Relationship("USE_QUESTION_TYPE")

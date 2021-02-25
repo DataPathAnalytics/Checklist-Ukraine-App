@@ -13,5 +13,5 @@ public class MappingPrivateResponse {
     private List<IdValueDTO> activityStatuses;
     private List<IdValueDTO> sessionStatuses;
     private List<IdValueDTO> questionTypes;
-    private List<IdValueDTO> templateTypes;
+    private List<IdValueDTO> templateConfigTypes;
 }

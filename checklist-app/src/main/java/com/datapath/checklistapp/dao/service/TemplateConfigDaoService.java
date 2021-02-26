@@ -43,4 +43,12 @@ public class TemplateConfigDaoService {
                 PageRequest.of(request.getPage(), request.getSize())
         );
     }
+
+    public void delete(TemplateConfigEntity entity) {
+        repository.delete(entity);
+    }
+
+    public boolean isUsed(Long id) {
+        return repository.isUsed(id);
+    }
 }

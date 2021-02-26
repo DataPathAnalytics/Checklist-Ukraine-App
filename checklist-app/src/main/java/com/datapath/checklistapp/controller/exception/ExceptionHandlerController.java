@@ -24,4 +24,10 @@ public class ExceptionHandlerController {
         ExceptionResponse response = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(value = {UnmodifiedException.class})
+    public ResponseEntity<ExceptionResponse> unmodifiedException(Exception ex) {
+        ExceptionResponse response = new ExceptionResponse(ex.getMessage());
+        return new ResponseEntity<>(response, new HttpHeaders(), HttpStatus.NOT_MODIFIED);
+    }
 }

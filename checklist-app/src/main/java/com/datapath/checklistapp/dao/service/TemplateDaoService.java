@@ -42,4 +42,12 @@ public class TemplateDaoService {
                 PageRequest.of(request.getPage(), request.getSize())
         );
     }
+
+    public void delete(TemplateEntity entity) {
+        repository.delete(entity);
+    }
+
+    public boolean isUsed(Long id) {
+        return repository.isUsed(id);
+    }
 }

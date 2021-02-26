@@ -11,6 +11,7 @@ import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -39,6 +40,8 @@ public class TemplateWebService {
     private final QuestionDaoService questionService;
     private final TemplateConverter templateConverter;
     private final InterpretationDaoService interpretationService;
+    private final QuestionExecutionDaoService questionExecutionService;
+    private final QuestionGroupDaoService questionGroupService;
 
     @Transactional
     public void create(CreateTemplateRequest request) {
@@ -155,6 +158,13 @@ public class TemplateWebService {
 
     @Transactional
     public void delete(Long id) {
-        //TODO:needs add logic for removing template if not using
+        if (templateService.isUsed(id)) throw new UnmodifiedException("Template already is used");
+
+        TemplateEntity entity = templateService.findById(id);
+        entity.getGroups().forEach(g -> {
+            g.getQuestions().forEach(questionExecutionService::delete);
+            questionGroupService.delete(g);
+        });
+        templateService.delete(entity);
     }
 }

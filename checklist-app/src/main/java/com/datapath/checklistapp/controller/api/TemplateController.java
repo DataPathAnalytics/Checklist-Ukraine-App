@@ -56,7 +56,11 @@ public class TemplateController {
     }
 
     @ApiOperation(value = "delete template by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 403, message = "Available only for users with role 'methodologist'")
+    })
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAuthority('methodologist')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

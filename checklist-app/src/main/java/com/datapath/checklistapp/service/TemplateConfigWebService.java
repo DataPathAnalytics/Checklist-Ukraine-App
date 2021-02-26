@@ -3,10 +3,7 @@ package com.datapath.checklistapp.service;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
-import com.datapath.checklistapp.dao.service.FolderDaoService;
-import com.datapath.checklistapp.dao.service.QuestionDaoService;
-import com.datapath.checklistapp.dao.service.TemplateConfigDaoService;
-import com.datapath.checklistapp.dao.service.UserDaoService;
+import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dao.service.classifier.TemplateConfigTypeDaoService;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -15,6 +12,7 @@ import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.response.search.SearchResponse;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
+import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import com.datapath.checklistapp.util.UserUtils;
@@ -42,6 +40,7 @@ public class TemplateConfigWebService {
     private final QuestionDaoService questionService;
     private final TemplateConfigTypeDaoService templateTypeService;
     private final TemplateConverter templateConverter;
+    private final QuestionExecutionDaoService questionExecutionService;
 
     @Transactional
     public void create(CreateTemplateConfigRequest request) {
@@ -198,6 +197,10 @@ public class TemplateConfigWebService {
 
     @Transactional
     public void delete(Long id) {
-        //TODO:needs add logic for removing template if not using
+        if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
+
+        TemplateConfigEntity entity = templateConfigService.findById(id);
+        entity.getQuestionExecutions().forEach(questionExecutionService::delete);
+        templateConfigService.delete(entity);
     }
 }

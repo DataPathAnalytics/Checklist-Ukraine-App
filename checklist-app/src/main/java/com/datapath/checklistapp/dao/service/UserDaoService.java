@@ -29,7 +29,7 @@ public class UserDaoService {
     }
 
     public Page<UserEntity> findAll(int page, int size) {
-        return repository.findAllByRemovedIsFalseAndRegisteredDateNotNullOrderByLockedDescRegisteredDateDescFirstNameAsc(
+        return repository.findAllByRemovedIsFalseAndSuperAdminIsFalseOrderByLockedDescRegisteredDateDescFirstNameAsc(
                 PageRequest.of(page, size)
         );
     }
@@ -39,8 +39,8 @@ public class UserDaoService {
                 .orElseThrow(() -> new UserException("User not found"));
     }
 
-    public UserEntity findAdmin() {
-        return repository.findAdminUser();
+    public List<UserEntity> findAdmins() {
+        return repository.findAdmins();
     }
 
     public boolean existsNotChecked() {

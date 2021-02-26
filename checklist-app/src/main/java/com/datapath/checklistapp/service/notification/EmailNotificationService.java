@@ -30,7 +30,7 @@ public class EmailNotificationService implements NotificationService {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, StandardCharsets.UTF_8.displayName());
 
             message.setSubject(template.getSubject());
-            message.setTo(template.getEmail());
+            message.setTo(template.getTo());
             message.setFrom(FROM, TOOL_NAME);
             message.setText(template.getText(), false);
 

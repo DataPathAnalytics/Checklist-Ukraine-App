@@ -27,6 +27,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -81,22 +82,23 @@ public class UserWebService {
         user.setDisable(true);
         user.setLocked(true);
         user.setRemoved(false);
+        user.setSuperAdmin(false);
         user.setPermission(permissionService.findByRole(AUDITOR_ROLE));
 
         updateDepartmentRelationship(user, request.getDepartmentId());
 
         userService.save(user);
 
-        UserEntity admin = userService.findAdmin();
+        List<UserEntity> admins = userService.findAdmins();
 
-        if (isNull(admin)) throw new UserException("Admin not found");
+        if (CollectionUtils.isEmpty(admins)) throw new UserException("Admins not found");
 
         String textTemplate = String.format(USER_REGISTRATION_MESSAGE_TEMPLATE, user.getFirstName(), user.getLastName(), user.getEmail());
 
         MessageTemplate template = MessageTemplate.builder()
                 .subject(USER_REGISTRATION_MESSAGE_SUBJECT)
                 .text(textTemplate)
-                .email(admin.getEmail())
+                .to(admins.stream().map(UserEntity::getEmail).toArray(String[]::new))
                 .build();
 
         emailSender.send(template);
@@ -106,7 +108,7 @@ public class UserWebService {
     public void update(UserUpdateRequest request) {
         UserEntity user = userService.findById(request.getId());
 
-        if (ADMIN_ROLE.equals(user.getPermission().getRole())) throw new UserException("Admin updating not allowed");
+        if (user.isSuperAdmin()) throw new UserException("SuperAdmin updating not allowed");
 
         if (user.isLocked()) user.setLocked(false);
 
@@ -116,7 +118,7 @@ public class UserWebService {
 
             template = MessageTemplate.builder()
                     .subject(ACCOUNT_VERIFICATION_MESSAGE_SUBJECT)
-                    .email(user.getEmail())
+                    .to(new String[]{user.getEmail()})
                     .build();
 
             if (request.getDisable()) {
@@ -147,6 +149,9 @@ public class UserWebService {
     @Transactional
     public void delete(Long id) {
         UserEntity user = userService.findById(id);
+
+        if (user.isSuperAdmin()) throw new UserException("SuperAdmin updating not allowed");
+
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
@@ -193,7 +198,7 @@ public class UserWebService {
         String text = String.format(RESET_PASSWORD_MESSAGE_TEMPLATE, request.getPath(), token);
 
         MessageTemplate message = MessageTemplate.builder()
-                .email(request.getEmail())
+                .to(new String[]{request.getEmail()})
                 .subject(RESET_PASSWORD_MESSAGE_SUBJECT)
                 .text(text)
                 .build();

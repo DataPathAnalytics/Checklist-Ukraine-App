@@ -30,6 +30,7 @@ public class UserEntity {
     private boolean disable;
     private boolean locked;
     private boolean removed;
+    private boolean superAdmin;
     @CreatedDate
     private LocalDateTime registeredDate;
 

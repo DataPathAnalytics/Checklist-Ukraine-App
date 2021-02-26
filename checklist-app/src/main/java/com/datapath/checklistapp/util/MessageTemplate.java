@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class MessageTemplate {
 
-    private String email;
+    private String[] to;
     private String subject;
     private String text;
 }

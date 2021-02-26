@@ -9,7 +9,6 @@ import com.datapath.checklistapp.dto.response.mapping.MappingPublicResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.datapath.checklistapp.util.Constants.ADMIN_ROLE;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -39,7 +38,6 @@ public class MappingWebService {
         MappingPrivateResponse response = new MappingPrivateResponse();
         response.setPermissions(
                 permissionDaoService.findAll().stream()
-                        .filter(r -> !ADMIN_ROLE.equals(r.getRole()))
                         .map(p -> new IdValueDTO(p.getPermissionId(), p.getValue()))
                         .collect(toList())
         );

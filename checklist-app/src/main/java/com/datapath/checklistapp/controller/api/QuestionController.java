@@ -39,7 +39,7 @@ public class QuestionController {
     }
 
     @ApiOperation(value = "list of questions", response = QuestionDTO.class)
-    @PostMapping
+    @PostMapping("list")
     public PageableResponse<QuestionDTO> list(@RequestBody PageableRequest request) {
         return service.list(request);
     }

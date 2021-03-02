@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistapp.dao.service.classifier.*;
 import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
+import com.datapath.checklistapp.dto.PermissionDTO;
 import com.datapath.checklistapp.dto.response.mapping.MappingPrivateResponse;
 import com.datapath.checklistapp.dto.response.mapping.MappingPublicResponse;
 import lombok.AllArgsConstructor;
@@ -38,7 +39,7 @@ public class MappingWebService {
         MappingPrivateResponse response = new MappingPrivateResponse();
         response.setPermissions(
                 permissionDaoService.findAll().stream()
-                        .map(p -> new IdValueDTO(p.getPermissionId(), p.getValue()))
+                        .map(p -> new PermissionDTO(p.getPermissionId(), p.getRole(), p.getValue()))
                         .collect(toList())
         );
         response.setAnswerTypes(

@@ -10,7 +10,7 @@ import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.converter.structure.AnswerConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -61,10 +61,10 @@ public class CatalogWebService {
                 .collect(toList());
     }
 
-    public SearchResponse<AnswerStructureDTO> searchAnswerStructures(SearchRequest request) {
+    public PageableResponse<AnswerStructureDTO> searchAnswerStructures(SearchRequest request) {
         Page<AnswerStructureEntity> page = answerStructureService.searchByName(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),
@@ -74,10 +74,10 @@ public class CatalogWebService {
         );
     }
 
-    public SearchResponse<IdValueDTO> searchKnowledgeCategories(SearchRequest request) {
+    public PageableResponse<IdValueDTO> searchKnowledgeCategories(SearchRequest request) {
         Page<KnowledgeCategoryEntity> page = knowledgeCategoryService.searchByName(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),

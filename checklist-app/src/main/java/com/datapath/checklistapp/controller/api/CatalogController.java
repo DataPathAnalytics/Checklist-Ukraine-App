@@ -4,7 +4,7 @@ import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.CatalogWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,9 +33,9 @@ public class CatalogController {
         return service.getKnowledgeCategories();
     }
 
-    @ApiOperation(value = "search knowledge categories by name", response = SearchResponse.class)
+    @ApiOperation(value = "search knowledge categories by name", response = PageableResponse.class)
     @PostMapping("knowledge-categories/search")
-    public SearchResponse<IdValueDTO> searchKnowledgeCategories(@RequestBody SearchRequest request) {
+    public PageableResponse<IdValueDTO> searchKnowledgeCategories(@RequestBody SearchRequest request) {
         return service.searchKnowledgeCategories(request);
     }
 
@@ -53,7 +53,7 @@ public class CatalogController {
 
     @ApiOperation(value = "search answer structures by name", response = AnswerStructureDTO.class)
     @PostMapping("answer-structures/search")
-    public SearchResponse<AnswerStructureDTO> searchAnswerStructures(@RequestBody SearchRequest request) {
+    public PageableResponse<AnswerStructureDTO> searchAnswerStructures(@RequestBody SearchRequest request) {
         return service.searchAnswerStructures(request);
     }
 }

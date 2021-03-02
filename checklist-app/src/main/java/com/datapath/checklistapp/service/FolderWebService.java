@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dao.service.FolderDaoService;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.request.folder.CreateFolderRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -62,10 +62,10 @@ public class FolderWebService {
                 .collect(toList());
     }
 
-    public SearchResponse<FolderDTO> searchTemplateConfigFolders(SearchRequest request) {
+    public PageableResponse<FolderDTO> searchTemplateConfigFolders(SearchRequest request) {
         Page<TemplateConfigFolderEntity> page = templateFolderService.searchTemplateConfigFolders(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),
@@ -79,10 +79,10 @@ public class FolderWebService {
         );
     }
 
-    public SearchResponse<FolderDTO> searchTemplateFolders(SearchRequest request) {
+    public PageableResponse<FolderDTO> searchTemplateFolders(SearchRequest request) {
         Page<TemplateFolderEntity> page = templateFolderService.searchTemplateFolders(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),

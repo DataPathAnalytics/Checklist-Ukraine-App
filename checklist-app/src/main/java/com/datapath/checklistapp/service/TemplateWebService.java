@@ -10,7 +10,7 @@ import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
-import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import lombok.AllArgsConstructor;
@@ -137,10 +137,10 @@ public class TemplateWebService {
     }
 
 
-    public SearchResponse<TemplateDTO> search(SearchRequest request) {
+    public PageableResponse<TemplateDTO> search(SearchRequest request) {
         Page<TemplateEntity> page = templateService.searchByName(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),

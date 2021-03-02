@@ -10,9 +10,10 @@ import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dao.service.classifier.QuestionTypeDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.QuestionTypeDTO;
+import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.response.search.SearchResponse;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -91,17 +92,22 @@ public class QuestionWebService {
                 .collect(toList());
     }
 
-    public List<QuestionDTO> list() {
-        return service.findAll()
-                .stream()
-                .map(questionConverter::map)
-                .collect(toList());
+    public PageableResponse<QuestionDTO> list(PageableRequest request) {
+        Page<QuestionEntity> page = service.findAll(request);
+        return new PageableResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(questionConverter::map)
+                        .collect(toList())
+        );
     }
 
-    public SearchResponse<QuestionDTO> search(SearchRequest request) {
+    public PageableResponse<QuestionDTO> search(SearchRequest request) {
         Page<QuestionEntity> page = service.searchByName(request);
 
-        return new SearchResponse<>(
+        return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
                 page.getTotalPages(),

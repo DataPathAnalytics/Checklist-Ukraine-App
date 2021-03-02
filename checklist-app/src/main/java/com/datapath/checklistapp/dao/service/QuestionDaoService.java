@@ -2,6 +2,7 @@ package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.repository.QuestionRepository;
+import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.util.database.Node;
@@ -24,8 +25,8 @@ public class QuestionDaoService {
         repository.save(entity);
     }
 
-    public List<QuestionEntity> findAll() {
-        return repository.findAll();
+    public Page<QuestionEntity> findAll(PageableRequest request) {
+        return repository.findAll(PageRequest.of(request.getPage(), request.getSize()));
     }
 
     public QuestionEntity findById(Long id) {

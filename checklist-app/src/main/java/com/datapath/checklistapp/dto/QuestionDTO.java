@@ -12,14 +12,10 @@ public class QuestionDTO {
     private String name;
     private LocalDateTime dateCreated;
 
-    private List<IdValueDTO> knowledgeCategories;
+    private List<Long> knowledgeCategories;
 
-    private String questionSourceId;
-    private String questionSourceName;
-    private String questionSourceLink;
-    private String documentParagraph;
+    private QuestionSourceDTO source;
 
     private AnswerStructureDTO answerStructure;
     private Integer questionTypeId;
-    private String questionTypeValue;
 }

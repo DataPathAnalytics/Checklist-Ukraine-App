@@ -28,5 +28,6 @@ public class AnswerStructureDTO {
         private ComponentType componentType;
         private boolean title;
         private boolean required;
+        private boolean identifier;
     }
 }

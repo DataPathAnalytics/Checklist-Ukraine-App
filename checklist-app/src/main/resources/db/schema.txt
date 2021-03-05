@@ -21,8 +21,6 @@ CREATE CONSTRAINT activity_status_value_cnt IF NOT EXISTS ON (c:ActivityStatus) 
 CREATE CONSTRAINT session_status_id_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.sessionStatusId IS UNIQUE
 CREATE CONSTRAINT session_status_value_cnt IF NOT EXISTS ON (c:SessionStatus) ASSERT c.value IS UNIQUE
 
-CREATE CONSTRAINT knowledge_value_cnt IF NOT EXISTS ON (c:KnowledgeCategory) ASSERT c.value IS UNIQUE
-
 CREATE CONSTRAINT template_config_type_type_id_cnt IF NOT EXISTS ON (c:TemplateConfigType) ASSERT c.typeId IS UNIQUE
 CREATE CONSTRAINT template_config_type_value_cnt IF NOT EXISTS ON (c:TemplateConfigType) ASSERT c.value IS UNIQUE
 

@@ -11,10 +11,7 @@ import com.datapath.checklistapp.dto.AnswerDTO;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
 import com.datapath.checklistapp.dto.SessionPageDTO;
-import com.datapath.checklistapp.dto.request.activity.CreateControlActivityRequest;
-import com.datapath.checklistapp.dto.request.activity.ResponseSessionStatusRequest;
-import com.datapath.checklistapp.dto.request.activity.SaveResponseSessionRequest;
-import com.datapath.checklistapp.dto.request.activity.TemplateOperationRequest;
+import com.datapath.checklistapp.dto.request.activity.*;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.PermissionException;
 import com.datapath.checklistapp.exception.ValidationException;
@@ -184,12 +181,6 @@ public class ControlActivityWebService {
     public ControlActivityDTO addTemplate(TemplateOperationRequest request) {
         checkPermission(request.getId());
 
-        customQueryService.deleteRelationship(
-                Node.ControlActivity.name(), null, request.getId(),
-                Node.Template.name(), null, request.getTemplateId(),
-                Relationship.HAS_TEMPLATE.name()
-        );
-
         customQueryService.createRelationship(
                 Node.ControlActivity.name(), null, request.getId(),
                 Node.Template.name(), null, request.getTemplateId(),
@@ -240,6 +231,7 @@ public class ControlActivityWebService {
         ResponseSessionEntity entity = new ResponseSessionEntity();
         entity.setId(request.getId());
         entity.setName(request.getName());
+        entity.setAutoCreated(request.isAutoCreated());
         entity.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
 
         Map<Long, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
@@ -279,12 +271,6 @@ public class ControlActivityWebService {
                 Node.ResponseSession.name(), null, entity.getId(),
                 Node.Template.name(), null, template.getId(),
                 Relationship.TEMPLATED_BY.name()
-        );
-
-        customQueryService.deleteRelationship(
-                Node.ControlActivity.name(), null, request.getControlActivityId(),
-                Node.ResponseSession.name(), null, entity.getId(),
-                Relationship.HAS_SESSION_RESPONSE.name()
         );
 
         customQueryService.createRelationship(
@@ -358,5 +344,38 @@ public class ControlActivityWebService {
         entity.setSessionResponses(new HashSet<>(responseSessionService.findByIds(domain.getSessionResponseIds())));
 
         return entity;
+    }
+
+    @Transactional
+    public void update(UpdateControlActivityRequest request) {
+        ControlActivityDomain domain = controlActivityService.findById(request.getId());
+        ResponseSessionEntity activityResponse = responseSessionService.findById(domain.getActivityResponseId());
+
+        request.getAnswers().forEach(a -> {
+            AnswerEntity answerEntity = new AnswerEntity();
+            answerEntity.setComment(a.getComment());
+
+            if (nonNull(a.getAnswerTypeId())) {
+                answerEntity.setAnswerType(answerService.findById(a.getAnswerTypeId()));
+            }
+
+            QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
+                    .stream()
+                    .filter(q -> a.getQuestionId().equals(q.getId()))
+                    .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
+
+            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
+            answerEntity.setQuestionExecution(questionExecution);
+
+            try {
+                answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            activityResponse.getAnswers().add(answerEntity);
+        });
+
+        responseSessionService.save(activityResponse);
     }
 }

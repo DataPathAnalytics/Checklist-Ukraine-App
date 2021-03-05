@@ -1,7 +1,6 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
-import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
@@ -25,24 +24,6 @@ public class CatalogController {
     @GetMapping("question-sources")
     public List<QuestionSourceDTO> questionSources() {
         return service.getQuestionSources();
-    }
-
-    @ApiOperation(value = "list of available knowledge categories", response = IdValueDTO.class)
-    @GetMapping("knowledge-categories")
-    public List<IdValueDTO> knowledgeCategories() {
-        return service.getKnowledgeCategories();
-    }
-
-    @ApiOperation(value = "search knowledge categories by name", response = PageableResponse.class)
-    @PostMapping("knowledge-categories/search")
-    public PageableResponse<IdValueDTO> searchKnowledgeCategories(@RequestBody SearchRequest request) {
-        return service.searchKnowledgeCategories(request);
-    }
-
-    @ApiOperation(value = "list of available interpretations", response = IdValueDTO.class)
-    @GetMapping("interpretations")
-    public List<IdValueDTO> interpretationList() {
-        return service.getInterpretations();
     }
 
     @ApiOperation(value = "list of available answer structures", response = AnswerStructureDTO.class)

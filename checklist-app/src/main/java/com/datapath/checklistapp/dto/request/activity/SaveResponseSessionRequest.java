@@ -20,4 +20,6 @@ public class SaveResponseSessionRequest {
     private Long templateId;
 
     private List<AnswerDTO> answers;
+
+    private boolean autoCreated;
 }

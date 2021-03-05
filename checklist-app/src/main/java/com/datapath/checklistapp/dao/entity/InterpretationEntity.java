@@ -12,5 +12,6 @@ public class InterpretationEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String interpretationValue;
+    private Integer conditionAnswer;
+    private Long outerId;
 }

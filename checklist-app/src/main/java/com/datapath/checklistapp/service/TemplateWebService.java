@@ -1,9 +1,9 @@
 package com.datapath.checklistapp.service;
 
+import com.datapath.checklistapp.dao.entity.InterpretationEntity;
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
 import com.datapath.checklistapp.dao.entity.TemplateEntity;
-import com.datapath.checklistapp.dao.relatioship.InterpretationRelationship;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -39,7 +39,6 @@ public class TemplateWebService {
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
     private final TemplateConverter templateConverter;
-    private final InterpretationDaoService interpretationService;
     private final QuestionExecutionDaoService questionExecutionService;
     private final QuestionGroupDaoService questionGroupService;
 
@@ -66,10 +65,10 @@ public class TemplateWebService {
                 questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
                 if (nonNull(q.getInterpretationId())) {
-                    InterpretationRelationship interpretationRel = new InterpretationRelationship();
-                    interpretationRel.setInterpretation(interpretationService.findById(q.getInterpretationId()));
-                    interpretationRel.setConditionAnswer(q.getInterpretationConditionAnswerId());
-                    questionExecutionEntity.setInterpretationRel(interpretationRel);
+                    InterpretationEntity interpretation = new InterpretationEntity();
+                    interpretation.setOuterId(q.getInterpretationId());
+                    interpretation.setConditionAnswer(q.getInterpretationConditionAnswerId());
+                    questionExecutionEntity.setInterpretation(interpretation);
                 }
 
                 ungroupedEntity.getQuestions().add(questionExecutionEntity);
@@ -94,10 +93,10 @@ public class TemplateWebService {
                         questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
                         if (nonNull(q.getInterpretationId())) {
-                            InterpretationRelationship interpretationRel = new InterpretationRelationship();
-                            interpretationRel.setInterpretation(interpretationService.findById(q.getInterpretationId()));
-                            interpretationRel.setConditionAnswer(q.getInterpretationConditionAnswerId());
-                            questionExecutionEntity.setInterpretationRel(interpretationRel);
+                            InterpretationEntity interpretation = new InterpretationEntity();
+                            interpretation.setOuterId(q.getInterpretationId());
+                            interpretation.setConditionAnswer(q.getInterpretationConditionAnswerId());
+                            questionExecutionEntity.setInterpretation(interpretation);
                         }
 
                         groupedEntity.getQuestions().add(questionExecutionEntity);

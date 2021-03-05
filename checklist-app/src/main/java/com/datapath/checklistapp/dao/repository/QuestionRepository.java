@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long> {
@@ -17,4 +18,6 @@ public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long
     List<Long> getByQuestionType(Integer id);
 
     Page<QuestionEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
+
+    List<QuestionEntity> findAllByDateCreatedAfterOrderByDateCreated(LocalDateTime date);
 }

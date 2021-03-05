@@ -3,10 +3,7 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
 import com.datapath.checklistapp.dto.SessionPageDTO;
-import com.datapath.checklistapp.dto.request.activity.CreateControlActivityRequest;
-import com.datapath.checklistapp.dto.request.activity.ResponseSessionStatusRequest;
-import com.datapath.checklistapp.dto.request.activity.SaveResponseSessionRequest;
-import com.datapath.checklistapp.dto.request.activity.TemplateOperationRequest;
+import com.datapath.checklistapp.dto.request.activity.*;
 import com.datapath.checklistapp.service.ControlActivityWebService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,6 +38,12 @@ public class ControlActivityController {
         service.create(request);
     }
 
+    @ApiOperation(value = "update control activity")
+    @PutMapping
+    public void update(@RequestBody @Valid UpdateControlActivityRequest request) {
+        service.update(request);
+    }
+
     @ApiOperation(value = "get control activity by id", response = ControlActivityDTO.class)
     @GetMapping("{id}")
     public ControlActivityDTO get(@PathVariable Long id) {
@@ -48,7 +51,7 @@ public class ControlActivityController {
     }
 
     @ApiOperation(value = "complete control activity", response = ControlActivityDTO.class)
-    @PutMapping("{id}")
+    @PutMapping("complete/{id}")
     public ControlActivityDTO complete(@PathVariable Long id) {
         return service.complete(id);
     }

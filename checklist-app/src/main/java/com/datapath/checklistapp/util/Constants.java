@@ -7,6 +7,7 @@ public final class Constants {
     private static final String LOGIN_URL = "/login";
     private static final String REGISTER_URL = "/users/register";
     private static final String PUBLIC_MAPPING_URL = "/mappings/public";
+    private static final String EXPORT_MAPPING_URL = "/export/*";
 
     public static final String TOOL_NAME = "Ukraine checklist tool";
     public static final String USER_REGISTRATION_MESSAGE_SUBJECT = "User registration";
@@ -51,6 +52,7 @@ public final class Constants {
             PUBLIC_MAPPING_URL,
             RESET_PASSWORD_MAIL_URL,
             RESET_PASSWORD_CHECK_URL,
-            RESET_PASSWORD_SAVE_URL
+            RESET_PASSWORD_SAVE_URL,
+            EXPORT_MAPPING_URL
     };
 }

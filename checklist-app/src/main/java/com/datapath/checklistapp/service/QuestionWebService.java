@@ -1,10 +1,10 @@
 package com.datapath.checklistapp.service;
 
+import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.relatioship.QuestionSourceRelationship;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
-import com.datapath.checklistapp.dao.service.KnowledgeCategoryDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dao.service.classifier.QuestionTypeDaoService;
@@ -25,8 +25,7 @@ import java.util.Map;
 
 import static com.datapath.checklistapp.util.Constants.FACT_QUESTION_TYPE;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +33,6 @@ public class QuestionWebService {
 
     private final QuestionDaoService service;
     private final QuestionSourceDaoService sourceService;
-    private final KnowledgeCategoryDaoService knowledgeCategoryService;
     private final AnswerStructureDaoService answerStructureService;
     private final QuestionTypeDaoService questionTypeService;
     private final QuestionConverter questionConverter;
@@ -44,7 +42,11 @@ public class QuestionWebService {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setName(request.getName());
-        entity.getKnowledgeCategory().addAll(knowledgeCategoryService.findByIds(request.getKnowledgeCategoryIds()));
+        entity.getKnowledgeCategory().addAll(
+                request.getKnowledgeCategoryIds().stream()
+                        .map(KnowledgeCategoryEntity::new)
+                        .collect(toSet())
+        );
         entity.setType(questionTypeService.findById(request.getQuestionTypeId()));
 
         if (nonNull(request.getQuestionSourceId())) {

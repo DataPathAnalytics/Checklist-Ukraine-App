@@ -11,4 +11,5 @@ public class QuestionSourceDTO {
     private String id;
     private String name;
     private String link;
+    private String paragraph;
 }

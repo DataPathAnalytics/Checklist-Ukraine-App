@@ -1,6 +1,6 @@
-package com.datapath.checklistapp.dao.repository;
+package com.datapath.analyticapp.dao.repository;
 
-import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
+import com.datapath.analyticapp.dao.entity.KnowledgeCategoryEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;

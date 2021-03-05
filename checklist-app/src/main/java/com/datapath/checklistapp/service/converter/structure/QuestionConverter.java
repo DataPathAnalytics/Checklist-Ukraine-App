@@ -1,11 +1,9 @@
 package com.datapath.checklistapp.service.converter.structure;
 
-import com.datapath.checklistapp.dao.entity.AnswerEntity;
-import com.datapath.checklistapp.dao.entity.QuestionEntity;
-import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
-import com.datapath.checklistapp.dto.IdValueDTO;
+import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.QuestionExecutionDTO;
+import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -21,25 +19,20 @@ public class QuestionConverter {
 
     public QuestionExecutionDTO map(QuestionExecutionEntity entity, AnswerEntity answerEntity) {
         QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
-        executionDTO.setQuestion(map(entity.getQuestion()));
-        executionDTO.setAnswer(answerConverter.map(answerEntity, entity.getQuestion().getAnswerStructure()));
-
-//        if (isNull(executionDTO.getAnswer())) {
-//            Map<String, Object> defaultAnswerFields = entity.getQuestion().getAnswerStructure()
-//                    .getFields()
-//                    .stream()
-//                    .filter(s -> nonNull(s.getDefaultValue()))
-//                    .collect(toMap(FieldDescriptionEntity::getName, FieldDescriptionEntity::getDefaultValue));
-//            if (!isEmpty(defaultAnswerFields)) {
-//                AnswerDTO answerDTO = new AnswerDTO();
-//                answerDTO.setValues(defaultAnswerFields);
-//                executionDTO.setAnswer(answerDTO);
-//            }
-//        }
-
-        executionDTO.setConditionAnswerId(entity.getConditionAnswerId());
         executionDTO.setId(entity.getId());
+        executionDTO.setRequired(entity.isRequired());
+
+        executionDTO.setParentConditionAnswerId(entity.getConditionAnswerId());
         executionDTO.setParentQuestionId(entity.getParentQuestionId());
+
+        executionDTO.setQuestion(map(entity.getQuestion()));
+        executionDTO.setAnswer(answerConverter.map(answerEntity));
+
+        if (nonNull(entity.getInterpretation())) {
+            executionDTO.setInterpretationConditionAnswerId(entity.getInterpretation().getConditionAnswer());
+            executionDTO.setInterpretationId(entity.getInterpretation().getOuterId());
+        }
+
         return executionDTO;
     }
 
@@ -50,18 +43,16 @@ public class QuestionConverter {
 
         dto.setKnowledgeCategories(
                 entity.getKnowledgeCategory().stream()
-                        .map(k -> new IdValueDTO(k.getId(), k.getName()))
+                        .mapToLong(KnowledgeCategoryEntity::getOuterId)
+                        .boxed()
                         .collect(toList())
         );
 
         dto.setQuestionTypeId(entity.getType().getTypeId());
-        dto.setQuestionTypeValue(entity.getType().getValue());
 
         if (nonNull(entity.getSource())) {
-            dto.setQuestionSourceId(entity.getSource().getSource().getId());
-            dto.setQuestionSourceName(entity.getSource().getSource().getName());
-            dto.setQuestionSourceLink(entity.getSource().getSource().getLink());
-            dto.setDocumentParagraph(entity.getSource().getDocumentParagraph());
+            QuestionSourceDTO source = this.map(entity.getSource().getSource());
+            source.setParagraph(entity.getSource().getDocumentParagraph());
         }
 
         if (nonNull(entity.getAnswerStructure())) {
@@ -72,11 +63,14 @@ public class QuestionConverter {
     }
 
     public QuestionExecutionDTO map(QuestionExecutionEntity entity) {
-        QuestionExecutionDTO dto = new QuestionExecutionDTO();
+        return this.map(entity, null);
+    }
 
-        BeanUtils.copyProperties(entity, dto);
-        dto.setQuestion(map(entity.getQuestion()));
-
-        return dto;
+    public QuestionSourceDTO map(QuestionSourceEntity entity) {
+        QuestionSourceDTO source = new QuestionSourceDTO();
+        source.setId(entity.getId());
+        source.setName(entity.getName());
+        source.setLink(entity.getLink());
+        return source;
     }
 }

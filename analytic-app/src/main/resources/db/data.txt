@@ -1,0 +1,13 @@
+MERGE (i:Interpretation {interpretation:'Хорошо'})
+MERGE (i:Interpretation {interpretation:'Плохо'})
+
+MERGE (c:KnowledgeCategory {type:'ControlActivityType', name:'ControlActivityType', linkType:'HAS_TYPE'})
+MERGE (c:KnowledgeCategory {type:'ControlAuthority', name:'ControlAuthority', linkType:'HAS_AUTHORITY'})
+MERGE (c:KnowledgeCategory {type:'Address', name:'Address', linkType:'HAS_ADDRESS'})
+MERGE (c:KnowledgeCategory {type:'OrganisationUnderControl', name:'OrganisationUnderControl', linkType:'HAS_ORGANIZATION'})
+MERGE (c:KnowledgeCategory {type:'BusinessType', name:'BusinessType', linkType:'HAS_TYPE'})
+MERGE (c:KnowledgeCategory {type:'PersonelCharacteristic', name:'PersonelCharacteristic', linkType:'HAS_PERSONAL_CHARACTERISTIC'})
+MERGE (c:KnowledgeCategory {type:'ControlActivityPeriod', name:'ControlActivityPeriod', linkType:'HAS_PERIOD'})
+MERGE (c:KnowledgeCategory {type:'Contract', name:'Contract', linkType:'HAS_CONTRACT'})
+MERGE (c:KnowledgeCategory {type:'ContractInsurancePeriod', name:'ContractInsurancePeriod', linkType:'HAS_PERIOD'})
+MERGE (c:KnowledgeCategory {type:'SubjectType', name:'SubjectType', linkType:'HAS_SUBJECT_TYPE'})

@@ -11,7 +11,7 @@ import static java.util.Objects.isNull;
 public class CustomQueryDaoService {
 
     private final static String CREATE_ONE_TO_ONE_RELATIONSHIP_QUERY_TEMPLATE =
-            "match (n1:%s), (n2:%s) where %s = %s and %s = %s create (n1)-[:%s]->(n2)";
+            "match (n1:%s), (n2:%s) where %s = %s and %s = %s merge (n1)-[:%s]->(n2)";
 
     private final static String DELETE_ONE_TO_ONE_RELATIONSHIP_QUERY_TEMPLATE =
             "match (n1:%s)-[r:%s]->(n2:%s) where %s = %s and %s = %s delete r";

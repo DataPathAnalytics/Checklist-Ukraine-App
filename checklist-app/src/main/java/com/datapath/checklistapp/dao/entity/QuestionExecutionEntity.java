@@ -1,6 +1,5 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.dao.relatioship.InterpretationRelationship;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -23,7 +22,7 @@ public class QuestionExecutionEntity {
     private boolean required;
 
     @Relationship(type = "HAS_INTERPRETATION")
-    private InterpretationRelationship interpretationRel;
+    private InterpretationEntity interpretation;
 
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;

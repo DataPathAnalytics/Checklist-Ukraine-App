@@ -25,6 +25,7 @@ public class ResponseSessionEntity {
     private LocalDateTime dateCreated;
     @LastModifiedDate
     private LocalDateTime dateModified;
+    private boolean autoCreated;
 
     @Relationship(type = "TEMPLATED_BY")
     private TemplateEntity template;

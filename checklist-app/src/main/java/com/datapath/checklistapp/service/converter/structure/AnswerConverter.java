@@ -12,7 +12,6 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -30,7 +29,7 @@ public class AnswerConverter {
     };
 
     @SneakyThrows
-    public AnswerDTO map(AnswerEntity entity, AnswerStructureEntity answerStructureEntity) {
+    public AnswerDTO map(AnswerEntity entity) {
         if (isNull(entity)) return null;
 
         AnswerDTO dto = new AnswerDTO();
@@ -39,15 +38,7 @@ public class AnswerConverter {
         if (nonNull(entity.getAnswerType())) {
             dto.setAnswerTypeId(entity.getAnswerType().getAnswerTypeId());
         } else {
-            Map<String, Object> answerValues = mapper.readValue(entity.getJsonValues(), typeRef);
-
-//            answerStructureEntity.getFields().forEach(f -> {
-//                if (nonNull(f.getDefaultValue()) && !answerValues.containsKey(f.getName())) {
-//                    answerValues.put(f.getName(), convertTypeService.convert(f.getDefaultValue(), f.getType()));
-//                }
-//            });
-
-            dto.setValues(answerValues);
+            dto.setValues(mapper.readValue(entity.getJsonValues(), typeRef));
         }
 
         return dto;
@@ -78,6 +69,7 @@ public class AnswerConverter {
                                     fieldDTO.setComponentType(f.getComponentType());
                                     fieldDTO.setRequired(f.isRequired());
                                     fieldDTO.setTitle(f.isTitle());
+                                    fieldDTO.setIdentifier(f.isIdentifier());
                                     return fieldDTO;
                                 }
                         ).collect(toList())

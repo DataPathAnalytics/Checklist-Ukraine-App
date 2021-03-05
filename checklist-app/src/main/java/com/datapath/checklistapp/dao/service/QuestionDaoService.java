@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
@@ -50,5 +51,13 @@ public class QuestionDaoService {
                 String.format(SEARCH_PATTERN, request.getKeyword()),
                 PageRequest.of(request.getPage(), request.getSize())
         );
+    }
+
+    public List<QuestionEntity> findByDateCreated(LocalDateTime date) {
+        return repository.findAllByDateCreatedAfterOrderByDateCreated(date);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(LocalDateTime.now());
     }
 }

@@ -8,8 +8,8 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Node("Question")
@@ -18,6 +18,7 @@ public class QuestionEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private Long outerId;
     private String name;
     private LocalDateTime dateCreated;
     @CreatedDate
@@ -25,7 +26,7 @@ public class QuestionEntity {
     private Integer outerTypeId;
 
     @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private Set<KnowledgeCategoryEntity> knowledgeCategory = new HashSet<>();
+    private List<KnowledgeCategoryEntity> knowledgeCategory = new ArrayList<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;

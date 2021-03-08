@@ -19,5 +19,5 @@ public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long
 
     Page<QuestionEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
-    List<QuestionEntity> findAllByDateCreatedAfterOrderByDateCreated(LocalDateTime date);
+    List<QuestionEntity> findAllByDateCreatedAfterOrderByDateCreated(LocalDateTime date, Pageable pageable);
 }

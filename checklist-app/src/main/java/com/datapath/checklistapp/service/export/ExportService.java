@@ -20,14 +20,14 @@ public class ExportService {
     private final QuestionDaoService questionService;
     private final QuestionConverter questionConverter;
 
-    public ExportQuestionResponse getNewQuestions(LocalDateTime date) {
-        List<QuestionEntity> questions = questionService.findByDateCreated(date);
+    public ExportQuestionResponse getNewQuestions(LocalDateTime date, int limit) {
+        List<QuestionEntity> questions = questionService.findByDateCreated(date, limit);
 
         if (isEmpty(questions)) return new ExportQuestionResponse();
 
         ExportQuestionResponse response = new ExportQuestionResponse();
         response.setQuestions(questions.stream().map(questionConverter::map).collect(toList()));
-        response.setLastDate(
+        response.setNextOffset(
                 questions.stream()
                         .map(QuestionEntity::getDateCreated)
                         .max(LocalDateTime::compareTo)

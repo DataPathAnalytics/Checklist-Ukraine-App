@@ -3,13 +3,12 @@ package com.datapath.analyticapp.dao.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 @Data
 @Node("AnswerStructure")
@@ -20,8 +19,9 @@ public class AnswerStructureEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private Long outerId;
     private String name;
-
-    @Relationship(type = "HAS_FIELD_DESCRIPTION")
-    private Set<FieldDescriptionEntity> fields = new HashSet<>();
+    private String identifierFieldName;
+    @CreatedDate
+    private LocalDateTime dateExport;
 }

@@ -1,13 +1,14 @@
-package com.datapath.checklistapp.dto.response.export;
+package com.datapath.analyticapp.dto.export.question;
 
-import com.datapath.checklistapp.dto.QuestionDTO;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ExportQuestionResponse {
+@NoArgsConstructor
+public class QuestionApiResponse {
 
     private List<QuestionDTO> questions;
     private LocalDateTime nextOffset;

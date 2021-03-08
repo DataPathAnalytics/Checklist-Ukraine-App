@@ -21,7 +21,8 @@ public class QuestionExport {
     @GetMapping("questions")
     public ExportQuestionResponse getNewQuestions(
             @RequestParam(defaultValue = "2021-01-01T00:00:00.000", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime date) {
-        return service.getNewQuestions(date);
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime offset,
+            @RequestParam(defaultValue = "10", required = false) int limit) {
+        return service.getNewQuestions(offset, limit);
     }
 }

@@ -1,11 +1,10 @@
-package com.datapath.analyticapp.service.export;
+package com.datapath.analyticapp.service;
 
 import com.datapath.analyticapp.dao.entity.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;
 import com.datapath.analyticapp.dto.export.question.QuestionApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,7 +13,7 @@ import java.util.Optional;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
-public class QuestionExportService {
+public class QuestionImportService {
 
     private static final int QUESTIONS_LIMIT = 10;
 
@@ -28,7 +27,6 @@ public class QuestionExportService {
     @Autowired
     private QuestionUpdateService questionUpdateService;
 
-    @Scheduled(fixedDelay = 5000, initialDelay = 1000)
     public void updateQuestions() {
         String url = restManager.getUrlByOffset(apiUrl, getLastModifiedTenderDate(), QUESTIONS_LIMIT);
 

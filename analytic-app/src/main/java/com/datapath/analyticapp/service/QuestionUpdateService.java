@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.export;
+package com.datapath.analyticapp.service;
 
 import com.datapath.analyticapp.dao.entity.AnswerStructureEntity;
 import com.datapath.analyticapp.dao.entity.QuestionEntity;

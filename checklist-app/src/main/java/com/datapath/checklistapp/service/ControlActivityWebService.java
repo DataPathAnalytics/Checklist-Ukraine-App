@@ -29,6 +29,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
@@ -229,7 +230,13 @@ public class ControlActivityWebService {
         TemplateEntity template = templateService.findById(request.getTemplateId());
 
         ResponseSessionEntity entity = new ResponseSessionEntity();
-        entity.setId(request.getId());
+
+        if (nonNull(request.getId())) {
+            entity.setId(request.getId());
+            LocalDateTime dateCreated = responseSessionService.getDateCreatedBySessionId(request.getId());
+            entity.setDateCreated(dateCreated);
+        }
+
         entity.setName(request.getName());
         entity.setAutoCreated(request.isAutoCreated());
         entity.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
@@ -352,28 +359,40 @@ public class ControlActivityWebService {
         ResponseSessionEntity activityResponse = responseSessionService.findById(domain.getActivityResponseId());
 
         request.getAnswers().forEach(a -> {
-            AnswerEntity answerEntity = new AnswerEntity();
-            answerEntity.setComment(a.getComment());
+
+            AnswerEntity answer = activityResponse.getAnswers()
+                    .stream()
+                    .filter(ea -> a.getQuestionId().equals(ea.getQuestionExecution().getId()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        AnswerEntity newAnswerEntity = new AnswerEntity();
+
+                        QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
+                                .stream()
+                                .filter(q -> a.getQuestionId().equals(q.getId()))
+                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
+
+                        newAnswerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
+                        newAnswerEntity.setQuestionExecution(questionExecution);
+
+                        newAnswerEntity.setQuestionExecution(questionExecution);
+                        return newAnswerEntity;
+                    });
+            answer.setComment(a.getComment());
 
             if (nonNull(a.getAnswerTypeId())) {
-                answerEntity.setAnswerType(answerService.findById(a.getAnswerTypeId()));
+                answer.setAnswerType(answerService.findById(a.getAnswerTypeId()));
             }
 
-            QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
-                    .stream()
-                    .filter(q -> a.getQuestionId().equals(q.getId()))
-                    .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
-
-            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
-            answerEntity.setQuestionExecution(questionExecution);
-
             try {
-                answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
+                answer.setJsonValues(mapper.writeValueAsString(a.getValues()));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
 
-            activityResponse.getAnswers().add(answerEntity);
+            if (isNull(answer.getId())) {
+                activityResponse.getAnswers().add(answer);
+            }
         });
 
         responseSessionService.save(activityResponse);

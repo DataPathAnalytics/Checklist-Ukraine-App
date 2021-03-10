@@ -1,9 +1,6 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.entity.InterpretationEntity;
-import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
-import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
-import com.datapath.checklistapp.dao.entity.TemplateEntity;
+import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -12,6 +9,7 @@ import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
+import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -23,9 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.datapath.checklistapp.util.Constants.SESSION_TEMPLATE_TYPE;
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static com.datapath.checklistapp.util.UserUtils.getCurrentUserId;
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -49,7 +47,11 @@ public class TemplateWebService {
         entity.setName(request.getName());
         entity.setAuthor(userService.findById(getCurrentUserId()));
         entity.setFolder(folderService.findTemplateFolderById(request.getFolderId()));
-        entity.setConfig(templateConfigService.findById(request.getTemplateConfigId()));
+
+        TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
+        if (!SESSION_TEMPLATE_TYPE.equals(config.getType().getTypeId()))
+            throw new ValidationException("Invalid template config type. Should by response session template config type.");
+        entity.setConfig(config);
 
         if (!isEmpty(request.getUngroupedQuestions())) {
             QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
@@ -57,21 +59,23 @@ public class TemplateWebService {
             ungroupedEntity.setName(UNGROUPED_NAME);
 
             request.getUngroupedQuestions().forEach(q -> {
-                QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
-                questionExecutionEntity.setOrderNumber(q.getOrderNumber());
-                questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
-                questionExecutionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
-                questionExecutionEntity.setRequired(q.isRequired());
-                questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+                QuestionExecutionEntity executionEntity = new QuestionExecutionEntity();
+                executionEntity.setOrderNumber(q.getOrderNumber());
+                executionEntity.setParentQuestionId(q.getParentQuestionId());
+                executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
+                executionEntity.setRequired(q.isRequired());
+                executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
-                if (nonNull(q.getInterpretationId())) {
-                    InterpretationEntity interpretation = new InterpretationEntity();
-                    interpretation.setOuterId(q.getInterpretationId());
-                    interpretation.setConditionAnswer(q.getInterpretationConditionAnswerId());
-                    questionExecutionEntity.setInterpretation(interpretation);
+                if (!isEmpty(q.getConditionCharacteristics())) {
+                    executionEntity.setConditionCharacteristics(
+                            q.getConditionCharacteristics().stream()
+                                    .map(c -> new ConditionCharacteristicEntity(
+                                            c.isEvaluation(), c.getRiskEventId(), c.getConditionAnswerId()))
+                                    .collect(toSet())
+                    );
                 }
 
-                ungroupedEntity.getQuestions().add(questionExecutionEntity);
+                ungroupedEntity.getQuestions().add(executionEntity);
             });
 
             entity.getGroups().add(ungroupedEntity);
@@ -85,21 +89,23 @@ public class TemplateWebService {
                     groupedEntity.setOrderNumber(group.getOrderNumber());
 
                     group.getQuestions().forEach(q -> {
-                        QuestionExecutionEntity questionExecutionEntity = new QuestionExecutionEntity();
-                        questionExecutionEntity.setOrderNumber(q.getOrderNumber());
-                        questionExecutionEntity.setParentQuestionId(q.getParentQuestionId());
-                        questionExecutionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
-                        questionExecutionEntity.setRequired(q.isRequired());
-                        questionExecutionEntity.setQuestion(questionService.findById(q.getQuestionId()));
+                        QuestionExecutionEntity executionEntity = new QuestionExecutionEntity();
+                        executionEntity.setOrderNumber(q.getOrderNumber());
+                        executionEntity.setParentQuestionId(q.getParentQuestionId());
+                        executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
+                        executionEntity.setRequired(q.isRequired());
+                        executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
-                        if (nonNull(q.getInterpretationId())) {
-                            InterpretationEntity interpretation = new InterpretationEntity();
-                            interpretation.setOuterId(q.getInterpretationId());
-                            interpretation.setConditionAnswer(q.getInterpretationConditionAnswerId());
-                            questionExecutionEntity.setInterpretation(interpretation);
+                        if (!isEmpty(q.getConditionCharacteristics())) {
+                            executionEntity.setConditionCharacteristics(
+                                    q.getConditionCharacteristics().stream()
+                                            .map(c -> new ConditionCharacteristicEntity(
+                                                    c.isEvaluation(), c.getRiskEventId(), c.getConditionAnswerId()))
+                                            .collect(toSet())
+                            );
                         }
 
-                        groupedEntity.getQuestions().add(questionExecutionEntity);
+                        groupedEntity.getQuestions().add(executionEntity);
                     });
                 }
             });

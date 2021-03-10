@@ -56,8 +56,4 @@ public class QuestionDaoService {
     public List<QuestionEntity> findByDateCreated(LocalDateTime date, int limit) {
         return repository.findAllByDateCreatedAfterOrderByDateCreated(date, PageRequest.of(0, limit));
     }
-
-    public static void main(String[] args) {
-        System.out.println(LocalDateTime.now());
-    }
 }

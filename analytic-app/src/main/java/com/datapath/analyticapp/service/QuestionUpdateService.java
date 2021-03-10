@@ -37,6 +37,8 @@ public class QuestionUpdateService {
             answerStructureEntity = new AnswerStructureEntity();
             answerStructureEntity.setOuterId(questionDto.getAnswerStructure().getId());
             answerStructureEntity.setName(questionDto.getAnswerStructure().getName());
+            answerStructureEntity.setNodeType(questionDto.getAnswerStructure().getNodeType());
+            answerStructureEntity.setLinkType(questionDto.getAnswerStructure().getLinkType());
             answerStructureEntity.setIdentifierFieldName(
                     questionDto.getAnswerStructure().getFieldDescriptions().stream()
                             .filter(QuestionDTO.FieldDescriptionDTO::isIdentifier)

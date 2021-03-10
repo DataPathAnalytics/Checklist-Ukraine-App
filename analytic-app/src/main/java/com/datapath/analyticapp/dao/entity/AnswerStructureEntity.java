@@ -22,6 +22,8 @@ public class AnswerStructureEntity {
     private Long outerId;
     private String name;
     private String identifierFieldName;
+    private String linkType;
+    private String nodeType;
     @CreatedDate
     private LocalDateTime dateExport;
 }

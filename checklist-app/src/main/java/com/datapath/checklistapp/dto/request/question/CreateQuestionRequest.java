@@ -28,7 +28,7 @@ public class CreateQuestionRequest {
     private String questionSourceParagraph;
 
     @AssertTrue
-    public boolean isValid() {
+    public Boolean isValid() {
         if (questionTypeId != 3) {
             return nonNull(answerStructureId) && knowledgeCategoryIds.size() == 1;
         }

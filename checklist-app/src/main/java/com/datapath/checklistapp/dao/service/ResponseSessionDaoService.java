@@ -8,6 +8,7 @@ import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,5 +32,9 @@ public class ResponseSessionDaoService {
 
     public List<ResponseSessionEntity> findByIds(List<Long> id) {
         return repository.findAllById(id);
+    }
+
+    public LocalDateTime getDateCreatedBySessionId(Long id) {
+        return repository.getDateCreatedBySessionId(id);
     }
 }

@@ -8,8 +8,6 @@ public class QuestionExecutionDTO {
     private Long id;
     private Long parentQuestionId;
     private Integer parentConditionAnswerId;
-    private Long interpretationId;
-    private Integer interpretationConditionAnswerId;
     private QuestionDTO question;
     private AnswerDTO answer;
     private boolean required;

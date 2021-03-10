@@ -33,7 +33,7 @@ public class CatalogWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(k -> new KnowledgeCategoryDTO(k.getId(), k.getType(), k.getValue(), k.getName()))
+                        .map(k -> new KnowledgeCategoryDTO(k.getId(), k.getValue(), k.getName()))
                         .collect(toList())
         );
     }

@@ -5,6 +5,7 @@ import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessionEntity, Long> {
@@ -18,4 +19,7 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
             "id(a) as authorId, s.sessionStatusId as sessionStatusId " +
             "order by rs.dateCreated, rs.name")
     List<ResponseSessionDomain> findResponseSessionByActivityId(Long activityId);
+
+    @Query(value = "match (s:ResponseSession) where id(s)=$id return s.dateCreated")
+    LocalDateTime getDateCreatedBySessionId(Long id);
 }

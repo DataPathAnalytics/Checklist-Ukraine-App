@@ -12,8 +12,6 @@ public class KnowledgeCategoryEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String type;
     private String value;
     private String name;
-    private String linkType;
 }

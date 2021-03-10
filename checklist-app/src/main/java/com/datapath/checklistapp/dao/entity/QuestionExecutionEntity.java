@@ -6,6 +6,9 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Node("QuestionExecution")
 public class QuestionExecutionEntity {
@@ -21,9 +24,9 @@ public class QuestionExecutionEntity {
 
     private boolean required;
 
-    @Relationship(type = "HAS_INTERPRETATION")
-    private InterpretationEntity interpretation;
-
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;
+
+    @Relationship(type = "HAS_CONDITION_CHARACTERISTIC")
+    private Set<ConditionCharacteristicEntity> conditionCharacteristics = new HashSet<>();
 }

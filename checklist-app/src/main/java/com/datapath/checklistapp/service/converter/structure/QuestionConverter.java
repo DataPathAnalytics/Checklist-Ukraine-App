@@ -28,11 +28,6 @@ public class QuestionConverter {
         executionDTO.setQuestion(map(entity.getQuestion()));
         executionDTO.setAnswer(answerConverter.map(answerEntity));
 
-        if (nonNull(entity.getInterpretation())) {
-            executionDTO.setInterpretationConditionAnswerId(entity.getInterpretation().getConditionAnswer());
-            executionDTO.setInterpretationId(entity.getInterpretation().getOuterId());
-        }
-
         return executionDTO;
     }
 

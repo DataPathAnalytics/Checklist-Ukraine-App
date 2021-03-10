@@ -18,6 +18,8 @@ public class QuestionDTO {
     public static class AnswerStructureDTO {
         private Long id;
         private String name;
+        private String linkType;
+        private String nodeType;
         private List<FieldDescriptionDTO> fieldDescriptions;
     }
 

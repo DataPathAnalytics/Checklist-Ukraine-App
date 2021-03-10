@@ -8,7 +8,6 @@ import lombok.Data;
 public class KnowledgeCategoryDTO {
 
     private Long id;
-    private String type;
     private String value;
     private String name;
 }

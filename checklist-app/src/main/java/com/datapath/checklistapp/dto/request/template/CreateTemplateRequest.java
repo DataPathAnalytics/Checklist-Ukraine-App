@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -45,12 +48,24 @@ public class CreateTemplateRequest {
         private Long parentQuestionId;
         private Integer parentConditionAnswerId;
 
-        private Long interpretationId;
-        private Integer interpretationConditionAnswerId;
+        private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
 
         private boolean required;
 
         @NotNull
         private Integer orderNumber;
+    }
+
+    @Data
+    @Valid
+    public static class ConditionCharacteristic {
+
+        private boolean evaluation;
+        private Long riskEventId;
+
+        @NotNull
+        @Min(1)
+        @Max(3)
+        private Integer conditionAnswerId;
     }
 }

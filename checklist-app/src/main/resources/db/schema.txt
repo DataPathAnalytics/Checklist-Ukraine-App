@@ -13,8 +13,6 @@ CREATE CONSTRAINT template_config_folder_name_cnt IF NOT EXISTS ON (t:TemplateCo
 
 CREATE CONSTRAINT question_source_id_cnt IF NOT EXISTS ON (q:QuestionSource) ASSERT q.id IS UNIQUE
 
-CREATE CONSTRAINT answer_id_cnt IF NOT EXISTS ON (a:Answer) ASSERT a.answerId IS UNIQUE
-
 CREATE CONSTRAINT activity_status_id_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.activityStatusId IS UNIQUE
 CREATE CONSTRAINT activity_status_value_cnt IF NOT EXISTS ON (c:ActivityStatus) ASSERT c.value IS UNIQUE
 

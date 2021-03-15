@@ -6,5 +6,6 @@ public enum ComponentType {
     SELECT,
     MULTI_SELECT,
     DATE,
-    DATETIME
+    DATETIME,
+    RADIOS
 }

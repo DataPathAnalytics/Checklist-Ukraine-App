@@ -9,10 +9,6 @@ MERGE (d:Department {region: 'Схід'})
 MERGE (d:Department {region: 'Південь'})
 MERGE (d:Department {region: 'Захід'})
 
-MERGE (a:AnswerType {answerTypeId: 1, value:'ТАК'})
-MERGE (a:AnswerType {answerTypeId: 2, value:'Ні'})
-MERGE (a:AnswerType {answerTypeId: 3, value:'НЗ'})
-
 MERGE (c:ActivityStatus {activityStatusId: 1, value:'В процесі'})
 MERGE (c:ActivityStatus {activityStatusId: 2, value:'Завершено'})
 

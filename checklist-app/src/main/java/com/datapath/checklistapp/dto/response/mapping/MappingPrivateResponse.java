@@ -10,7 +10,6 @@ import java.util.List;
 public class MappingPrivateResponse {
 
     private List<PermissionDTO> permissions;
-    private List<IdValueDTO> answerTypes;
     private List<IdValueDTO> activityStatuses;
     private List<IdValueDTO> sessionStatuses;
     private List<IdValueDTO> questionTypes;

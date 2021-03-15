@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.AnswerStructureEntity;
 import com.datapath.checklistapp.dao.repository.AnswerStructureRepository;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
+import com.datapath.checklistapp.util.Constants;
 import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,5 +34,9 @@ public class AnswerStructureDaoService {
                 String.format(SEARCH_PATTERN, request.getKeyword()),
                 PageRequest.of(request.getPage(), request.getSize())
         );
+    }
+
+    public AnswerStructureEntity findDefault() {
+        return repository.findFirstByName(Constants.DEFAULT);
     }
 }

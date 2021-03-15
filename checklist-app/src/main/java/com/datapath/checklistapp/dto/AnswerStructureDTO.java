@@ -21,7 +21,7 @@ public class AnswerStructureDTO {
     @NoArgsConstructor
     public static class FieldDescriptionDTO {
         private String name;
-        private List<Object> defaultValues;
+        private List<ValueDTO> values;
         private String description;
         private String dataSource;
         private ValueType valueType;
@@ -29,5 +29,13 @@ public class AnswerStructureDTO {
         private boolean title;
         private boolean required;
         private boolean identifier;
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ValueDTO {
+        private Long id;
+        private String value;
     }
 }

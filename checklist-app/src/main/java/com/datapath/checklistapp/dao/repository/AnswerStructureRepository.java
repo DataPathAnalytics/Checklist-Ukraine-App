@@ -8,4 +8,6 @@ import org.springframework.data.neo4j.repository.Neo4jRepository;
 public interface AnswerStructureRepository extends Neo4jRepository<AnswerStructureEntity, Long> {
 
     Page<AnswerStructureEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
+
+    AnswerStructureEntity findFirstByName(String name);
 }

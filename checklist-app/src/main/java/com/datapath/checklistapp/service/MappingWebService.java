@@ -18,7 +18,6 @@ public class MappingWebService {
 
     private final DepartmentDaoService departmentDaoService;
     private final PermissionDaoService permissionDaoService;
-    private final AnswerTypeDaoService answerTypeService;
     private final ActivityStatusDaoService activityStatusService;
     private final SessionStatusDaoService sessionStatusService;
     private final TemplateConfigTypeDaoService templateTypeService;
@@ -41,10 +40,6 @@ public class MappingWebService {
                 permissionDaoService.findAll().stream()
                         .map(p -> new PermissionDTO(p.getPermissionId(), p.getRole(), p.getValue()))
                         .collect(toList())
-        );
-        response.setAnswerTypes(
-                answerTypeService.findAll().stream()
-                        .map(a -> new IdValueDTO(a.getAnswerTypeId(), a.getValue())).collect(toList())
         );
         response.setSessionStatuses(
                 sessionStatusService.findAll().stream()

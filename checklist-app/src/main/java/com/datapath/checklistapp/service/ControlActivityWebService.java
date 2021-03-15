@@ -5,7 +5,6 @@ import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
-import com.datapath.checklistapp.dao.service.classifier.AnswerTypeDaoService;
 import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistapp.dto.AnswerDTO;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
@@ -50,7 +49,6 @@ public class ControlActivityWebService {
     private final TemplateConfigDaoService templateConfigService;
     private final ResponseSessionDaoService responseSessionService;
     private final SessionStatusDaoService sessionStatusService;
-    private final AnswerTypeDaoService answerService;
     private final CustomQueryDaoService customQueryService;
 
     private final QuestionConverter questionConverter;
@@ -107,26 +105,33 @@ public class ControlActivityWebService {
 
         ResponseSessionEntity activityResponse = new ResponseSessionEntity();
         request.getAnswers().forEach(a -> {
-            AnswerEntity answerEntity = new AnswerEntity();
-            answerEntity.setComment(a.getComment());
-
-            if (nonNull(a.getAnswerTypeId())) {
-                answerEntity.setAnswerType(answerService.findById(a.getAnswerTypeId()));
-            }
-
             QuestionExecutionEntity questionExecution = config.getQuestionExecutions().stream()
                     .filter(q -> a.getQuestionId().equals(q.getId()))
                     .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
 
+            AnswerEntity answerEntity = new AnswerEntity();
+            answerEntity.setComment(a.getComment());
+
+            if (nonNull(a.getValueId())) {
+                answerEntity.setValue(
+                        questionExecution.getQuestion().getAnswerStructure().getFields()
+                                .stream()
+                                .flatMap(f -> f.getValues().stream())
+                                .filter(v -> a.getValueId().equals(v.getId()))
+                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), a.getValueId()))
+                );
+            }
+
             answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
             answerEntity.setQuestionExecution(questionExecution);
 
-            try {
-                answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            if (!isEmpty(a.getValues())) {
+                try {
+                    answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
-
             activityResponse.getAnswers().add(answerEntity);
         });
         activityEntity.setActivityResponse(activityResponse);
@@ -239,7 +244,12 @@ public class ControlActivityWebService {
 
         entity.setName(request.getName());
         entity.setAutoCreated(request.isAutoCreated());
-        entity.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
+
+        if (request.isAutoCreated()) {
+            entity.setStatus(sessionStatusService.findById(IN_COMPLETED_STATUS));
+        } else {
+            entity.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
+        }
 
         Map<Long, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
                 .stream()
@@ -249,22 +259,30 @@ public class ControlActivityWebService {
         template.getConfig().getQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
 
         for (AnswerDTO answer : request.getAnswers()) {
-            AnswerEntity answerEntity = new AnswerEntity();
-
-            answerEntity.setComment(answer.getComment());
-            try {
-                answerEntity.setJsonValues(mapper.writeValueAsString(answer.getValues()));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-
-            if (nonNull(answer.getAnswerTypeId())) {
-                answerEntity.setAnswerType(answerService.findById(answer.getAnswerTypeId()));
-            }
-
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(answer.getQuestionId());
             if (isNull(questionExecution))
                 throw new EntityNotFoundException(Node.QuestionExecution.name(), answer.getQuestionId());
+
+            AnswerEntity answerEntity = new AnswerEntity();
+            answerEntity.setComment(answer.getComment());
+
+            if (!isEmpty(answer.getValues())) {
+                try {
+                    answerEntity.setJsonValues(mapper.writeValueAsString(answer.getValues()));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (nonNull(answer.getValueId())) {
+                answerEntity.setValue(
+                        questionExecution.getQuestion().getAnswerStructure().getFields()
+                                .stream()
+                                .flatMap(f -> f.getValues().stream())
+                                .filter(v -> answer.getValueId().equals(v.getId()))
+                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), answer.getValueId()))
+                );
+            }
 
             answerEntity.setQuestionExecution(questionExecution);
             answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
@@ -364,30 +382,35 @@ public class ControlActivityWebService {
                     .stream()
                     .filter(ea -> a.getQuestionId().equals(ea.getQuestionExecution().getId()))
                     .findFirst()
-                    .orElseGet(() -> {
-                        AnswerEntity newAnswerEntity = new AnswerEntity();
+                    .orElseGet(AnswerEntity::new);
 
-                        QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
-                                .stream()
-                                .filter(q -> a.getQuestionId().equals(q.getId()))
-                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
+            QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
+                    .stream()
+                    .filter(q -> a.getQuestionId().equals(q.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
 
-                        newAnswerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
-                        newAnswerEntity.setQuestionExecution(questionExecution);
+            answer.setParentQuestionId(questionExecution.getParentQuestionId());
+            answer.setQuestionExecution(questionExecution);
 
-                        newAnswerEntity.setQuestionExecution(questionExecution);
-                        return newAnswerEntity;
-                    });
             answer.setComment(a.getComment());
 
-            if (nonNull(a.getAnswerTypeId())) {
-                answer.setAnswerType(answerService.findById(a.getAnswerTypeId()));
+            if (nonNull(a.getValueId())) {
+                answer.setValue(
+                        questionExecution.getQuestion().getAnswerStructure().getFields()
+                                .stream()
+                                .flatMap(f -> f.getValues().stream())
+                                .filter(v -> a.getValueId().equals(v.getId()))
+                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), a.getValueId()))
+                );
             }
 
-            try {
-                answer.setJsonValues(mapper.writeValueAsString(a.getValues()));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
+            if (!isEmpty(a.getValues())) {
+                try {
+                    answer.setJsonValues(mapper.writeValueAsString(a.getValues()));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
             }
 
             if (isNull(answer.getId())) {

@@ -27,6 +27,6 @@ public class FieldDescriptionEntity {
     private boolean required;
     private boolean identifier;
 
-    @Relationship(type = "HAS_DEFAULT_VALUE")
-    private Set<DefaultValueEntity> defaultValues = new HashSet<>();
+    @Relationship(type = "HAS_VALUE")
+    private Set<ValueEntity> values = new HashSet<>();
 }

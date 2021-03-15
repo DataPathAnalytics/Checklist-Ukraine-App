@@ -57,6 +57,12 @@ public class QuestionWebService {
             entity.setSource(relationship);
         }
 
+        if (nonNull(request.getAnswerStructureId())) {
+            entity.setAnswerStructure(answerStructureService.findById(request.getAnswerStructureId()));
+        } else {
+            entity.setAnswerStructure(answerStructureService.findDefault());
+        }
+
         if (!FACT_QUESTION_TYPE.equals(request.getQuestionTypeId())) {
             entity.setAnswerStructure(answerStructureService.findById(request.getAnswerStructureId()));
         }

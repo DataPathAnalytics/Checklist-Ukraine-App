@@ -8,7 +8,6 @@ public enum Node {
     User,
     ActivityStatus,
     QuestionExecution,
-    Answer,
     QuestionType,
     SessionStatus,
     TemplateConfigType,
@@ -18,5 +17,6 @@ public enum Node {
     TemplateFolder,
     TemplateConfigFolder,
     Question,
-    QuestionSource
+    QuestionSource,
+    Value
 }

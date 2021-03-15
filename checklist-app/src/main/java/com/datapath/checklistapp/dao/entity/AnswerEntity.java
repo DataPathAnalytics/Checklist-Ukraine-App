@@ -1,6 +1,5 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.dao.entity.classifier.AnswerType;
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -21,7 +20,7 @@ public class AnswerEntity {
 
     @Relationship(type = "EXECUTED_BY")
     private QuestionExecutionEntity questionExecution;
-    @Relationship(type = "IN_ANSWER_TYPE")
-    private AnswerType answerType;
+    @Relationship(type = "HAS_ANSWER")
+    private ValueEntity value;
 
 }

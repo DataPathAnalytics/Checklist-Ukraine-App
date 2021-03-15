@@ -31,7 +31,8 @@ public class CreateQuestionRequest {
     public Boolean isValid() {
         if (questionTypeId != 3) {
             return nonNull(answerStructureId) && knowledgeCategoryIds.size() == 1;
+        } else {
+            return knowledgeCategoryIds.size() > 0;
         }
-        return true;
     }
 }

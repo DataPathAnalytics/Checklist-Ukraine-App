@@ -1,8 +1,6 @@
-MERGE (a:AnswerStructure {name:'Тип ауторити'})
-MERGE (f:FieldDescription {name:'name', identifier:false, description:'Значение', valueType:'STRING', title:false, required:true, componentType:'INPUT'})
-MERGE (d:DefaultValue {value:'Ревізія'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f)
-MERGE (f)-[:HAS_DEFAULT_VALUE]->(d);
+MERGE (a:AnswerStructure {name:'Тип ауторити', linkType:'', nodeType:''})
+MERGE (f:FieldDescription {name:'name', identifier:false, description:'Значение', valueType:'STRING', title:false, required:true, componentType:'INPUT', dataSource:'authority'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
 
 MERGE (a:AnswerStructure {name:'Период'})
 MERGE (f1:FieldDescription {name:'startDate', identifier:false, description:'Начало периода', valueType:'DATE', title:false, required:false, componentType:'DATE'})
@@ -47,3 +45,13 @@ MERGE (f3:FieldDescription {name:'number', identifier:false, description:'Ном
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f3);
+
+MERGE (a:AnswerStructure {name:'Default'})
+MERGE (f:FieldDescription {name:'value', identifier:false, description:'Значение', valueType:'STRING', title:false, required:false, componentType:'RADIOS'})
+MERGE (d1:Value {value:'Да'})
+MERGE (d2:Value {value:'Нет'})
+MERGE (d3:Value {value:'НП'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f)
+MERGE (f)-[:HAS_VALUE]->(d1)
+MERGE (f)-[:HAS_VALUE]->(d2)
+MERGE (f)-[:HAS_VALUE]->(d3);

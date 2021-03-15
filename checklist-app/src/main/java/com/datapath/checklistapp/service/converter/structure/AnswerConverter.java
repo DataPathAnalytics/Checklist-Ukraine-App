@@ -35,8 +35,8 @@ public class AnswerConverter {
         AnswerDTO dto = new AnswerDTO();
         dto.setComment(entity.getComment());
 
-        if (nonNull(entity.getAnswerType())) {
-            dto.setAnswerTypeId(entity.getAnswerType().getAnswerTypeId());
+        if (nonNull(entity.getValue())) {
+            dto.setValueId(entity.getValue().getId());
         } else {
             dto.setValues(mapper.readValue(entity.getJsonValues(), typeRef));
         }
@@ -55,10 +55,10 @@ public class AnswerConverter {
                                     AnswerStructureDTO.FieldDescriptionDTO fieldDTO = new AnswerStructureDTO.FieldDescriptionDTO();
                                     fieldDTO.setName(f.getName());
 
-                                    if (!isEmpty(f.getDefaultValues())) {
-                                        fieldDTO.setDefaultValues(
-                                                f.getDefaultValues().stream()
-                                                        .map(dv -> convertTypeService.convert(dv.getValue(), f.getValueType()))
+                                    if (!isEmpty(f.getValues())) {
+                                        fieldDTO.setValues(
+                                                f.getValues().stream()
+                                                        .map(v -> new AnswerStructureDTO.ValueDTO(v.getId(), v.getValue()))
                                                         .collect(toList())
                                         );
                                     }

@@ -15,7 +15,7 @@ public class AnswerDTO {
     @NotNull
     private Long questionId;
 
-    private Integer answerTypeId;
+    private Long valueId;
     private String comment;
 
     private Map<String, Object> values;

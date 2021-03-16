@@ -34,6 +34,7 @@ public class AnswerConverter {
 
         AnswerDTO dto = new AnswerDTO();
         dto.setComment(entity.getComment());
+        dto.setParentQuestionId(entity.getParentQuestionId());
 
         if (nonNull(entity.getValue())) {
             dto.setValueId(entity.getValue().getId());

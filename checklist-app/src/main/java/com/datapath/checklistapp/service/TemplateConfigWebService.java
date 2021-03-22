@@ -1,5 +1,6 @@
 package com.datapath.checklistapp.service;
 
+import com.datapath.checklistapp.dao.entity.FieldDescriptionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
@@ -11,7 +12,6 @@ import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
@@ -25,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.datapath.checklistapp.util.Constants.*;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
 
@@ -74,7 +72,7 @@ public class TemplateConfigWebService {
 
         QuestionExecutionEntity objectExecution = new QuestionExecutionEntity();
         objectExecution.setQuestion(questionIdMap.get(request.getObjectQuestionId()));
-        entity.getQuestionExecutions().add(objectExecution);
+        entity.setObjectQuestionExecution(objectExecution);
 
         request.getFeatureQuestions().forEach(q -> {
             QuestionEntity question = questionIdMap.get(q.getQuestionId());
@@ -84,7 +82,8 @@ public class TemplateConfigWebService {
                 execution.setParentQuestionId(q.getParentQuestionId());
                 execution.setOrderNumber(q.getOrderNumber());
                 execution.setRequired(q.isRequired());
-                entity.getQuestionExecutions().add(execution);
+                execution.setLinkType(q.getLinkType());
+                entity.getFutureQuestionExecutions().add(execution);
             }
         });
 
@@ -95,7 +94,8 @@ public class TemplateConfigWebService {
                 execution.setQuestion(question);
                 execution.setOrderNumber(q.getOrderNumber());
                 execution.setRequired(q.isRequired());
-                entity.getQuestionExecutions().add(execution);
+                execution.setLinkType(q.getLinkType());
+                entity.getTypeQuestionExecutions().add(execution);
             }
         });
 
@@ -106,7 +106,8 @@ public class TemplateConfigWebService {
                 execution.setQuestion(question);
                 execution.setOrderNumber(q.getOrderNumber());
                 execution.setRequired(q.isRequired());
-                entity.getQuestionExecutions().add(execution);
+                execution.setLinkType(q.getLinkType());
+                entity.getAuthorityQuestionExecutions().add(execution);
             }
         });
 
@@ -150,30 +151,18 @@ public class TemplateConfigWebService {
 
     private void checkQuestionTypes(CreateTemplateConfigRequest request, Map<Long, QuestionEntity> questionIdMap) {
         QuestionEntity objectQuestion = questionIdMap.get(request.getObjectQuestionId());
-        if (isNull(objectQuestion))
-            throw new EntityNotFoundException("question", request.getObjectQuestionId());
-        if (!OBJECT_QUESTION_TYPE.equals(objectQuestion.getType().getTypeId()))
-            throw new ValidationException("Invalid type of base question. Should be " + OBJECT_QUESTION_TYPE);
 
-        checkQuestionTypes(request.getFeatureQuestions(), questionIdMap, FEATURE_QUESTION_TYPE);
-        checkQuestionTypes(request.getAuthorityQuestions(), questionIdMap, AUTHORITY_QUESTION_TYPE);
+        if (!hasIdentifier(objectQuestion))
+            throw new ValidationException("Invalid base question. Answer structure must has identifier fields");
 
-        if (ACTIVITY_TEMPLATE_TYPE.equals(request.getTemplateConfigTypeId())) {
-            checkQuestionTypes(request.getTypeQuestions(), questionIdMap, ACTIVITY_QUESTION_TYPE);
-        } else if (SESSION_TEMPLATE_TYPE.equals(request.getTemplateConfigTypeId())) {
-            checkQuestionTypes(request.getTypeQuestions(), questionIdMap, SESSION_QUESTION_TYPE);
-        } else throw new ValidationException("Invalid template type: " + request.getTemplateConfigTypeId());
-    }
+        boolean validAuthorityQuestion = request.getAuthorityQuestions()
+                .stream()
+                .map(q -> questionIdMap.get(q.getQuestionId()))
+                .anyMatch(this::hasIdentifier);
 
-    private void checkQuestionTypes(List<CreateTemplateConfigRequest.TemplateQuestion> questions,
-                                    Map<Long, QuestionEntity> questionIdMap,
-                                    Integer checkedType) {
-        boolean existsIncorrect = questions.stream()
-                .map(questionIdMap::get)
-                .filter(Objects::nonNull)
-                .anyMatch(q -> !checkedType.equals(q.getType().getTypeId()));
-        if (existsIncorrect)
-            throw new ValidationException("Invalid question type. Should be " + checkedType);
+        if (!validAuthorityQuestion) {
+            throw new ValidationException("Invalid authority question. Answer structure must has identifier fields");
+        }
     }
 
     public PageableResponse<TemplateDTO> search(SearchRequest request) {
@@ -195,12 +184,20 @@ public class TemplateConfigWebService {
         );
     }
 
+    private boolean hasIdentifier(QuestionEntity question) {
+        return question.getAnswerStructure().getFields().stream()
+                .anyMatch(FieldDescriptionEntity::isIdentifier);
+    }
+
     @Transactional
     public void delete(Long id) {
         if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
 
         TemplateConfigEntity entity = templateConfigService.findById(id);
-        entity.getQuestionExecutions().forEach(questionExecutionService::delete);
+        entity.getTypeQuestionExecutions().forEach(questionExecutionService::delete);
+        entity.getAuthorityQuestionExecutions().forEach(questionExecutionService::delete);
+        entity.getFutureQuestionExecutions().forEach(questionExecutionService::delete);
+        questionExecutionService.delete(entity.getObjectQuestionExecution());
         templateConfigService.delete(entity);
     }
 }

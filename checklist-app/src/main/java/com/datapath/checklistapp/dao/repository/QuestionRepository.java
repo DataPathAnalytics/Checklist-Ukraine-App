@@ -11,13 +11,10 @@ import java.util.List;
 
 public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long> {
 
-    @Query(value = "match (q:Question)-->(qt:QuestionType)<--(tt:TemplateConfigType) where tt.typeId = id return id(q)")
-    List<Long> getByTemplateConfigType(Integer id);
-
-    @Query(value = "match (q:Question)-->(qt:QuestionType) where qt.typeId = $id return id(q)")
-    List<Long> getByQuestionType(Integer id);
-
     Page<QuestionEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
     List<QuestionEntity> findAllByDateCreatedAfterOrderByDateCreated(LocalDateTime date, Pageable pageable);
+
+    @Query(value = "match (q:Question)-->(as:AnswerStructure)-->(f:FieldDescription) where f.identifier=true return id(q)")
+    Page<Long> findWithIdentifier(String format, Pageable pageable);
 }

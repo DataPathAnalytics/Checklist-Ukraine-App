@@ -1,16 +1,14 @@
 package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
+import com.datapath.checklistapp.dao.entity.LinkTypeEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.relatioship.QuestionSourceRelationship;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
-import com.datapath.checklistapp.dao.service.classifier.QuestionTypeDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.QuestionTypeDTO;
-import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
@@ -20,12 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-
-import static com.datapath.checklistapp.util.Constants.FACT_QUESTION_TYPE;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +29,6 @@ public class QuestionWebService {
     private final QuestionDaoService service;
     private final QuestionSourceDaoService sourceService;
     private final AnswerStructureDaoService answerStructureService;
-    private final QuestionTypeDaoService questionTypeService;
     private final QuestionConverter questionConverter;
 
     @Transactional
@@ -47,7 +41,12 @@ public class QuestionWebService {
                         .map(KnowledgeCategoryEntity::new)
                         .collect(toSet())
         );
-        entity.setType(questionTypeService.findById(request.getQuestionTypeId()));
+
+        entity.setLinkTypes(request.getLinkTypes()
+                .stream()
+                .map(LinkTypeEntity::new)
+                .collect(toSet())
+        );
 
         if (nonNull(request.getQuestionSourceId())) {
             QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());
@@ -63,10 +62,6 @@ public class QuestionWebService {
             entity.setAnswerStructure(answerStructureService.findDefault());
         }
 
-        if (!FACT_QUESTION_TYPE.equals(request.getQuestionTypeId())) {
-            entity.setAnswerStructure(answerStructureService.findById(request.getAnswerStructureId()));
-        }
-
         service.save(entity);
     }
 
@@ -74,34 +69,10 @@ public class QuestionWebService {
         return questionConverter.map(service.findById(id));
     }
 
-    public List<QuestionTypeDTO> listByTemplateConfigType(Integer id) {
-        List<Long> ids = service.findByTemplateConfigType(id);
+    @Transactional
+    public PageableResponse<QuestionDTO> search(SearchRequest request) {
+        Page<QuestionEntity> page = service.searchByName(request);
 
-        Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
-                .stream()
-                .map(questionConverter::map)
-                .collect(groupingBy(QuestionDTO::getQuestionTypeId));
-        return questionsByType.entrySet()
-                .stream()
-                .map(e -> new QuestionTypeDTO(e.getKey(), e.getValue()))
-                .collect(toList());
-    }
-
-    public List<QuestionTypeDTO> listByQuestionType(Integer id) {
-        List<Long> ids = service.findByQuestionType(id);
-
-        Map<Integer, List<QuestionDTO>> questionsByType = service.findById(ids)
-                .stream()
-                .map(questionConverter::map)
-                .collect(groupingBy(QuestionDTO::getQuestionTypeId));
-        return questionsByType.entrySet()
-                .stream()
-                .map(e -> new QuestionTypeDTO(e.getKey(), e.getValue()))
-                .collect(toList());
-    }
-
-    public PageableResponse<QuestionDTO> list(PageableRequest request) {
-        Page<QuestionEntity> page = service.findAll(request);
         return new PageableResponse<>(
                 page.getNumber(),
                 page.getTotalElements(),
@@ -112,14 +83,15 @@ public class QuestionWebService {
         );
     }
 
-    public PageableResponse<QuestionDTO> search(SearchRequest request) {
-        Page<QuestionEntity> page = service.searchByName(request);
+    @Transactional
+    public PageableResponse<QuestionDTO> searchWithIdentifier(SearchRequest request) {
+        Page<Long> idsPage = service.searchWithIdentifierByName(request);
 
         return new PageableResponse<>(
-                page.getNumber(),
-                page.getTotalElements(),
-                page.getTotalPages(),
-                page.get()
+                idsPage.getNumber(),
+                idsPage.getTotalElements(),
+                idsPage.getTotalPages(),
+                service.findById(idsPage.getContent()).stream()
                         .map(questionConverter::map)
                         .collect(toList())
         );

@@ -7,7 +7,6 @@ import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dto.GroupQuestionsDTO;
 import com.datapath.checklistapp.dto.QuestionExecutionDTO;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.datapath.checklistapp.util.Constants.*;
+import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -51,21 +50,15 @@ public class ResponseSessionConverter {
                 .stream()
                 .collect(toMap(a -> a.getQuestionExecution().getId(), Function.identity()));
 
-        QuestionExecutionEntity objectQuestion = entity.getTemplate().getConfig().getQuestionExecutions()
-                .stream()
-                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Required object question not found. Response session id: " + entity.getId()));
+        QuestionExecutionEntity objectQuestion = entity.getTemplate().getConfig().getObjectQuestionExecution();
 
-        List<QuestionExecutionDTO> featureQuestions = entity.getTemplate().getConfig().getQuestionExecutions()
+        List<QuestionExecutionDTO> featureQuestions = entity.getTemplate().getConfig().getFutureQuestionExecutions()
                 .stream()
-                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
-        List<QuestionExecutionDTO> typeQuestions = entity.getTemplate().getConfig().getQuestionExecutions()
+        List<QuestionExecutionDTO> typeQuestions = entity.getTemplate().getConfig().getTypeQuestionExecutions()
                 .stream()
-                .filter(q -> SESSION_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 

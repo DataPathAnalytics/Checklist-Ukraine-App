@@ -11,4 +11,5 @@ public class QuestionExecutionDTO {
     private QuestionDTO question;
     private AnswerDTO answer;
     private boolean required;
+    private String linkType;
 }

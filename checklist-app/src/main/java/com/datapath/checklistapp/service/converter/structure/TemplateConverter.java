@@ -8,14 +8,13 @@ import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.GroupQuestionsDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
-import com.datapath.checklistapp.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.datapath.checklistapp.util.Constants.*;
+import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -33,33 +32,24 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        QuestionExecutionEntity objectQuestion = entity.getQuestionExecutions().stream()
-                .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Not found required object question"));
+        dto.setObjectQuestion(questionConverter.map(entity.getObjectQuestionExecution()));
 
-        dto.setObjectQuestion(questionConverter.map(objectQuestion));
-
-        dto.setObjectFeatureQuestions(
-                entity.getQuestionExecutions().stream()
-                        .filter(qe -> FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
+        dto.setFeatureQuestions(
+                entity.getFutureQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
         );
 
         dto.setTypeQuestions(
-                entity.getQuestionExecutions().stream()
-                        .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()) ||
-                                SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
+                entity.getTypeQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
         );
 
         dto.setAuthorityQuestions(
-                entity.getQuestionExecutions().stream()
-                        .filter(qe -> AUTHORITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
+                entity.getAuthorityQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
@@ -76,27 +66,17 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        QuestionExecutionEntity objectQuestion = entity.getConfig()
-                .getQuestionExecutions()
-                .stream()
-                .filter(qe -> OBJECT_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Not found required object question"));
+        dto.setObjectQuestion(questionConverter.map(entity.getConfig().getObjectQuestionExecution()));
 
-        dto.setObjectQuestion(questionConverter.map(objectQuestion));
-
-        dto.setObjectFeatureQuestions(
-                entity.getConfig().getQuestionExecutions().stream()
-                        .filter(qe -> FEATURE_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
+        dto.setFeatureQuestions(
+                entity.getConfig().getFutureQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
         );
 
         dto.setTypeQuestions(
-                entity.getConfig().getQuestionExecutions().stream()
-                        .filter(qe -> ACTIVITY_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()) ||
-                                SESSION_QUESTION_TYPE.equals(qe.getQuestion().getType().getTypeId()))
+                entity.getConfig().getTypeQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
@@ -135,7 +115,7 @@ public class TemplateConverter {
     }
 
     public List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,
-                                                                Map<Long, FolderDTO> folders) {
+                                                               Map<Long, FolderDTO> folders) {
         List<TemplateFolderTreeDTO> response = new ArrayList<>();
 
         folders.forEach((k, v) -> {

@@ -18,11 +18,4 @@ MERGE (c:SessionStatus {sessionStatusId: 2, value:'Завершено'})
 MERGE (c:TemplateConfigType {typeId: 1, value:'ControlActivity'})
 MERGE (c:TemplateConfigType {typeId: 2, value:'ResponseSession'})
 
-MERGE (c:QuestionType {typeId: 1, value:'ControlActivity'})
-MERGE (c:QuestionType {typeId: 2, value:'ResponseSession'})
-MERGE (c:QuestionType {typeId: 3, value:'Fact'})
-MERGE (c:QuestionType {typeId: 4, value:'Object'})
-MERGE (c:QuestionType {typeId: 5, value:'Feature'})
-MERGE (c:QuestionType {typeId: 6, value:'Authority'})
-
 MERGE (c:QuestionSource {id:'id1', name:'TestQuestionSource', link:'www.test.com'})

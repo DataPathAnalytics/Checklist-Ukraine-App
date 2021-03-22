@@ -1,7 +1,10 @@
 package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.service.DepartmentDaoService;
-import com.datapath.checklistapp.dao.service.classifier.*;
+import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
+import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;
+import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
+import com.datapath.checklistapp.dao.service.classifier.TemplateConfigTypeDaoService;
 import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.PermissionDTO;
@@ -21,7 +24,6 @@ public class MappingWebService {
     private final ActivityStatusDaoService activityStatusService;
     private final SessionStatusDaoService sessionStatusService;
     private final TemplateConfigTypeDaoService templateTypeService;
-    private final QuestionTypeDaoService questionTypeService;
 
     public MappingPublicResponse getPublicMappings() {
         MappingPublicResponse response = new MappingPublicResponse();
@@ -53,11 +55,6 @@ public class MappingWebService {
         );
         response.setTemplateConfigTypes(
                 templateTypeService.findAll().stream()
-                        .map(e -> new IdValueDTO(e.getTypeId(), e.getValue()))
-                        .collect(toList())
-        );
-        response.setQuestionTypes(
-                questionTypeService.findAll().stream()
                         .map(e -> new IdValueDTO(e.getTypeId(), e.getValue()))
                         .collect(toList())
         );

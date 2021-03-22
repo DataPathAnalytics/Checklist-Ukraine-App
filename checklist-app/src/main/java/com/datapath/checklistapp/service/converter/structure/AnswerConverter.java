@@ -4,7 +4,6 @@ import com.datapath.checklistapp.dao.entity.AnswerEntity;
 import com.datapath.checklistapp.dao.entity.AnswerStructureEntity;
 import com.datapath.checklistapp.dto.AnswerDTO;
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
-import com.datapath.checklistapp.service.converter.type.ConvertTypeService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -22,7 +21,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @AllArgsConstructor
 public class AnswerConverter {
 
-    private final ConvertTypeService convertTypeService;
     private final ObjectMapper mapper;
 
     private static final TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {

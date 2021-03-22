@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Data
 @NoArgsConstructor
@@ -35,7 +38,15 @@ public class CreateTemplateConfigRequest {
         @NotNull
         private Long questionId;
         private Long parentQuestionId;
+        @NotNull
         private Integer orderNumber;
         private boolean required;
+        @NotNull
+        private String linkType;
+    }
+
+    @AssertTrue
+    public Boolean isValid() {
+        return !isEmpty(authorityQuestions);
     }
 }

@@ -79,13 +79,12 @@ public class ControlActivityWebService {
 
                     ResponseSessionEntity responseSession = responseSessionService.findById(c.getActivityResponseId());
 
-                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getQuestionExecutions().stream()
-                            .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
-                            .findFirst().orElseThrow(() -> new ValidationException("Not found object question. Activity id " + c.getId()));
+                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getObjectQuestionExecution();
 
                     AnswerEntity objectAnswer = responseSession.getAnswers().stream()
                             .filter(a -> objectQuestion.getId().equals(a.getQuestionExecution().getId()))
-                            .findFirst().orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
+                            .findFirst()
+                            .orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
 
                     dto.setObjectQuestion(questionConverter.map(objectQuestion, objectAnswer));
                     return dto;
@@ -104,10 +103,11 @@ public class ControlActivityWebService {
         activityEntity.setAuthor(userService.findById(currentUserId));
 
         ResponseSessionEntity activityResponse = new ResponseSessionEntity();
+
+        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(config);
+
         request.getAnswers().forEach(a -> {
-            QuestionExecutionEntity questionExecution = config.getQuestionExecutions().stream()
-                    .filter(q -> a.getQuestionId().equals(q.getId()))
-                    .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
+            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
 
             AnswerEntity answerEntity = new AnswerEntity();
             answerEntity.setComment(a.getComment());
@@ -256,7 +256,7 @@ public class ControlActivityWebService {
                 .flatMap(qg -> qg.getQuestions().stream())
                 .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
 
-        template.getConfig().getQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        questionExecutionIdMap.putAll(getQuestionExecutionMap(template.getConfig()));
 
         for (AnswerDTO answer : request.getAnswers()) {
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(answer.getQuestionId());
@@ -376,6 +376,8 @@ public class ControlActivityWebService {
         ControlActivityDomain domain = controlActivityService.findById(request.getId());
         ResponseSessionEntity activityResponse = responseSessionService.findById(domain.getActivityResponseId());
 
+        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
+
         request.getAnswers().forEach(a -> {
 
             AnswerEntity answer = activityResponse.getAnswers()
@@ -384,11 +386,7 @@ public class ControlActivityWebService {
                     .findFirst()
                     .orElseGet(AnswerEntity::new);
 
-            QuestionExecutionEntity questionExecution = activityResponse.getTemplateConfig().getQuestionExecutions()
-                    .stream()
-                    .filter(q -> a.getQuestionId().equals(q.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException(Node.QuestionExecution.name(), a.getQuestionId()));
+            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
 
             answer.setParentQuestionId(questionExecution.getParentQuestionId());
             answer.setQuestionExecution(questionExecution);
@@ -419,5 +417,16 @@ public class ControlActivityWebService {
         });
 
         responseSessionService.save(activityResponse);
+    }
+
+    private Map<Long, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {
+        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = new HashMap<>();
+        templateConfig.getTypeQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getFutureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getAuthorityQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        questionExecutionIdMap.put(
+                templateConfig.getObjectQuestionExecution().getId(),
+                templateConfig.getObjectQuestionExecution());
+        return questionExecutionIdMap;
     }
 }

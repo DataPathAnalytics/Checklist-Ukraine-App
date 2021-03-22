@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -30,6 +28,7 @@ public class CreateTemplateRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Valid
     public static class QuestionGroup {
         @NotNull
         private String name;
@@ -41,6 +40,7 @@ public class CreateTemplateRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Valid
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
@@ -51,6 +51,7 @@ public class CreateTemplateRequest {
         private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
 
         private boolean required;
+        private String linkType;
 
         @NotNull
         private Integer orderNumber;
@@ -64,8 +65,6 @@ public class CreateTemplateRequest {
         private Long riskEventId;
 
         @NotNull
-        @Min(1)
-        @Max(3)
         private Integer conditionAnswerId;
     }
 }

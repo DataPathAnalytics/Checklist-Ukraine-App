@@ -17,5 +17,6 @@ public class QuestionDTO {
     private QuestionSourceDTO source;
 
     private AnswerStructureDTO answerStructure;
-    private Integer questionTypeId;
+
+    private List<String> linkTypes;
 }

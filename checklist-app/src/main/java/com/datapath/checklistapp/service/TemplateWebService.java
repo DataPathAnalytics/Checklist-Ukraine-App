@@ -64,6 +64,7 @@ public class TemplateWebService {
                 executionEntity.setParentQuestionId(q.getParentQuestionId());
                 executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
                 executionEntity.setRequired(q.isRequired());
+                executionEntity.setLinkType(q.getLinkType());
                 executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
                 if (!isEmpty(q.getConditionCharacteristics())) {
@@ -94,6 +95,7 @@ public class TemplateWebService {
                         executionEntity.setParentQuestionId(q.getParentQuestionId());
                         executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
                         executionEntity.setRequired(q.isRequired());
+                        executionEntity.setLinkType(q.getLinkType());
                         executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
 
                         if (!isEmpty(q.getConditionCharacteristics())) {

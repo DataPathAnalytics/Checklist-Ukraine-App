@@ -38,14 +38,6 @@ public class QuestionDaoService {
         return repository.findAllById(ids);
     }
 
-    public List<Long> findByTemplateConfigType(Integer id) {
-        return repository.getByTemplateConfigType(id);
-    }
-
-    public List<Long> findByQuestionType(Integer id) {
-        return repository.getByQuestionType(id);
-    }
-
     public Page<QuestionEntity> searchByName(SearchRequest request) {
         return repository.findByNameMatchesRegexOrderByName(
                 String.format(SEARCH_PATTERN, request.getKeyword()),
@@ -55,5 +47,12 @@ public class QuestionDaoService {
 
     public List<QuestionEntity> findByDateCreated(LocalDateTime date, int limit) {
         return repository.findAllByDateCreatedAfterOrderByDateCreated(date, PageRequest.of(0, limit));
+    }
+
+    public Page<Long> searchWithIdentifierByName(SearchRequest request) {
+        return repository.findWithIdentifier(
+                String.format(SEARCH_PATTERN, request.getKeyword()),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

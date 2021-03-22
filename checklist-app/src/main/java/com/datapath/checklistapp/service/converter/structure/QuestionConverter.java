@@ -21,6 +21,7 @@ public class QuestionConverter {
         QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
         executionDTO.setId(entity.getId());
         executionDTO.setRequired(entity.isRequired());
+        executionDTO.setLinkType(entity.getLinkType());
 
         executionDTO.setParentConditionAnswerId(entity.getConditionAnswerId());
         executionDTO.setParentQuestionId(entity.getParentQuestionId());
@@ -43,8 +44,6 @@ public class QuestionConverter {
                         .collect(toList())
         );
 
-        dto.setQuestionTypeId(entity.getType().getTypeId());
-
         if (nonNull(entity.getSource())) {
             QuestionSourceDTO source = this.map(entity.getSource().getSource());
             source.setParagraph(entity.getSource().getDocumentParagraph());
@@ -53,6 +52,8 @@ public class QuestionConverter {
         if (nonNull(entity.getAnswerStructure())) {
             dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));
         }
+
+        dto.setLinkTypes(entity.getLinkTypes().stream().map(LinkTypeEntity::getLinkType).collect(toList()));
 
         return dto;
     }

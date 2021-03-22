@@ -8,7 +8,6 @@ public enum Node {
     User,
     ActivityStatus,
     QuestionExecution,
-    QuestionType,
     SessionStatus,
     TemplateConfigType,
     Permission,

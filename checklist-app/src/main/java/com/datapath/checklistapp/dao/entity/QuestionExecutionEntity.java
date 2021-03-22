@@ -24,6 +24,8 @@ public class QuestionExecutionEntity {
 
     private boolean required;
 
+    private String linkType;
+
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;
 

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static java.util.Objects.nonNull;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Data
 @AllArgsConstructor
@@ -20,19 +20,15 @@ public class CreateQuestionRequest {
     private String name;
     @NotNull
     private List<Long> knowledgeCategoryIds;
-    @NotNull
-    private Integer questionTypeId;
 
     private Long answerStructureId;
     private String questionSourceId;
     private String questionSourceParagraph;
 
+    private List<String> linkTypes;
+
     @AssertTrue
     public Boolean isValid() {
-        if (questionTypeId != 3) {
-            return nonNull(answerStructureId) && knowledgeCategoryIds.size() == 1;
-        } else {
-            return knowledgeCategoryIds.size() > 0;
-        }
+        return !isEmpty(knowledgeCategoryIds) && !isEmpty(linkTypes);
     }
 }

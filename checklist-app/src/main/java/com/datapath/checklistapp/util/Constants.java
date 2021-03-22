@@ -33,13 +33,6 @@ public final class Constants {
     public static final Integer ACTIVITY_TEMPLATE_TYPE = 1;
     public static final Integer SESSION_TEMPLATE_TYPE = 2;
 
-    public static final Integer ACTIVITY_QUESTION_TYPE = 1;
-    public static final Integer SESSION_QUESTION_TYPE = 2;
-    public static final Integer FACT_QUESTION_TYPE = 3;
-    public static final Integer OBJECT_QUESTION_TYPE = 4;
-    public static final Integer FEATURE_QUESTION_TYPE = 5;
-    public static final Integer AUTHORITY_QUESTION_TYPE = 6;
-
     public final static String DEFAULT_EVENT_CHECKLIST_COUNT_STR = "5";
     public final static String DEFAULT_EVENT_CHECKLIST_PAGE_STR = "0";
     public final static Integer DEFAULT_EVENT_CHECKLIST_COUNT = Integer.parseInt(DEFAULT_EVENT_CHECKLIST_COUNT_STR);

@@ -1,6 +1,5 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.dao.entity.classifier.QuestionType;
 import com.datapath.checklistapp.dao.relatioship.QuestionSourceRelationship;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -30,9 +29,9 @@ public class QuestionEntity {
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;
 
-    @Relationship(type = "IN_TYPE")
-    private QuestionType type;
-
     @Relationship(type = "FROM_QUESTION_SOURCE")
     private QuestionSourceRelationship source;
+
+    @Relationship
+    private Set<LinkTypeEntity> linkTypes = new HashSet<>();
 }

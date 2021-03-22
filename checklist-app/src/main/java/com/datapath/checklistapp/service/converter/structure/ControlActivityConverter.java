@@ -5,7 +5,6 @@ import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.QuestionExecutionDTO;
 import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
-import com.datapath.checklistapp.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.datapath.checklistapp.util.Constants.*;
+import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT;
+import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE;
 import static java.util.stream.Collectors.*;
 
 @Service
@@ -53,35 +53,28 @@ public class ControlActivityConverter {
 
         List<QuestionExecutionDTO> featureQuestions = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getQuestionExecutions()
+                .getFutureQuestionExecutions()
                 .stream()
-                .filter(q -> FEATURE_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
         List<QuestionExecutionDTO> typeQuestions = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getQuestionExecutions()
+                .getTypeQuestionExecutions()
                 .stream()
-                .filter(q -> ACTIVITY_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
         List<QuestionExecutionDTO> authorityQuestions = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getQuestionExecutions()
+                .getAuthorityQuestionExecutions()
                 .stream()
-                .filter(q -> AUTHORITY_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
 
         QuestionExecutionEntity objectQuestion = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getQuestionExecutions()
-                .stream()
-                .filter(q -> OBJECT_QUESTION_TYPE.equals(q.getQuestion().getType().getTypeId()))
-                .findFirst()
-                .orElseThrow(() -> new ValidationException("Required object question not found. Control activity id: " + activity.getId()));
+                .getObjectQuestionExecution();
 
         dto.setObjectQuestion(questionConverter.map(objectQuestion, answerQuestionId.get(objectQuestion.getId())));
         dto.setObjectFeatureQuestions(featureQuestions);

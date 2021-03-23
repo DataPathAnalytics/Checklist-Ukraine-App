@@ -11,10 +11,12 @@ import java.util.List;
 
 public interface TemplateConfigRepository extends Neo4jRepository<TemplateConfigEntity, Long> {
 
+    String IS_USED_QUERY = "match (t:TemplateConfig)<-[r]-(n) where id(t)=$id return count(r) > 0";
+
     List<TemplateConfigEntity> findAllByType(TemplateConfigType type);
 
     Page<TemplateConfigEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
-    @Query(value = "match (t:TemplateConfig)<-[r]-(n) where id(t)=$id return count(r) > 0")
+    @Query(value = IS_USED_QUERY)
     boolean isUsed(Long id);
 }

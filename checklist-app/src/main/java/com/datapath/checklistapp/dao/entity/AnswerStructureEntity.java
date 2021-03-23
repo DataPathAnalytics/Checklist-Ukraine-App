@@ -21,8 +21,6 @@ public class AnswerStructureEntity {
     @GeneratedValue
     private Long id;
     private String name;
-    private String linkType;
-    private String nodeType;
 
     @Relationship(type = "HAS_FIELD_DESCRIPTION")
     private Set<FieldDescriptionEntity> fields = new HashSet<>();

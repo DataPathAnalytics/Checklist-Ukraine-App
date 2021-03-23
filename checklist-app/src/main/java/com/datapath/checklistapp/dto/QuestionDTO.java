@@ -9,7 +9,7 @@ import java.util.List;
 public class QuestionDTO {
 
     private Long id;
-    private String name;
+    private String value;
     private LocalDateTime dateCreated;
 
     private List<Long> knowledgeCategories;

@@ -8,8 +8,10 @@ import org.springframework.data.neo4j.repository.query.Query;
 
 public interface TemplateRepository extends Neo4jRepository<TemplateEntity, Long> {
 
+    String IS_USED_QUERY = "match (t:Template)<-[r]-(n) where id(t)=$id return count(r) > 0";
+
     Page<TemplateEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
-    @Query(value = "match (t:Template)<-[r]-(n) where id(t)=$id return count(r) > 0")
+    @Query(value = IS_USED_QUERY)
     boolean isUsed(Long id);
 }

@@ -19,7 +19,7 @@ public class QuestionEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
+    private String value;
     @CreatedDate
     private LocalDateTime dateCreated;
 
@@ -32,6 +32,6 @@ public class QuestionEntity {
     @Relationship(type = "FROM_QUESTION_SOURCE")
     private QuestionSourceRelationship source;
 
-    @Relationship
+    @Relationship(type = "HAS_LINK_TYPE")
     private Set<LinkTypeEntity> linkTypes = new HashSet<>();
 }

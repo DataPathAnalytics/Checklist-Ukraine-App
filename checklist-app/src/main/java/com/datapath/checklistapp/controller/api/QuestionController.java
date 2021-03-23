@@ -42,14 +42,14 @@ public class QuestionController {
         return service.get(id);
     }
 
-    @ApiOperation(value = "search question by name", response = QuestionDTO.class)
+    @ApiOperation(value = "search question by value", response = QuestionDTO.class)
     @PostMapping("search")
     public PageableResponse<QuestionDTO> search(@RequestBody SearchRequest request) {
         return service.search(request);
     }
 
-    @ApiOperation(value = "search questions with identifier answer field type by name", response = QuestionTypeDTO.class)
-    @GetMapping("identifier-search")
+    @ApiOperation(value = "search questions with identifier answer field type by value", response = QuestionTypeDTO.class)
+    @PostMapping("identifier-search")
     public PageableResponse<QuestionDTO> searchWithIdentifier(@RequestBody SearchRequest request) {
         return service.searchWithIdentifier(request);
     }

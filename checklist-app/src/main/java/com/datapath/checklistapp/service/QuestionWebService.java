@@ -18,6 +18,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
+import java.util.List;
+
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -35,7 +38,7 @@ public class QuestionWebService {
     public void create(CreateQuestionRequest request) {
         QuestionEntity entity = new QuestionEntity();
 
-        entity.setName(request.getName());
+        entity.setValue(request.getValue());
         entity.getKnowledgeCategory().addAll(
                 request.getKnowledgeCategoryIds().stream()
                         .map(KnowledgeCategoryEntity::new)
@@ -71,7 +74,7 @@ public class QuestionWebService {
 
     @Transactional
     public PageableResponse<QuestionDTO> search(SearchRequest request) {
-        Page<QuestionEntity> page = service.searchByName(request);
+        Page<QuestionEntity> page = service.searchByValue(request);
 
         return new PageableResponse<>(
                 page.getNumber(),
@@ -85,14 +88,17 @@ public class QuestionWebService {
 
     @Transactional
     public PageableResponse<QuestionDTO> searchWithIdentifier(SearchRequest request) {
-        Page<Long> idsPage = service.searchWithIdentifierByName(request);
+        List<Long> ids = service.searchWithIdentifierByValue(request);
+        Long count = service.countWithIdentifierByValue(request);
 
         return new PageableResponse<>(
-                idsPage.getNumber(),
-                idsPage.getTotalElements(),
-                idsPage.getTotalPages(),
-                service.findById(idsPage.getContent()).stream()
+                request.getPage(),
+                count,
+                (int) Math.ceil((double) count / request.getSize()),
+                service.findById(ids)
+                        .stream()
                         .map(questionConverter::map)
+                        .sorted(Comparator.comparing(QuestionDTO::getValue))
                         .collect(toList())
         );
     }

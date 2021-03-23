@@ -17,7 +17,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class CreateQuestionRequest {
 
     @NotBlank
-    private String name;
+    private String value;
     @NotNull
     private List<Long> knowledgeCategoryIds;
 

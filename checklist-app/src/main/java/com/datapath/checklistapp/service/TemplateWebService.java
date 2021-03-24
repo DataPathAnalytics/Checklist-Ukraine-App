@@ -1,6 +1,9 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.entity.*;
+import com.datapath.checklistapp.dao.entity.QuestionEntity;
+import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
+import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
+import com.datapath.checklistapp.dao.entity.TemplateEntity;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -10,6 +13,7 @@ import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
+import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -17,13 +21,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.SESSION_TEMPLATE_TYPE;
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static com.datapath.checklistapp.util.UserUtils.getCurrentUserId;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -37,6 +41,7 @@ public class TemplateWebService {
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
     private final TemplateConverter templateConverter;
+    private final QuestionConverter questionConverter;
     private final QuestionExecutionDaoService questionExecutionService;
     private final QuestionGroupDaoService questionGroupService;
 
@@ -53,31 +58,31 @@ public class TemplateWebService {
             throw new ValidationException("Invalid template config type. Should by response session template config type.");
         entity.setConfig(config);
 
+        Set<Long> questionIds = new HashSet<>();
+        request.getUngroupedQuestions().stream()
+                .map(CreateTemplateRequest.TemplateQuestion::getQuestionId)
+                .forEach(questionIds::add);
+        request.getQuestionGroups().stream()
+                .flatMap(qg -> qg.getQuestions().stream())
+                .map(CreateTemplateRequest.TemplateQuestion::getQuestionId)
+                .forEach(questionIds::add);
+
+        Map<Long, QuestionEntity> questionIdMap = questionService.findById(new ArrayList<>(questionIds))
+                .stream()
+                .collect(toMap(QuestionEntity::getId, Function.identity()));
+
         if (!isEmpty(request.getUngroupedQuestions())) {
             QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
 
             ungroupedEntity.setName(UNGROUPED_NAME);
 
             request.getUngroupedQuestions().forEach(q -> {
-                QuestionExecutionEntity executionEntity = new QuestionExecutionEntity();
-                executionEntity.setOrderNumber(q.getOrderNumber());
-                executionEntity.setParentQuestionId(q.getParentQuestionId());
-                executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
-                executionEntity.setRequired(q.isRequired());
-                executionEntity.setLinkType(q.getLinkType());
-                executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
-
-                if (!isEmpty(q.getConditionCharacteristics())) {
-                    executionEntity.setConditionCharacteristics(
-                            q.getConditionCharacteristics().stream()
-                                    .map(c -> new ConditionCharacteristicEntity(
-                                            c.isEvaluation(), c.getRiskEventId(), c.getConditionAnswerId()))
-                                    .collect(toSet())
-                    );
-                }
-
-                ungroupedEntity.getQuestions().add(executionEntity);
-            });
+                        QuestionEntity question = questionIdMap.get(q.getQuestionId());
+                        if (nonNull(question)) {
+                            ungroupedEntity.getQuestions().add(questionConverter.map(q, question));
+                        }
+                    }
+            );
 
             entity.getGroups().add(ungroupedEntity);
         }
@@ -90,24 +95,10 @@ public class TemplateWebService {
                     groupedEntity.setOrderNumber(group.getOrderNumber());
 
                     group.getQuestions().forEach(q -> {
-                        QuestionExecutionEntity executionEntity = new QuestionExecutionEntity();
-                        executionEntity.setOrderNumber(q.getOrderNumber());
-                        executionEntity.setParentQuestionId(q.getParentQuestionId());
-                        executionEntity.setConditionAnswerId(q.getParentConditionAnswerId());
-                        executionEntity.setRequired(q.isRequired());
-                        executionEntity.setLinkType(q.getLinkType());
-                        executionEntity.setQuestion(questionService.findById(q.getQuestionId()));
-
-                        if (!isEmpty(q.getConditionCharacteristics())) {
-                            executionEntity.setConditionCharacteristics(
-                                    q.getConditionCharacteristics().stream()
-                                            .map(c -> new ConditionCharacteristicEntity(
-                                                    c.isEvaluation(), c.getRiskEventId(), c.getConditionAnswerId()))
-                                            .collect(toSet())
-                            );
+                        QuestionEntity question = questionIdMap.get(q.getQuestionId());
+                        if (nonNull(question)) {
+                            groupedEntity.getQuestions().add(questionConverter.map(q, question));
                         }
-
-                        groupedEntity.getQuestions().add(executionEntity);
                     });
                 }
             });
@@ -118,14 +109,7 @@ public class TemplateWebService {
     public List<TemplateFolderTreeDTO> list() {
         Map<Long, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
                 .stream()
-                .map(t -> {
-                    TemplateDTO dto = new TemplateDTO();
-                    BeanUtils.copyProperties(t, dto);
-                    dto.setFolderId(t.getFolder().getId());
-                    dto.setAuthorId(t.getAuthor().getId());
-                    dto.setTemplateConfigId(t.getConfig().getId());
-                    return dto;
-                })
+                .map(templateConverter::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
         Map<Long, FolderDTO> folders = folderService.findAllTemplateFolders()
@@ -152,14 +136,8 @@ public class TemplateWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(t -> {
-                            TemplateDTO dto = new TemplateDTO();
-                            BeanUtils.copyProperties(t, dto);
-                            dto.setFolderId(t.getFolder().getId());
-                            dto.setAuthorId(t.getAuthor().getId());
-                            dto.setTemplateConfigId(t.getConfig().getId());
-                            return dto;
-                        }).collect(toList())
+                        .map(templateConverter::shortMap)
+                        .collect(toList())
         );
     }
 

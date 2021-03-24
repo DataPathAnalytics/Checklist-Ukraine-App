@@ -18,11 +18,11 @@ import com.datapath.checklistapp.exception.ResetPasswordException;
 import com.datapath.checklistapp.exception.UserException;
 import com.datapath.checklistapp.security.ConfirmationTokenStorageService;
 import com.datapath.checklistapp.security.UsersStorageService;
+import com.datapath.checklistapp.service.converter.structure.UserConverter;
 import com.datapath.checklistapp.service.notification.EmailNotificationService;
 import com.datapath.checklistapp.util.MessageTemplate;
 import com.datapath.checklistapp.util.UserUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,6 +51,7 @@ public class UserWebService {
     private final ConfirmationTokenStorageService tokenStorageService;
     private final EmailNotificationService emailSender;
     private final PermissionDaoService permissionService;
+    private final UserConverter userConverter;
 
     public UserPageDTO list(int page, int size) {
         Page<UserEntity> entities = userService.findAll(page, size);
@@ -242,16 +243,6 @@ public class UserWebService {
     }
 
     private UserDTO mapEntityToDTO(UserEntity entity) {
-        UserDTO dto = new UserDTO();
-        BeanUtils.copyProperties(entity, dto);
-
-        Optional<EmploymentEntity> lastEmployment = getLastEmployment(entity.getEmployments());
-
-        lastEmployment.ifPresent(
-                employment -> dto.setDepartmentId(employment.getDepartment().getId())
-        );
-
-        dto.setPermissionId(entity.getPermission().getPermissionId());
-        return dto;
+        return userConverter.map(entity, getLastEmployment(entity.getEmployments()));
     }
 }

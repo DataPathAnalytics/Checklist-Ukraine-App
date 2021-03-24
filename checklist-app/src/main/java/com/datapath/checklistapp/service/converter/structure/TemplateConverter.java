@@ -128,4 +128,22 @@ public class TemplateConverter {
 
         return response;
     }
+
+    public TemplateDTO shortMap(TemplateEntity entity) {
+        TemplateDTO dto = new TemplateDTO();
+        BeanUtils.copyProperties(entity, dto);
+        dto.setFolderId(entity.getFolder().getId());
+        dto.setAuthorId(entity.getAuthor().getId());
+        dto.setTemplateConfigId(entity.getConfig().getId());
+        return dto;
+    }
+
+    public TemplateDTO shortMap(TemplateConfigEntity entity) {
+        TemplateDTO dto = new TemplateDTO();
+        BeanUtils.copyProperties(entity, dto);
+        dto.setFolderId(entity.getFolder().getId());
+        dto.setAuthorId(entity.getAuthor().getId());
+        dto.setTemplateConfigTypeId(entity.getType().getTypeId());
+        return dto;
+    }
 }

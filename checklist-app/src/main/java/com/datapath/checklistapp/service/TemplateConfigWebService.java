@@ -14,6 +14,7 @@ import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigReques
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
+import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import com.datapath.checklistapp.util.UserUtils;
 import lombok.AllArgsConstructor;
@@ -38,30 +39,31 @@ public class TemplateConfigWebService {
     private final QuestionDaoService questionService;
     private final TemplateConfigTypeDaoService templateTypeService;
     private final TemplateConverter templateConverter;
+    private final QuestionConverter questionConverter;
     private final QuestionExecutionDaoService questionExecutionService;
 
     @Transactional
     public void create(CreateTemplateConfigRequest request) {
         Set<Long> questionIds = new HashSet<>();
         questionIds.add(request.getObjectQuestionId());
-        questionIds.addAll(request.getFeatureQuestions()
+        request.getFeatureQuestions()
                 .stream()
                 .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .collect(toList()));
-        questionIds.addAll(request.getTypeQuestions()
+                .forEach(questionIds::add);
+        request.getTypeQuestions()
                 .stream()
                 .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .collect(toList()));
-        questionIds.addAll(request.getAuthorityQuestions()
+                .forEach(questionIds::add);
+        request.getAuthorityQuestions()
                 .stream()
                 .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .collect(toList()));
+                .forEach(questionIds::add);
 
         Map<Long, QuestionEntity> questionIdMap = questionService.findById(new ArrayList<>(questionIds))
                 .stream()
                 .collect(toMap(QuestionEntity::getId, Function.identity()));
 
-        checkQuestionTypes(request, questionIdMap);
+        validateQuestions(request, questionIdMap);
 
         TemplateConfigEntity entity = new TemplateConfigEntity();
 
@@ -77,37 +79,21 @@ public class TemplateConfigWebService {
         request.getFeatureQuestions().forEach(q -> {
             QuestionEntity question = questionIdMap.get(q.getQuestionId());
             if (nonNull(question)) {
-                QuestionExecutionEntity execution = new QuestionExecutionEntity();
-                execution.setQuestion(question);
-                execution.setParentQuestionId(q.getParentQuestionId());
-                execution.setOrderNumber(q.getOrderNumber());
-                execution.setRequired(q.isRequired());
-                execution.setLinkType(q.getLinkType());
-                entity.getFutureQuestionExecutions().add(execution);
+                entity.getFutureQuestionExecutions().add(questionConverter.map(q, question));
             }
         });
 
         request.getTypeQuestions().forEach(q -> {
             QuestionEntity question = questionIdMap.get(q.getQuestionId());
             if (nonNull(question)) {
-                QuestionExecutionEntity execution = new QuestionExecutionEntity();
-                execution.setQuestion(question);
-                execution.setOrderNumber(q.getOrderNumber());
-                execution.setRequired(q.isRequired());
-                execution.setLinkType(q.getLinkType());
-                entity.getTypeQuestionExecutions().add(execution);
+                entity.getTypeQuestionExecutions().add(questionConverter.map(q, question));
             }
         });
 
         request.getAuthorityQuestions().forEach(q -> {
             QuestionEntity question = questionIdMap.get(q.getQuestionId());
             if (nonNull(question)) {
-                QuestionExecutionEntity execution = new QuestionExecutionEntity();
-                execution.setQuestion(question);
-                execution.setOrderNumber(q.getOrderNumber());
-                execution.setRequired(q.isRequired());
-                execution.setLinkType(q.getLinkType());
-                entity.getAuthorityQuestionExecutions().add(execution);
+                entity.getAuthorityQuestionExecutions().add(questionConverter.map(q, question));
             }
         });
 
@@ -124,14 +110,7 @@ public class TemplateConfigWebService {
         }
 
         Map<Long, List<TemplateDTO>> folderTemplatesMap = entities.stream()
-                .map(t -> {
-                    TemplateDTO dto = new TemplateDTO();
-                    BeanUtils.copyProperties(t, dto);
-                    dto.setFolderId(t.getFolder().getId());
-                    dto.setAuthorId(t.getAuthor().getId());
-                    dto.setTemplateConfigTypeId(t.getType().getTypeId());
-                    return dto;
-                })
+                .map(templateConverter::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
         Map<Long, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
@@ -149,7 +128,7 @@ public class TemplateConfigWebService {
         return templateConverter.map(templateConfigService.findById(id));
     }
 
-    private void checkQuestionTypes(CreateTemplateConfigRequest request, Map<Long, QuestionEntity> questionIdMap) {
+    private void validateQuestions(CreateTemplateConfigRequest request, Map<Long, QuestionEntity> questionIdMap) {
         QuestionEntity objectQuestion = questionIdMap.get(request.getObjectQuestionId());
 
         if (!hasIdentifier(objectQuestion))
@@ -173,14 +152,8 @@ public class TemplateConfigWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(t -> {
-                            TemplateDTO dto = new TemplateDTO();
-                            BeanUtils.copyProperties(t, dto);
-                            dto.setFolderId(t.getFolder().getId());
-                            dto.setAuthorId(t.getAuthor().getId());
-                            dto.setTemplateConfigTypeId(t.getType().getTypeId());
-                            return dto;
-                        }).collect(toList())
+                        .map(templateConverter::shortMap)
+                        .collect(toList())
         );
     }
 

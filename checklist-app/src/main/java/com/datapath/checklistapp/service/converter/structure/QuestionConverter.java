@@ -42,22 +42,15 @@ public class QuestionConverter {
         BeanUtils.copyProperties(entity, dto);
 
         dto.setKnowledgeCategories(
-                entity.getKnowledgeCategory().stream()
-                        .mapToLong(KnowledgeCategoryEntity::getOuterId)
+                entity.getKnowledgeClass().stream()
+                        .mapToLong(KnowledgeClassEntity::getOuterId)
                         .boxed()
                         .collect(toList())
         );
 
-        if (nonNull(entity.getSource())) {
-            QuestionSourceDTO source = this.map(entity.getSource().getSource());
-            source.setParagraph(entity.getSource().getDocumentParagraph());
-        }
-
         if (nonNull(entity.getAnswerStructure())) {
             dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));
         }
-
-        dto.setLinkTypes(entity.getLinkTypes().stream().map(LinkTypeEntity::getLinkType).collect(toList()));
 
         return dto;
     }
@@ -87,7 +80,7 @@ public class QuestionConverter {
             execution.setConditionCharacteristics(
                     q.getConditionCharacteristics().stream()
                             .map(c -> new ConditionCharacteristicEntity(
-                                    c.isEvaluation(), c.getRiskEventId(), c.getConditionAnswerId()))
+                                    c.isEvaluation(), c.getRiskEventTypeId(), c.getConditionAnswerId()))
                             .collect(toSet())
             );
         }

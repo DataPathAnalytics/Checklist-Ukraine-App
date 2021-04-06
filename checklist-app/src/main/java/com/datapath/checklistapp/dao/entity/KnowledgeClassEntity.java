@@ -7,16 +7,16 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("KnowledgeCategory")
+@Node("KnowledgeClass")
 @NoArgsConstructor
-public class KnowledgeCategoryEntity {
+public class KnowledgeClassEntity {
 
     @Id
     @GeneratedValue
     private Long id;
     private Long outerId;
 
-    public KnowledgeCategoryEntity(Long outerId) {
+    public KnowledgeClassEntity(Long outerId) {
         this.outerId = outerId;
     }
 }

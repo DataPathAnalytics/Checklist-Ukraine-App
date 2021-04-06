@@ -1,10 +1,7 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.entity.KnowledgeCategoryEntity;
-import com.datapath.checklistapp.dao.entity.LinkTypeEntity;
+import com.datapath.checklistapp.dao.entity.KnowledgeClassEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
-import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
-import com.datapath.checklistapp.dao.relatioship.QuestionSourceRelationship;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
@@ -39,24 +36,15 @@ public class QuestionWebService {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setValue(request.getValue());
-        entity.getKnowledgeCategory().addAll(
+        entity.getKnowledgeClass().addAll(
                 request.getKnowledgeCategoryIds().stream()
-                        .map(KnowledgeCategoryEntity::new)
+                        .map(KnowledgeClassEntity::new)
                         .collect(toSet())
         );
 
-        entity.setLinkTypes(request.getLinkTypes()
-                .stream()
-                .map(LinkTypeEntity::new)
-                .collect(toSet())
-        );
-
-        if (nonNull(request.getQuestionSourceId())) {
-            QuestionSourceEntity questionSource = sourceService.findById(request.getQuestionSourceId());
-            QuestionSourceRelationship relationship = new QuestionSourceRelationship();
-            relationship.setSource(questionSource);
-            relationship.setDocumentParagraph(request.getQuestionSourceParagraph());
-            entity.setSource(relationship);
+        if (nonNull(request.getQuestionSourceName())) {
+            entity.setQuestionSourceName(request.getQuestionSourceName());
+            entity.setQuestionSourceLink(request.getQuestionSourceLink());
         }
 
         if (nonNull(request.getAnswerStructureId())) {

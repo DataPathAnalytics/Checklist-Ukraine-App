@@ -1,6 +1,5 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.dao.relatioship.QuestionSourceRelationship;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
@@ -23,15 +22,12 @@ public class QuestionEntity {
     @CreatedDate
     private LocalDateTime dateCreated;
 
+    private String questionSourceName;
+    private String questionSourceLink;
+
     @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private Set<KnowledgeCategoryEntity> knowledgeCategory = new HashSet<>();
+    private Set<KnowledgeClassEntity> knowledgeClass = new HashSet<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;
-
-    @Relationship(type = "FROM_QUESTION_SOURCE")
-    private QuestionSourceRelationship source;
-
-    @Relationship(type = "HAS_LINK_TYPE")
-    private Set<LinkTypeEntity> linkTypes = new HashSet<>();
 }

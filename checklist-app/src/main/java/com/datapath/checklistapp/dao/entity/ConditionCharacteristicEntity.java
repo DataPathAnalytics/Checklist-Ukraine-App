@@ -16,12 +16,12 @@ public class ConditionCharacteristicEntity {
     private Long id;
 
     private boolean evaluation;
-    private Long outerRiskEventId;
+    private Long outerRiskEventTypeId;
     private Integer conditionAnswerId;
 
-    public ConditionCharacteristicEntity(boolean evaluation, Long outerRiskEventId, Integer conditionAnswerId) {
+    public ConditionCharacteristicEntity(boolean evaluation, Long outerRiskEventTypeId, Integer conditionAnswerId) {
         this.conditionAnswerId = conditionAnswerId;
         this.evaluation = evaluation;
-        this.outerRiskEventId = outerRiskEventId;
+        this.outerRiskEventTypeId = outerRiskEventTypeId;
     }
 }

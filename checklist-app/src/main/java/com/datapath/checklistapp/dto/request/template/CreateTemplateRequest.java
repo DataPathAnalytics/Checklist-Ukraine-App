@@ -62,7 +62,7 @@ public class CreateTemplateRequest {
     public static class ConditionCharacteristic {
 
         private boolean evaluation;
-        private Long riskEventId;
+        private Long riskEventTypeId;
 
         @NotNull
         private Integer conditionAnswerId;

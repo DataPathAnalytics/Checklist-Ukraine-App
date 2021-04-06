@@ -1,4 +1,4 @@
-MERGE (a:AnswerStructure {name:'Тип ауторити', linkType:'', nodeType:''})
+MERGE (a:AnswerStructure {name:'Тип ауторити'})
 MERGE (f:FieldDescription {name:'name', identifier:false, description:'Значение', valueType:'STRING', title:false, required:true, componentType:'INPUT', dataSource:'authority'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
 
@@ -63,3 +63,11 @@ MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
 MERGE (a:AnswerStructure {name:'Територіальний орган'})
 MERGE (f:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:true, componentType:'SELECT', dataSource:'authorityRegion'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
+
+MERGE (a:AnswerStructure {name:'Сума'})
+MERGE (f1:FieldDescription {name:'amount', identifier:false, valueType:'DOUBLE', title:false, required:true, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'currency', identifier:false, valueType:'STRING', title:false, required:true, componentType:'SELECT'})
+MERGE (d:Value {value:'UAH'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
+MERGE (f2)-[:HAS_VALUE]->(d);

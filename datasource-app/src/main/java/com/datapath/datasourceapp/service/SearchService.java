@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static com.datapath.datasourceapp.Constants.COLLECTIONS;
+import static com.datapath.datasourceapp.Constants.NAME;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 
@@ -41,7 +42,10 @@ public class SearchService {
     }
 
     public CollectionResponse collections() {
-        List<CollectionInfoDomain> collections = template.findAll(CollectionInfoDomain.class, COLLECTIONS);
+        Query query = new Query();
+        query.with(Sort.by(NAME));
+
+        List<CollectionInfoDomain> collections = template.find(query, CollectionInfoDomain.class, COLLECTIONS);
         return new CollectionResponse(collections);
     }
 }

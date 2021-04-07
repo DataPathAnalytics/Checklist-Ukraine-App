@@ -1,0 +1,29 @@
+{
+  "name": "organization",
+  "description": "Organization list",
+  "key": "identifier",
+  "fields": [
+    {
+      "name": "identifier",
+      "description": "ЄДРПОУ"
+    },
+    {
+      "name": "name",
+      "description": "Name"
+    }
+  ],
+  "items": [
+    {
+      "identifier": "05422303",
+      "name": "Служба автомобільних доріг у Черкаській області"
+    },
+    {
+      "identifier": "25908960",
+      "name": "Служба автомобільних доріг у Волинській області"
+    },
+    {
+      "identifier": "25449824",
+      "name": "Служба автомобільних доріг у Закарпатській області"
+    }
+  ]
+}

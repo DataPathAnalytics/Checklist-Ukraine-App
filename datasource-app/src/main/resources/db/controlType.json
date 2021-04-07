@@ -1,0 +1,25 @@
+{
+  "name": "controlType",
+  "description": "Control type list",
+  "key": "name",
+  "fields": [
+    {
+      "name": "name",
+      "description": "Name"
+    }
+  ],
+  "items": [
+    {
+      "name": "Ревiзiя фiнансово-господарської дiяльностi"
+    },
+    {
+      "name": "Ревiзiя окремих питань господарської дiяльностi"
+    },
+    {
+      "name": "Державний фiнансовий адудит"
+    },
+    {
+      "name": "Перевiрка закупiвель"
+    }
+  ]
+}

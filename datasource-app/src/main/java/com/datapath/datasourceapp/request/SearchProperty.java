@@ -15,5 +15,8 @@ public class SearchProperty {
     private String datasource;
     @NotBlank
     private String fieldName;
-    private String fieldValue = "";
+    private Object fieldValue = "";
+
+    private String filterFieldName;
+    private String filterFieldValue = "";
 }

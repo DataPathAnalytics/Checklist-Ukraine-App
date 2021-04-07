@@ -1,0 +1,21 @@
+{
+  "name": "questionSource",
+  "description": "Question sources",
+  "key": "name",
+  "fields": [
+    {
+      "name": "name",
+      "description": "Name"
+    },
+    {
+      "name": "link",
+      "description": "Link"
+    }
+  ],
+  "items": [
+    {
+      "name": "Кошторисна норма (в будівництві)",
+      "link": "https://ips.ligazakon.net/document/fin4151?an=79&ed=0000_00_00&dtm=&le="
+    }
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "name": "contract",
+  "description": "Contract list",
+  "key": "contractNumber",
+  "fields": [
+    {
+      "name": "organizationIdentifier",
+      "description":"ЄДРПОУ Обьект контроля"
+    },{
+      "name": "contractNumber",
+      "description":"Номер контракту"
+    },{
+      "name": "amount",
+      "description":"Сума контракту"
+    },{
+      "name": "currency",
+      "description":"Валюта контракту"
+    },{
+      "name": "startDate",
+      "description":"Дата початку"
+    },{
+      "name": "endDate",
+      "description":"Дата кiнця"
+    }
+  ],
+  "items": [
+    {
+      "organizationIdentifier": "05422303",
+      "contractNumber": "UA-2019-03-01-001141-b-a1",
+      "amount": 2799990.50,
+      "currency": "UAH",
+      "startDate": "2019-04-12",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "05422303",
+      "contractNumber": "UA-2019-02-27-001393-b-a1",
+      "amount": 2145000.00,
+      "currency": "UAH",
+      "startDate": "2019-04-12",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "05422303",
+      "contractNumber": "UA-2019-02-27-001415-b-a1",
+      "amount": 2199000.00,
+      "currency": "UAH",
+      "startDate": "2019-04-12",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "05422303",
+      "contractNumber": "UA-2019-02-22-001672-a-a2",
+      "amount": 1348000.00,
+      "currency": "UAH",
+      "startDate": "2019-04-15",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "05422303",
+      "contractNumber": "UA-2019-02-27-001453-b-a1",
+      "amount": 1880000.00,
+      "currency": "UAH",
+      "startDate": "2019-04-16",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25908960",
+      "contractNumber": "UA-2019-02-08-001206-a-c1",
+      "amount": 158032547.00,
+      "currency": "UAH",
+      "startDate": "2019-04-09",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25908960",
+      "contractNumber": "UA-2019-04-10-000995-b-c1",
+      "amount": 57420.00,
+      "currency": "UAH",
+      "startDate": "2019-04-10",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25908960",
+      "contractNumber": "UA-2019-02-11-001035-a-a1",
+      "amount": 11302111.00,
+      "currency": "UAH",
+      "startDate": "2019-04-16",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25908960",
+      "contractNumber": "UA-2019-02-15-001427-a-b1",
+      "amount": 16248600.00,
+      "currency": "UAH",
+      "startDate": "2019-04-16",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25908960",
+      "contractNumber": "UA-2019-02-20-000385-a-c1",
+      "amount": 4879266.00,
+      "currency": "UAH",
+      "startDate": "2019-04-16",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25449824",
+      "contractNumber": "UA-2019-01-24-002363-a-b1",
+      "amount": 214777777.00,
+      "currency": "UAH",
+      "startDate": "2019-04-06",
+      "endDate": "2020-12-31"
+    },
+    {
+      "organizationIdentifier": "25449824",
+      "contractNumber": "UA-2019-04-09-001545-b-c1",
+      "amount": 198223.01,
+      "currency": "UAH",
+      "startDate": "2019-04-09",
+      "endDate": "2019-04-30"
+    },
+    {
+      "organizationIdentifier": "25449824",
+      "contractNumber": "UA-2019-02-01-002765-b-a1",
+      "amount": 109617717.00,
+      "currency": "UAH",
+      "startDate": "2019-04-08",
+      "endDate": "2020-03-31"
+    },
+    {
+      "organizationIdentifier": "25449824",
+      "contractNumber": "UA-2019-03-15-001302-c-a1",
+      "amount": 3584820.00,
+      "currency": "UAH",
+      "startDate": "2019-04-15",
+      "endDate": "2019-12-31"
+    },
+    {
+      "organizationIdentifier": "25449824",
+      "contractNumber": "UA-2019-02-05-002008-c-b1",
+      "amount": 153900777.77,
+      "currency": "UAH",
+      "startDate": "2019-04-15",
+      "endDate": "2020-12-31"
+    }
+  ]
+}
+

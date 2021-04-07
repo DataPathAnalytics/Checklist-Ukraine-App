@@ -36,7 +36,7 @@ public class QuestionWebService {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setValue(request.getValue());
-        entity.getKnowledgeClass().addAll(
+        entity.getKnowledgeClasses().addAll(
                 request.getKnowledgeCategoryIds().stream()
                         .map(KnowledgeClassEntity::new)
                         .collect(toSet())

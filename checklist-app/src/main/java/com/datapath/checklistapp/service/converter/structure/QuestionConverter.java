@@ -42,7 +42,7 @@ public class QuestionConverter {
         BeanUtils.copyProperties(entity, dto);
 
         dto.setKnowledgeCategories(
-                entity.getKnowledgeClass().stream()
+                entity.getKnowledgeClasses().stream()
                         .mapToLong(KnowledgeClassEntity::getOuterId)
                         .boxed()
                         .collect(toList())

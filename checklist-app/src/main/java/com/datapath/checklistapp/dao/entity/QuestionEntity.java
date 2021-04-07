@@ -26,7 +26,7 @@ public class QuestionEntity {
     private String questionSourceLink;
 
     @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private Set<KnowledgeClassEntity> knowledgeClass = new HashSet<>();
+    private Set<KnowledgeClassEntity> knowledgeClasses = new HashSet<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;

@@ -17,5 +17,6 @@ public enum Node {
     TemplateConfigFolder,
     Question,
     QuestionSource,
-    Value
+    Value,
+    FieldDescription
 }

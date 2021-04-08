@@ -4,13 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static com.datapath.checklistapp.util.Constants.ACTIVITY_TEMPLATE_TYPE;
+import static java.util.Objects.nonNull;
 
 @Data
 @NoArgsConstructor
@@ -25,15 +27,34 @@ public class CreateTemplateConfigRequest {
     private Long folderId;
 
     @NotNull
-    private Long objectQuestionId;
+    private BaseQuestion objectQuestion;
+    private BaseQuestion authorityQuestion;
 
-    private List<TemplateQuestion> featureQuestions = new ArrayList<>();
+    private List<TemplateQuestion> objectFeatureQuestions = new ArrayList<>();
     private List<TemplateQuestion> typeQuestions = new ArrayList<>();
-    private List<TemplateQuestion> authorityQuestions = new ArrayList<>();
+    private List<TemplateQuestion> authorityFeatureQuestions = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Valid
+    public static class BaseQuestion {
+        @NotNull
+        private Long questionId;
+        private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
+
+        public TemplateQuestion asTemplateQuestion() {
+            TemplateQuestion question = new TemplateQuestion();
+            question.setQuestionId(this.questionId);
+            question.setAutoCompleteConfigs(this.getAutoCompleteConfigs());
+            return question;
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Valid
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
@@ -41,12 +62,43 @@ public class CreateTemplateConfigRequest {
         @NotNull
         private Integer orderNumber;
         private boolean required;
+
         @NotNull
-        private String linkType;
+        private Long nodeTypeId;
+        @NotNull
+        private Long linkTypeId;
+
+        private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
+    }
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Valid
+    public static class AutoCompleteConfig {
+        @NotNull
+        private Long fieldId;
+        private boolean autoComplete;
+        private boolean searchable;
+        private String datasource;
+        private String filterFieldName;
+        @NotBlank
+        private String fieldName;
+
+        @AssertTrue
+        public Boolean isValid() {
+            if (searchable) {
+                return nonNull(datasource);
+            }
+            return true;
+        }
     }
 
     @AssertTrue
     public Boolean isValid() {
-        return !isEmpty(authorityQuestions);
+        if (templateConfigTypeId.equals(ACTIVITY_TEMPLATE_TYPE)) {
+            return nonNull(authorityQuestion);
+        }
+        return true;
     }
 }

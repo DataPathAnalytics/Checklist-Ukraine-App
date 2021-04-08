@@ -21,9 +21,10 @@ public class TemplateDTO {
     private Integer templateConfigTypeId;
 
     private QuestionExecutionDTO objectQuestion;
-    private List<QuestionExecutionDTO> featureQuestions;
+    private QuestionExecutionDTO authorityQuestion;
+    private List<QuestionExecutionDTO> objectFeatureQuestions;
     private List<QuestionExecutionDTO> ungroupedQuestions;
     private List<GroupQuestionsDTO> questions;
     private List<QuestionExecutionDTO> typeQuestions;
-    private List<QuestionExecutionDTO> authorityQuestions;
+    private List<QuestionExecutionDTO> authorityFeatureQuestions;
 }

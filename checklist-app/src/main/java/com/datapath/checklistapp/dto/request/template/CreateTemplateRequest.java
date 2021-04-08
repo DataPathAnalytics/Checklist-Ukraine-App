@@ -51,7 +51,8 @@ public class CreateTemplateRequest {
         private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
 
         private boolean required;
-        private String linkType;
+        private Long linkTypeId;
+        private Long nodeTypeId;
 
         @NotNull
         private Integer orderNumber;
@@ -60,11 +61,9 @@ public class CreateTemplateRequest {
     @Data
     @Valid
     public static class ConditionCharacteristic {
-
-        private boolean evaluation;
-        private Long riskEventTypeId;
-
         @NotNull
-        private Integer conditionAnswerId;
+        private Long riskEventTypeId;
+        @NotNull
+        private Long conditionAnswerId;
     }
 }

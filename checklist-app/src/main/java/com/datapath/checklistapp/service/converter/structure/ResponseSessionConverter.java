@@ -52,7 +52,7 @@ public class ResponseSessionConverter {
 
         QuestionExecutionEntity objectQuestion = entity.getTemplate().getConfig().getObjectQuestionExecution();
 
-        List<QuestionExecutionDTO> featureQuestions = entity.getTemplate().getConfig().getFutureQuestionExecutions()
+        List<QuestionExecutionDTO> featureQuestions = entity.getTemplate().getConfig().getObjectFutureQuestionExecutions()
                 .stream()
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());

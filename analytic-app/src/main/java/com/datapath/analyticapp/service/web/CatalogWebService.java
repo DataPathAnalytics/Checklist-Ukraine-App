@@ -1,11 +1,15 @@
 package com.datapath.analyticapp.service.web;
 
-import com.datapath.analyticapp.dao.entity.InterpretationEntity;
-import com.datapath.analyticapp.dao.entity.KnowledgeCategoryEntity;
-import com.datapath.analyticapp.dao.repository.InterpretationRepository;
-import com.datapath.analyticapp.dao.repository.KnowledgeCategoryRepository;
-import com.datapath.analyticapp.dto.InterpretationDTO;
-import com.datapath.analyticapp.dto.KnowledgeCategoryDTO;
+import com.datapath.analyticapp.dao.entity.EventTypeEntity;
+import com.datapath.analyticapp.dao.entity.KnowledgeClassEntity;
+import com.datapath.analyticapp.dao.entity.NodeTypeEntity;
+import com.datapath.analyticapp.dao.repository.EventTypeRepository;
+import com.datapath.analyticapp.dao.repository.KnowledgeClassRepository;
+import com.datapath.analyticapp.dao.repository.NodeTypeRepository;
+import com.datapath.analyticapp.dto.EventTypeDTO;
+import com.datapath.analyticapp.dto.KnowledgeClassDTO;
+import com.datapath.analyticapp.dto.LinkTypeDTO;
+import com.datapath.analyticapp.dto.NodeTypeDTO;
 import com.datapath.analyticapp.dto.request.SearchRequest;
 import com.datapath.analyticapp.dto.response.PageableResponse;
 import lombok.AllArgsConstructor;
@@ -20,12 +24,12 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 public class CatalogWebService {
 
-    private final InterpretationRepository interpretationRepository;
-    private final KnowledgeCategoryRepository knowledgeCategoryRepository;
+    private final KnowledgeClassRepository knowledgeClassRepository;
+    private final EventTypeRepository eventTypeRepository;
+    private final NodeTypeRepository nodeTypeRepository;
 
-
-    public PageableResponse<KnowledgeCategoryDTO> searchKnowledgeCategories(SearchRequest request) {
-        Page<KnowledgeCategoryEntity> page = knowledgeCategoryRepository.findByNameMatchesRegexOrderByName(
+    public PageableResponse<KnowledgeClassDTO> searchKnowledgeClasses(SearchRequest request) {
+        Page<KnowledgeClassEntity> page = knowledgeClassRepository.findByKnowledgeClassNameMatchesRegexOrderByKnowledgeClassName(
                 String.format(SEARCH_PATTERN, request.getKeyword()), PageRequest.of(request.getPage(), request.getSize()));
 
         return new PageableResponse<>(
@@ -33,13 +37,13 @@ public class CatalogWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(k -> new KnowledgeCategoryDTO(k.getId(), k.getValue(), k.getName()))
+                        .map(k -> new KnowledgeClassDTO(k.getId(), k.getKnowledgeClassName()))
                         .collect(toList())
         );
     }
 
-    public PageableResponse<InterpretationDTO> searchInterpretations(SearchRequest request) {
-        Page<InterpretationEntity> page = interpretationRepository.findByInterpretationMatchesRegexOrderByInterpretation(
+    public PageableResponse<EventTypeDTO> searchEventTypes(SearchRequest request) {
+        Page<EventTypeEntity> page = eventTypeRepository.findByEventTypeNameMatchesRegexOrderByEventTypeName(
                 String.format(SEARCH_PATTERN, request.getKeyword()), PageRequest.of(request.getPage(), request.getSize()));
 
         return new PageableResponse<>(
@@ -47,8 +51,28 @@ public class CatalogWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(i -> new InterpretationDTO(i.getId(), i.getInterpretation()))
+                        .map(i -> new EventTypeDTO(i.getId(), i.getEventTypeName()))
                         .collect(toList())
+        );
+    }
+
+    public PageableResponse<NodeTypeDTO> searchNodeTypes(SearchRequest request) {
+        Page<NodeTypeEntity> page = nodeTypeRepository.findByNodeTypeNameMatchesRegexOrderByNodeTypeName(
+                String.format(SEARCH_PATTERN, request.getKeyword()), PageRequest.of(request.getPage(), request.getSize()));
+
+        return new PageableResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(i -> new NodeTypeDTO(
+                                        i.getId(),
+                                        i.getNodeTypeName(),
+                                        i.getLinkTypes().stream()
+                                                .map(l -> new LinkTypeDTO(l.getId(), l.getLinkTypeName(), l.getLinkTypeDescription()))
+                                                .collect(toList())
+                                )
+                        ).collect(toList())
         );
     }
 }

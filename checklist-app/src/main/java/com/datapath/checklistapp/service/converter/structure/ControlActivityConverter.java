@@ -53,7 +53,7 @@ public class ControlActivityConverter {
 
         List<QuestionExecutionDTO> featureQuestions = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getFutureQuestionExecutions()
+                .getObjectFutureQuestionExecutions()
                 .stream()
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());
@@ -67,7 +67,7 @@ public class ControlActivityConverter {
 
         List<QuestionExecutionDTO> authorityQuestions = activity.getActivityResponse()
                 .getTemplateConfig()
-                .getAuthorityQuestionExecutions()
+                .getAuthorityFeatureQuestionExecutions()
                 .stream()
                 .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
                 .collect(toList());

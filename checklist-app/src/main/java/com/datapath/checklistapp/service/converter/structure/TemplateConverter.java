@@ -33,9 +33,10 @@ public class TemplateConverter {
         dto.setAuthorId(entity.getAuthor().getId());
 
         dto.setObjectQuestion(questionConverter.map(entity.getObjectQuestionExecution()));
+        dto.setAuthorityQuestion(questionConverter.map(entity.getAuthorityQuestionExecution()));
 
-        dto.setFeatureQuestions(
-                entity.getFutureQuestionExecutions().stream()
+        dto.setObjectFeatureQuestions(
+                entity.getObjectFutureQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
@@ -48,8 +49,8 @@ public class TemplateConverter {
                         .collect(toList())
         );
 
-        dto.setAuthorityQuestions(
-                entity.getAuthorityQuestionExecutions().stream()
+        dto.setAuthorityFeatureQuestions(
+                entity.getAuthorityFeatureQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())
@@ -67,9 +68,17 @@ public class TemplateConverter {
         dto.setAuthorId(entity.getAuthor().getId());
 
         dto.setObjectQuestion(questionConverter.map(entity.getConfig().getObjectQuestionExecution()));
+        dto.setAuthorityQuestion(questionConverter.map(entity.getConfig().getAuthorityQuestionExecution()));
 
-        dto.setFeatureQuestions(
-                entity.getConfig().getFutureQuestionExecutions().stream()
+        dto.setObjectFeatureQuestions(
+                entity.getConfig().getObjectFutureQuestionExecutions().stream()
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                        .map(questionConverter::map)
+                        .collect(toList())
+        );
+
+        dto.setAuthorityFeatureQuestions(
+                entity.getConfig().getAuthorityFeatureQuestionExecutions().stream()
                         .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                         .map(questionConverter::map)
                         .collect(toList())

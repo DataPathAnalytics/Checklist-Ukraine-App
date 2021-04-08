@@ -20,10 +20,10 @@ public class AnswerStructureDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class FieldDescriptionDTO {
+        private Long id;
         private String name;
         private List<ValueDTO> values;
-        private String description;
-        private String dataSource;
+        private String label;
         private ValueType valueType;
         private ComponentType componentType;
         private boolean title;

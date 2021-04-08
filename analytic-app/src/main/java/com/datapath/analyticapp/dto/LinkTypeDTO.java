@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class KnowledgeCategoryDTO {
+public class LinkTypeDTO {
 
     private Long id;
-    private String value;
-    private String name;
+    private String linkTypeName;
+    private String linkTypeDescription;
 }

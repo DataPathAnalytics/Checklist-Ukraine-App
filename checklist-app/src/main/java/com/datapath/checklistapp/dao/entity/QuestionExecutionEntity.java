@@ -24,11 +24,15 @@ public class QuestionExecutionEntity {
 
     private boolean required;
 
-    private String linkType;
+    private Long linkTypeId;
+    private Long nodeTypeId;
 
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;
 
     @Relationship(type = "HAS_CONDITION_CHARACTERISTIC")
     private Set<ConditionCharacteristicEntity> conditionCharacteristics = new HashSet<>();
+
+    @Relationship(type = "HAS_AUTOCOMPLETE_CONFIG")
+    private Set<AutoCompleteConfigEntity> autoCompleteConfig = new HashSet<>();
 }

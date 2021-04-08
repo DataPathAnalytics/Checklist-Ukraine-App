@@ -34,15 +34,18 @@ public class TemplateConfigEntity {
     @Relationship(type = "IN_FOLDER")
     private TemplateConfigFolderEntity folder;
 
-    @Relationship(type = "HAS_FUTURE_QUESTION_EXECUTION")
-    private Set<QuestionExecutionEntity> futureQuestionExecutions = new HashSet<>();
+    @Relationship(type = "HAS_OBJECT_FUTURE_QUESTION_EXECUTION")
+    private Set<QuestionExecutionEntity> objectFutureQuestionExecutions = new HashSet<>();
 
     @Relationship(type = "HAS_TYPE_QUESTION_EXECUTION")
     private Set<QuestionExecutionEntity> typeQuestionExecutions = new HashSet<>();
 
-    @Relationship(type = "HAS_AUTHORITY_QUESTION_EXECUTION")
-    private Set<QuestionExecutionEntity> authorityQuestionExecutions = new HashSet<>();
+    @Relationship(type = "HAS_AUTHORITY_FEATURE_QUESTION_EXECUTION")
+    private Set<QuestionExecutionEntity> authorityFeatureQuestionExecutions = new HashSet<>();
 
     @Relationship(type = "HAS_OBJECT_QUESTION_EXECUTION")
     private QuestionExecutionEntity objectQuestionExecution;
+
+    @Relationship(type = "HAS_AUTHORITY_QUESTION_EXECUTION")
+    private QuestionExecutionEntity authorityQuestionExecution;
 }

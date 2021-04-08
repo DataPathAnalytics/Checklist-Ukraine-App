@@ -19,10 +19,9 @@ public class FieldDescriptionEntity {
     @GeneratedValue
     private Long id;
     private String name;
-    private String description;
+    private String label;
     private ValueType valueType;
     private ComponentType componentType;
-    private String dataSource;
     private boolean title;
     private boolean required;
     private boolean identifier;

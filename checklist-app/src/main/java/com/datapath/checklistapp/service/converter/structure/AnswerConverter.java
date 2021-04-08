@@ -52,6 +52,7 @@ public class AnswerConverter {
                 entity.getFields().stream()
                         .map(f -> {
                                     AnswerStructureDTO.FieldDescriptionDTO fieldDTO = new AnswerStructureDTO.FieldDescriptionDTO();
+                                    fieldDTO.setId(f.getId());
                                     fieldDTO.setName(f.getName());
 
                                     if (!isEmpty(f.getValues())) {
@@ -62,8 +63,7 @@ public class AnswerConverter {
                                         );
                                     }
 
-                                    fieldDTO.setDescription(f.getDescription());
-                                    fieldDTO.setDataSource(f.getDataSource());
+                                    fieldDTO.setLabel(f.getLabel());
                                     fieldDTO.setValueType(f.getValueType());
                                     fieldDTO.setComponentType(f.getComponentType());
                                     fieldDTO.setRequired(f.isRequired());

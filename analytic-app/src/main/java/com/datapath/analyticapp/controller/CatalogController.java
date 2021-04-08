@@ -1,7 +1,8 @@
 package com.datapath.analyticapp.controller;
 
-import com.datapath.analyticapp.dto.InterpretationDTO;
-import com.datapath.analyticapp.dto.KnowledgeCategoryDTO;
+import com.datapath.analyticapp.dto.EventTypeDTO;
+import com.datapath.analyticapp.dto.KnowledgeClassDTO;
+import com.datapath.analyticapp.dto.NodeTypeDTO;
 import com.datapath.analyticapp.dto.request.SearchRequest;
 import com.datapath.analyticapp.dto.response.PageableResponse;
 import com.datapath.analyticapp.service.web.CatalogWebService;
@@ -18,13 +19,18 @@ public class CatalogController {
 
     private final CatalogWebService service;
 
-    @PostMapping("knowledge-categories")
-    public PageableResponse<KnowledgeCategoryDTO> searchKnowledgeCategories(@RequestBody SearchRequest request) {
-        return service.searchKnowledgeCategories(request);
+    @PostMapping("knowledge-class")
+    public PageableResponse<KnowledgeClassDTO> searchKnowledgeClasses(@RequestBody SearchRequest request) {
+        return service.searchKnowledgeClasses(request);
     }
 
-    @PostMapping("interpretations")
-    public PageableResponse<InterpretationDTO> searchInterpretations(@RequestBody SearchRequest request) {
-        return service.searchInterpretations(request);
+    @PostMapping("event-type")
+    public PageableResponse<EventTypeDTO> searchEventTypes(@RequestBody SearchRequest request) {
+        return service.searchEventTypes(request);
+    }
+
+    @PostMapping("node-type")
+    public PageableResponse<NodeTypeDTO> searchNodeTypes(@RequestBody SearchRequest request) {
+        return service.searchNodeTypes(request);
     }
 }

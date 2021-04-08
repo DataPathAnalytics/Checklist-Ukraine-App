@@ -15,13 +15,11 @@ public class ConditionCharacteristicEntity {
     @GeneratedValue
     private Long id;
 
-    private boolean evaluation;
     private Long outerRiskEventTypeId;
-    private Integer conditionAnswerId;
+    private Long conditionAnswerId;
 
-    public ConditionCharacteristicEntity(boolean evaluation, Long outerRiskEventTypeId, Integer conditionAnswerId) {
+    public ConditionCharacteristicEntity(Long outerRiskEventTypeId, Long conditionAnswerId) {
         this.conditionAnswerId = conditionAnswerId;
-        this.evaluation = evaluation;
         this.outerRiskEventTypeId = outerRiskEventTypeId;
     }
 }

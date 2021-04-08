@@ -25,8 +25,8 @@ public class QuestionEntity {
     private LocalDateTime dateExport;
     private Integer outerTypeId;
 
-    @Relationship(type = "IN_KNOWLEDGE_CATEGORY")
-    private List<KnowledgeCategoryEntity> knowledgeCategory = new ArrayList<>();
+    @Relationship(type = "IN_KNOWLEDGE_CLASS")
+    private List<KnowledgeClassEntity> knowledgeClasses = new ArrayList<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;

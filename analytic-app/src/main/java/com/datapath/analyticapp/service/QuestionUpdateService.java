@@ -3,7 +3,7 @@ package com.datapath.analyticapp.service;
 import com.datapath.analyticapp.dao.entity.AnswerStructureEntity;
 import com.datapath.analyticapp.dao.entity.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.AnswerStructureRepository;
-import com.datapath.analyticapp.dao.repository.KnowledgeCategoryRepository;
+import com.datapath.analyticapp.dao.repository.KnowledgeClassRepository;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;
 import com.datapath.analyticapp.dto.export.question.QuestionDTO;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ import static java.util.Objects.isNull;
 public class QuestionUpdateService {
 
     private final QuestionRepository questionRepository;
-    private final KnowledgeCategoryRepository knowledgeCategoryRepository;
+    private final KnowledgeClassRepository knowledgeClassRepository;
     private final AnswerStructureRepository answerStructureRepository;
 
     @Transactional
@@ -29,7 +29,7 @@ public class QuestionUpdateService {
         question.setName(questionDto.getName());
         question.setDateCreated(questionDto.getDateCreated());
         question.setOuterTypeId(questionDto.getQuestionTypeId());
-        question.setKnowledgeCategory(knowledgeCategoryRepository.findAllById(questionDto.getKnowledgeCategories()));
+        question.setKnowledgeClasses(knowledgeClassRepository.findAllById(questionDto.getKnowledgeCategories()));
 
         AnswerStructureEntity answerStructureEntity = answerStructureRepository.findFirstByOuterId(questionDto.getAnswerStructure().getId());
 

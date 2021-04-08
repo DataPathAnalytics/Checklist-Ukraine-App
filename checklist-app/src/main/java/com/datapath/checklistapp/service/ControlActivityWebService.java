@@ -343,7 +343,9 @@ public class ControlActivityWebService {
 
     @Transactional
     public ResponseSessionDTO changeStatus(ResponseSessionStatusRequest request) {
-        ResponseSessionEntity entity = responseSessionService.findById(request.getId());
+        checkPermission(request.getControlActivityId());
+
+        ResponseSessionEntity entity = responseSessionService.findById(request.getResponseSessionId());
 
         if (IN_PROCESS_STATUS.equals(request.getSessionStatusId())) {
             entity.setReviewer(null);
@@ -422,8 +424,8 @@ public class ControlActivityWebService {
     private Map<Long, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {
         Map<Long, QuestionExecutionEntity> questionExecutionIdMap = new HashMap<>();
         templateConfig.getTypeQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
-        templateConfig.getFutureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
-        templateConfig.getAuthorityQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getObjectFutureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getAuthorityFeatureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
         questionExecutionIdMap.put(
                 templateConfig.getObjectQuestionExecution().getId(),
                 templateConfig.getObjectQuestionExecution());

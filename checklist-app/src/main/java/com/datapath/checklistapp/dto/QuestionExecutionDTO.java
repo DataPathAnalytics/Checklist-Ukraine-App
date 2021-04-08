@@ -2,6 +2,9 @@ package com.datapath.checklistapp.dto;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class QuestionExecutionDTO {
 
@@ -11,5 +14,8 @@ public class QuestionExecutionDTO {
     private QuestionDTO question;
     private AnswerDTO answer;
     private boolean required;
-    private String linkType;
+    private Long linkTypeId;
+    private Long nodeTypeId;
+
+    private List<AutoCompleteConfigDTO> autoCompleteConfigs = new ArrayList<>();
 }

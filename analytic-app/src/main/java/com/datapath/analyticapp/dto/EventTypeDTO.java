@@ -5,7 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class InterpretationDTO {
+public class EventTypeDTO {
+
     private Long id;
-    private String interpretation;
+    private String eventTypeName;
 }

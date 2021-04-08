@@ -6,12 +6,11 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("KnowledgeCategory")
-public class KnowledgeCategoryEntity {
+@Node("eventType")
+public class EventTypeEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String value;
-    private String name;
+    private String eventTypeName;
 }

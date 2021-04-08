@@ -1,0 +1,4 @@
+CREATE CONSTRAINT event_type_name_cnt IF NOT EXISTS ON (n:EventType) ASSERT n.eventTypeName IS UNIQUE
+CREATE CONSTRAINT knowledge_class_name_cnt IF NOT EXISTS ON (n:KnowledgeClass) ASSERT n.knowledgeClassName IS UNIQUE
+CREATE CONSTRAINT node_type_name_cnt IF NOT EXISTS ON (n:NodeType) ASSERT n.nodeTypeName IS UNIQUE
+CREATE CONSTRAINT link_type_name_cnt IF NOT EXISTS ON (n:LinkType) ASSERT n.linkTypeName IS UNIQUE

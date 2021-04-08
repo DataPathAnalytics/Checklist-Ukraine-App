@@ -6,11 +6,11 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("Interpretation")
-public class InterpretationEntity {
+@Node("KnowledgeClass")
+public class KnowledgeClassEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String interpretation;
+    private String knowledgeClassName;
 }

@@ -5,32 +5,42 @@
   "fields": [
     {
       "name": "organizationIdentifier",
-      "description":"ЄДРПОУ Обьект контроля"
-    },{
+      "description": "ЄДРПОУ Обьект контроля"
+    },
+    {
       "name": "contractNumber",
-      "description":"Номер контракту"
-    },{
+      "description": "Номер контракту"
+    },
+    {
       "name": "amount",
-      "description":"Сума контракту"
-    },{
+      "description": "Сума контракту"
+    },
+    {
       "name": "currency",
-      "description":"Валюта контракту"
-    },{
+      "description": "Валюта контракту"
+    },
+    {
       "name": "startDate",
-      "description":"Дата початку"
-    },{
+      "description": "Дата початку"
+    },
+    {
       "name": "endDate",
-      "description":"Дата кiнця"
+      "description": "Дата кiнця"
+    },
+    {
+      "name": "cpv",
+      "description": "Предмет закупівлі"
     }
   ],
   "items": [
     {
       "organizationIdentifier": "05422303",
       "contractNumber": "UA-2019-03-01-001141-b-a1",
-      "amount": 2799990.50,
+      "amount": 2799990.00,
       "currency": "UAH",
       "startDate": "2019-04-12",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "05422303",
@@ -38,7 +48,8 @@
       "amount": 2145000.00,
       "currency": "UAH",
       "startDate": "2019-04-12",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "05422303",
@@ -46,7 +57,8 @@
       "amount": 2199000.00,
       "currency": "UAH",
       "startDate": "2019-04-12",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "05422303",
@@ -54,7 +66,8 @@
       "amount": 1348000.00,
       "currency": "UAH",
       "startDate": "2019-04-15",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "05422303",
@@ -62,7 +75,8 @@
       "amount": 1880000.00,
       "currency": "UAH",
       "startDate": "2019-04-16",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25908960",
@@ -70,7 +84,8 @@
       "amount": 158032547.00,
       "currency": "UAH",
       "startDate": "2019-04-09",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25908960",
@@ -78,7 +93,8 @@
       "amount": 57420.00,
       "currency": "UAH",
       "startDate": "2019-04-10",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25908960",
@@ -86,7 +102,8 @@
       "amount": 11302111.00,
       "currency": "UAH",
       "startDate": "2019-04-16",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25908960",
@@ -94,7 +111,8 @@
       "amount": 16248600.00,
       "currency": "UAH",
       "startDate": "2019-04-16",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25908960",
@@ -102,7 +120,8 @@
       "amount": 4879266.00,
       "currency": "UAH",
       "startDate": "2019-04-16",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25449824",
@@ -110,7 +129,8 @@
       "amount": 214777777.00,
       "currency": "UAH",
       "startDate": "2019-04-06",
-      "endDate": "2020-12-31"
+      "endDate": "2020-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25449824",
@@ -118,7 +138,8 @@
       "amount": 198223.01,
       "currency": "UAH",
       "startDate": "2019-04-09",
-      "endDate": "2019-04-30"
+      "endDate": "2019-04-30",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25449824",
@@ -126,7 +147,8 @@
       "amount": 109617717.00,
       "currency": "UAH",
       "startDate": "2019-04-08",
-      "endDate": "2020-03-31"
+      "endDate": "2020-03-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25449824",
@@ -134,7 +156,8 @@
       "amount": 3584820.00,
       "currency": "UAH",
       "startDate": "2019-04-15",
-      "endDate": "2019-12-31"
+      "endDate": "2019-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     },
     {
       "organizationIdentifier": "25449824",
@@ -142,7 +165,8 @@
       "amount": 153900777.77,
       "currency": "UAH",
       "startDate": "2019-04-15",
-      "endDate": "2020-12-31"
+      "endDate": "2020-12-31",
+      "cpv": "Будівельні роботи та поточний ремонт"
     }
   ]
 }

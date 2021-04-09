@@ -9,5 +9,5 @@ public interface AnswerStructureRepository extends Neo4jRepository<AnswerStructu
 
     Page<AnswerStructureEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
-    AnswerStructureEntity findFirstByName(String name);
+    AnswerStructureEntity findFirstBy_defaultIsTrue();
 }

@@ -25,7 +25,6 @@ public final class Constants {
     public static final String METHODOLOGIST_ROLE = "methodologist";
 
     public static final String UNGROUPED_NAME = "ungrouped";
-    public static final String DEFAULT = "Default";
 
     public static final Integer IN_PROCESS_STATUS = 1;
     public static final Integer IN_COMPLETED_STATUS = 2;

@@ -1,72 +1,48 @@
-MERGE (a:AnswerStructure {name:'Тип ауторити'})
-MERGE (f:FieldDescription {name:'name', identifier:false, valueType:'STRING', title:false, required:true, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
+MERGE (a:AnswerStructure {name:'Текстове значення', _default: false})
+MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
 
-MERGE (a:AnswerStructure {name:'Період'})
+MERGE (a:AnswerStructure {name:'Текстове значення (унікальне)', _default: false})
+MERGE (f1:FieldDescription {name:'name', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
+
+MERGE (a:AnswerStructure {name:'Період', _default: false})
 MERGE (f1:FieldDescription {name:'startDate', identifier:false, label:'Початок періоду', valueType:'DATE', title:false, required:false, componentType:'DATE'})
 MERGE (f2:FieldDescription {name:'endDate', identifier:false, label:'Кінець періоду', valueType:'DATE', title:false, required:false, componentType:'DATE'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
-MERGE (a:AnswerStructure {name:'Организація'})
+MERGE (a:AnswerStructure {name:'Организація', _default: false})
 MERGE (f1:FieldDescription {name:'id', identifier:true, label:'Идентификатор', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
 MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Название', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
-MERGE (a:AnswerStructure {name:'Адрес'})
-MERGE (f1:FieldDescription {name:'postCode', identifier:false, label:'Код', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'country', identifier:false, label:'Страна', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f3:FieldDescription {name:'city', identifier:false, label:'Город', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f4:FieldDescription {name:'region', identifier:false, label:'Регион', valueType:'STRING', title:true, required:false, componentType:'INPUT'})
-MERGE (f5:FieldDescription {name:'street', identifier:false, label:'Улица', valueType:'STRING', title:true, required:false, componentType:'INPUT'})
+MERGE (a:AnswerStructure {name:'Контракт', _default: false})
+MERGE (f1:FieldDescription {name:'contractNumber', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'amount', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
+MERGE (f3:FieldDescription {name:'currency', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (f4:FieldDescription {name:'startDate', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
+MERGE (f5:FieldDescription {name:'endDate', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f3)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f4)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f5);
 
-MERGE (a:AnswerStructure {name:'Строка'})
-MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
-
-MERGE (a:AnswerStructure {name:'Целое число'})
-MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'INTEGER', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
-
-MERGE (a:AnswerStructure {name:'Число с плавающей точкой'})
-MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
-
-MERGE (a:AnswerStructure {name:'Список'})
-MERGE (f1:FieldDescription {name:'values', identifier:false, valueType:'LIST', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
-
-MERGE (a:AnswerStructure {name:'Контракт'})
-MERGE (f1:FieldDescription {name:'id', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
-
-MERGE (a:AnswerStructure {name:'Default'})
+MERGE (a:AnswerStructure {name:'За замовчуванням', _default: true})
 MERGE (f:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:false, componentType:'RADIOS'})
-MERGE (d1:Value {value:'Да'})
-MERGE (d2:Value {value:'Нет'})
-MERGE (d3:Value {value:'НП'})
+MERGE (d1:Value {value:'Так'})
+MERGE (d2:Value {value:'Нi'})
+MERGE (d3:Value {value:'Не застосовуэться'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f)
 MERGE (f)-[:HAS_VALUE]->(d1)
 MERGE (f)-[:HAS_VALUE]->(d2)
 MERGE (f)-[:HAS_VALUE]->(d3);
 
-MERGE (a:AnswerStructure {name:'Захід державного фінансового контролю'})
-MERGE (f:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:true, componentType:'SELECT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
-
-MERGE (a:AnswerStructure {name:'Територіальний орган'})
-MERGE (f:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:true, componentType:'SELECT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f);
-
-MERGE (a:AnswerStructure {name:'Сума'})
-MERGE (f1:FieldDescription {name:'amount', label:'Сумма', identifier:false, valueType:'DOUBLE', title:false, required:true, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'currency', label:'Валюта', identifier:false, valueType:'STRING', title:false, required:true, componentType:'SELECT'})
+MERGE (a:AnswerStructure {name:'Сума', _default: false})
+MERGE (f1:FieldDescription {name:'amount', label:'Сума', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'currency', label:'Валюта', identifier:false, valueType:'STRING', title:false, required:false, componentType:'SELECT'})
 MERGE (d:Value {value:'UAH'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)

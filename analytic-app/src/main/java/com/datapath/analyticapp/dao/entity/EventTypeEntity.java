@@ -6,7 +6,7 @@ import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
 
 @Data
-@Node("eventType")
+@Node("EventType")
 public class EventTypeEntity {
 
     @Id

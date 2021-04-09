@@ -1,4 +1,5 @@
 MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, removed: false, superAdmin:true})
+MERGE (u:User { firstName: 'Степан', lastName: 'Степанов', email:'apilipchyk@gmail.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, removed: false, superAdmin:false})
 
 MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор'})
 MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор'})
@@ -17,5 +18,3 @@ MERGE (c:SessionStatus {sessionStatusId: 2, value:'Завершено'})
 
 MERGE (c:TemplateConfigType {typeId: 1, value:'ControlActivity'})
 MERGE (c:TemplateConfigType {typeId: 2, value:'ResponseSession'})
-
-MERGE (c:QuestionSource {id:'id1', name:'TestQuestionSource', link:'www.test.com'})

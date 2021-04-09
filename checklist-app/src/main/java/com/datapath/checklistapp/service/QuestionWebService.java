@@ -4,7 +4,6 @@ import com.datapath.checklistapp.dao.entity.KnowledgeClassEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
-import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
@@ -27,7 +26,6 @@ import static java.util.stream.Collectors.toSet;
 public class QuestionWebService {
 
     private final QuestionDaoService service;
-    private final QuestionSourceDaoService sourceService;
     private final AnswerStructureDaoService answerStructureService;
     private final QuestionConverter questionConverter;
 

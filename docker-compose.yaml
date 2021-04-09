@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  checklist_neo4j_db:
+    image: neo4j:latest
+    container_name: "checklist_neo4j_db"
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - $HOME/docker_neo4j/checklist_data:/data
+    environment:
+      - NEO4J_AUTH=neo4j/checklist
+
+  analytics_neo4j_db:
+    image: neo4j:latest
+    container_name: "analytics_neo4j_db"
+    ports:
+      - "7475:7474"
+      - "7688:7687"
+    volumes:
+      - $HOME/docker_neo4j/analytics_data:/data
+    environment:
+      - NEO4J_AUTH=neo4j/analytics
+
+  datasource_mongo_db:
+    image: mongo:latest
+    container_name: "datasource_mongo_db"
+    ports:
+      - "27017:27017"
+    volumes:
+      - $HOME/docker_mongo/analytics_data:/data/db

@@ -46,7 +46,7 @@ public class CreateTemplateConfigRequest {
         public TemplateQuestion asTemplateQuestion() {
             TemplateQuestion question = new TemplateQuestion();
             question.setQuestionId(this.questionId);
-            question.setAutoCompleteConfigs(this.getAutoCompleteConfigs());
+            question.setAutoCompleteConfigs(this.autoCompleteConfigs);
             return question;
         }
     }
@@ -58,16 +58,16 @@ public class CreateTemplateConfigRequest {
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
-        private Long parentQuestionId;
         @NotNull
         private Integer orderNumber;
-        private boolean required;
-
         @NotNull
         private Long nodeTypeId;
         @NotNull
         private Long linkTypeId;
 
+        private boolean required;
+
+        private List<TemplateQuestion> subQuestions = new ArrayList<>();
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
     }
 

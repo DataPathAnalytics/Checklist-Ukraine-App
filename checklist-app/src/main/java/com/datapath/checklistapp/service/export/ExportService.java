@@ -71,11 +71,11 @@ public class ExportService {
                                 session.setDateCreated(s.getDateCreated());
                                 session.setDateModified(s.getDateModified());
                                 session.setReviewerId(s.getReviewer().getId());
-                                session.setExecutions(
-                                        s.getAnswers().stream()
-                                                .map(answer -> questionConverter.map(answer.getQuestionExecution(), answer))
-                                                .collect(toList())
-                                );
+//                                session.setExecutions(
+//                                        s.getAnswers().stream()
+//                                                .map(answer -> questionConverter.map(answer.getQuestionExecution(), answer))
+//                                                .collect(toList())
+//                                );
                                 return session;
                             })
                             .collect(toList())

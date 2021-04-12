@@ -1,9 +1,6 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.entity.QuestionEntity;
-import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
-import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
-import com.datapath.checklistapp.dao.entity.TemplateEntity;
+import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -21,7 +18,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.SESSION_TEMPLATE_TYPE;
@@ -58,48 +58,41 @@ public class TemplateWebService {
             throw new ValidationException("Invalid template config type. Should by response session template config type.");
         entity.setConfig(config);
 
-        Set<Long> questionIds = new HashSet<>();
-        request.getUngroupedQuestions().stream()
-                .map(CreateTemplateRequest.TemplateQuestion::getQuestionId)
-                .forEach(questionIds::add);
-        request.getQuestionGroups().stream()
-                .flatMap(qg -> qg.getQuestions().stream())
-                .map(CreateTemplateRequest.TemplateQuestion::getQuestionId)
-                .forEach(questionIds::add);
-
-        Map<Long, QuestionEntity> questionIdMap = questionService.findById(new ArrayList<>(questionIds))
-                .stream()
-                .collect(toMap(QuestionEntity::getId, Function.identity()));
-
         if (!isEmpty(request.getUngroupedQuestions())) {
-            QuestionGroupEntity ungroupedEntity = new QuestionGroupEntity();
+            QuestionGroupEntity group = new QuestionGroupEntity();
+            group.setName(UNGROUPED_NAME);
 
-            ungroupedEntity.setName(UNGROUPED_NAME);
+            Set<QuestionExecutionEntity> question = new HashSet<>();
 
-            request.getUngroupedQuestions().forEach(q -> {
-                        QuestionEntity question = questionIdMap.get(q.getQuestionId());
-                        if (nonNull(question)) {
-                            ungroupedEntity.getQuestions().add(questionConverter.map(q, question));
-                        }
-                    }
+            request.getUngroupedQuestions().forEach(q -> processQuestion(
+                    q,
+                    questionService.findById(q.getQuestionId()),
+                    question,
+                    null,
+                    null)
             );
 
-            entity.getGroups().add(ungroupedEntity);
+            entity.getGroups().add(group);
         }
 
         if (!isEmpty(request.getQuestionGroups())) {
-            request.getQuestionGroups().forEach(group -> {
-                if (!isEmpty(group.getQuestions())) {
-                    QuestionGroupEntity groupedEntity = new QuestionGroupEntity();
-                    groupedEntity.setName(group.getName());
-                    groupedEntity.setOrderNumber(group.getOrderNumber());
+            request.getQuestionGroups().forEach(groupDTO -> {
+                if (!isEmpty(groupDTO.getQuestions())) {
+                    QuestionGroupEntity group = new QuestionGroupEntity();
+                    group.setName(group.getName());
+                    group.setOrderNumber(group.getOrderNumber());
 
-                    group.getQuestions().forEach(q -> {
-                        QuestionEntity question = questionIdMap.get(q.getQuestionId());
-                        if (nonNull(question)) {
-                            groupedEntity.getQuestions().add(questionConverter.map(q, question));
-                        }
-                    });
+                    Set<QuestionExecutionEntity> question = new HashSet<>();
+
+                    groupDTO.getQuestions().forEach(q -> processQuestion(
+                            q,
+                            questionService.findById(q.getQuestionId()),
+                            question,
+                            null,
+                            null)
+                    );
+
+                    entity.getGroups().add(group);
                 }
             });
         }
@@ -151,5 +144,33 @@ public class TemplateWebService {
             questionGroupService.delete(g);
         });
         templateService.delete(entity);
+    }
+
+    private void processQuestion(CreateTemplateRequest.TemplateQuestion dtoQuestion,
+                                 QuestionEntity daoQuestion,
+                                 Set<QuestionExecutionEntity> questionExecutions,
+                                 Long parentQuestionId,
+                                 Long conditionAnswerId) {
+        QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion);
+
+        if (nonNull(parentQuestionId)) {
+            question.setParentQuestionId(parentQuestionId);
+            question.setConditionAnswerId(conditionAnswerId);
+        } else {
+            question.setRoot(true);
+        }
+
+        QuestionExecutionEntity saved = questionExecutionService.save(question);
+        questionExecutions.add(saved);
+
+        if (!isEmpty(dtoQuestion.getSubQuestions())) {
+            dtoQuestion.getSubQuestions().forEach(s -> processQuestion(
+                    s.getQuestion(),
+                    questionService.findById(s.getQuestion().getQuestionId()),
+                    questionExecutions,
+                    saved.getId(),
+                    s.getConditionAnswerId())
+            );
+        }
     }
 }

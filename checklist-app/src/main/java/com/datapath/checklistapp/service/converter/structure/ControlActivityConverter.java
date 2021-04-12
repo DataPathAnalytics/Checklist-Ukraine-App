@@ -1,8 +1,9 @@
 package com.datapath.checklistapp.service.converter.structure;
 
-import com.datapath.checklistapp.dao.entity.*;
+import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
+import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
-import com.datapath.checklistapp.dto.QuestionExecutionDTO;
 import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import lombok.AllArgsConstructor;
@@ -10,20 +11,19 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT;
 import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @AllArgsConstructor
 public class ControlActivityConverter {
 
     private final ResponseSessionConverter responseSessionConverter;
-    private final QuestionConverter questionConverter;
+    private final TemplateConverter templateConverter;
+    private final AnswerConverter answerConverter;
 
     public ControlActivityDTO map(ControlActivityEntity activity) {
         ControlActivityDTO dto = new ControlActivityDTO();
@@ -37,6 +37,8 @@ public class ControlActivityConverter {
         dto.setAuthorId(activity.getAuthor().getId());
         dto.setStatusId(activity.getStatus().getActivityStatusId());
 
+        dto.setTemplateConfig(templateConverter.map(activity.getActivityResponse().getTemplateConfig()));
+
         dto.setTemplates(
                 activity.getTemplates().stream()
                         .map(t -> {
@@ -47,39 +49,11 @@ public class ControlActivityConverter {
                             return templateDto;
                         }).collect(toList()));
 
-        Map<Long, AnswerEntity> answerQuestionId = activity.getActivityResponse().getAnswers()
-                .stream()
-                .collect(toMap(a -> a.getQuestionExecution().getId(), Function.identity()));
-
-        List<QuestionExecutionDTO> featureQuestions = activity.getActivityResponse()
-                .getTemplateConfig()
-                .getObjectFutureQuestionExecutions()
-                .stream()
-                .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
-                .collect(toList());
-
-        List<QuestionExecutionDTO> typeQuestions = activity.getActivityResponse()
-                .getTemplateConfig()
-                .getTypeQuestionExecutions()
-                .stream()
-                .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
-                .collect(toList());
-
-        List<QuestionExecutionDTO> authorityQuestions = activity.getActivityResponse()
-                .getTemplateConfig()
-                .getAuthorityFeatureQuestionExecutions()
-                .stream()
-                .map(q -> questionConverter.map(q, answerQuestionId.get(q.getId())))
-                .collect(toList());
-
-        QuestionExecutionEntity objectQuestion = activity.getActivityResponse()
-                .getTemplateConfig()
-                .getObjectQuestionExecution();
-
-        dto.setObjectQuestion(questionConverter.map(objectQuestion, answerQuestionId.get(objectQuestion.getId())));
-        dto.setObjectFeatureQuestions(featureQuestions);
-        dto.setTypeQuestions(typeQuestions);
-        dto.setAuthorityQuestions(authorityQuestions);
+        dto.setAnswers(
+                activity.getActivityResponse().getAnswers().stream()
+                        .map(answerConverter::map)
+                        .collect(toList())
+        );
 
         SessionPageDTO sessionPage = new SessionPageDTO();
         sessionPage.setPageSize(DEFAULT_EVENT_CHECKLIST_COUNT);

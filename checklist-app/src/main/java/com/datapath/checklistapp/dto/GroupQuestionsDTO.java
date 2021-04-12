@@ -8,5 +8,6 @@ import java.util.List;
 public class GroupQuestionsDTO {
 
     private String groupName;
+    private Integer orderNumber;
     private List<QuestionExecutionDTO> questions;
 }

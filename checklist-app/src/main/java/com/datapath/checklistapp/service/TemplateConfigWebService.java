@@ -2,6 +2,7 @@ package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.entity.FieldDescriptionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
+import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dao.service.classifier.TemplateConfigTypeDaoService;
@@ -22,11 +23,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
@@ -43,27 +48,7 @@ public class TemplateConfigWebService {
 
     @Transactional
     public void create(CreateTemplateConfigRequest request) {
-        Set<Long> questionIds = new HashSet<>();
-        questionIds.add(request.getObjectQuestion().getQuestionId());
-        questionIds.add(request.getAuthorityQuestion().getQuestionId());
-        request.getObjectFeatureQuestions()
-                .stream()
-                .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .forEach(questionIds::add);
-        request.getTypeQuestions()
-                .stream()
-                .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .forEach(questionIds::add);
-        request.getAuthorityFeatureQuestions()
-                .stream()
-                .map(CreateTemplateConfigRequest.TemplateQuestion::getQuestionId)
-                .forEach(questionIds::add);
-
-        Map<Long, QuestionEntity> questionIdMap = questionService.findById(new ArrayList<>(questionIds))
-                .stream()
-                .collect(toMap(QuestionEntity::getId, Function.identity()));
-
-        validateQuestions(request, questionIdMap);
+        validateQuestions(request);
 
         TemplateConfigEntity entity = new TemplateConfigEntity();
 
@@ -72,39 +57,40 @@ public class TemplateConfigWebService {
         entity.setType(templateTypeService.findById(request.getTemplateConfigTypeId()));
         entity.setFolder(folderService.findTemplateConfigFolderById(request.getFolderId()));
 
-        entity.setObjectQuestionExecution(
+        QuestionExecutionEntity objectQuestionExecution = questionExecutionService.save(
                 questionConverter.map(
                         request.getObjectQuestion().asTemplateQuestion(),
-                        questionIdMap.get(request.getObjectQuestion().getQuestionId())
-                )
+                        questionService.findById(request.getObjectQuestion().getQuestionId()))
         );
-        entity.setAuthorityQuestionExecution(
-                questionConverter.map(
-                        request.getAuthorityQuestion().asTemplateQuestion(),
-                        questionIdMap.get(request.getAuthorityQuestion().getQuestionId())
-                )
+        entity.setObjectQuestion(objectQuestionExecution);
+
+        Set<QuestionExecutionEntity> objectFeatureQuestions = new HashSet<>();
+        request.getObjectFeatureQuestions().forEach(
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), objectFeatureQuestions, null)
         );
+        entity.setObjectFutureQuestions(objectFeatureQuestions);
 
-        request.getObjectFeatureQuestions().forEach(q -> {
-            QuestionEntity question = questionIdMap.get(q.getQuestionId());
-            if (nonNull(question)) {
-                entity.getObjectFutureQuestionExecutions().add(questionConverter.map(q, question));
-            }
-        });
+        if (nonNull(request.getAuthorityQuestion())) {
+            QuestionExecutionEntity authorityQuestionExecution = questionExecutionService.save(
+                    questionConverter.map(
+                            request.getAuthorityQuestion().asTemplateQuestion(),
+                            questionService.findById(request.getAuthorityQuestion().getQuestionId())
+                    )
+            );
+            entity.setAuthorityQuestion(authorityQuestionExecution);
 
-        request.getTypeQuestions().forEach(q -> {
-            QuestionEntity question = questionIdMap.get(q.getQuestionId());
-            if (nonNull(question)) {
-                entity.getTypeQuestionExecutions().add(questionConverter.map(q, question));
-            }
-        });
+            Set<QuestionExecutionEntity> authorityFeatureQuestions = new HashSet<>();
+            request.getAuthorityFeatureQuestions().forEach(
+                    q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null)
+            );
+            entity.setAuthorityFeatureQuestions(objectFeatureQuestions);
+        }
 
-        request.getAuthorityFeatureQuestions().forEach(q -> {
-            QuestionEntity question = questionIdMap.get(q.getQuestionId());
-            if (nonNull(question)) {
-                entity.getAuthorityFeatureQuestionExecutions().add(questionConverter.map(q, question));
-            }
-        });
+        Set<QuestionExecutionEntity> typeQuestions = new HashSet<>();
+        request.getTypeQuestions().forEach(
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), typeQuestions, null)
+        );
+        entity.setTypeQuestions(typeQuestions);
 
         templateConfigService.save(entity);
     }
@@ -137,18 +123,6 @@ public class TemplateConfigWebService {
         return templateConverter.map(templateConfigService.findById(id));
     }
 
-    private void validateQuestions(CreateTemplateConfigRequest request, Map<Long, QuestionEntity> questionIdMap) {
-        QuestionEntity objectQuestion = questionIdMap.get(request.getObjectQuestion().getQuestionId());
-
-        if (!hasIdentifier(objectQuestion))
-            throw new ValidationException("Invalid base question. Answer structure must has identifier fields");
-
-        QuestionEntity authorityQuestion = questionIdMap.get(request.getAuthorityQuestion().getQuestionId());
-
-        if (!hasIdentifier(authorityQuestion))
-            throw new ValidationException("Invalid authority representative question. Answer structure must has identifier fields");
-    }
-
     public PageableResponse<TemplateDTO> search(SearchRequest request) {
         Page<TemplateConfigEntity> page = templateConfigService.searchByName(request);
 
@@ -162,21 +136,54 @@ public class TemplateConfigWebService {
         );
     }
 
-    private boolean hasIdentifier(QuestionEntity question) {
-        return question.getAnswerStructure().getFields().stream()
-                .anyMatch(FieldDescriptionEntity::isIdentifier);
-    }
-
     @Transactional
     public void delete(Long id) {
         if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
 
         TemplateConfigEntity entity = templateConfigService.findById(id);
-        entity.getTypeQuestionExecutions().forEach(questionExecutionService::delete);
-        entity.getAuthorityFeatureQuestionExecutions().forEach(questionExecutionService::delete);
-        entity.getObjectFutureQuestionExecutions().forEach(questionExecutionService::delete);
-        questionExecutionService.delete(entity.getObjectQuestionExecution());
-        questionExecutionService.delete(entity.getAuthorityQuestionExecution());
+        entity.getTypeQuestions().forEach(questionExecutionService::delete);
+        entity.getAuthorityFeatureQuestions().forEach(questionExecutionService::delete);
+        entity.getObjectFutureQuestions().forEach(questionExecutionService::delete);
+        questionExecutionService.delete(entity.getObjectQuestion());
+        questionExecutionService.delete(entity.getAuthorityQuestion());
         templateConfigService.delete(entity);
+    }
+
+    private void processQuestion(CreateTemplateConfigRequest.TemplateQuestion dtoQuestion,
+                                 QuestionEntity daoQuestion,
+                                 Set<QuestionExecutionEntity> questionExecutions,
+                                 Long parentQuestionId) {
+        QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion);
+
+        if (nonNull(parentQuestionId)) {
+            question.setParentQuestionId(parentQuestionId);
+        } else {
+            question.setRoot(true);
+        }
+
+        QuestionExecutionEntity saved = questionExecutionService.save(question);
+        questionExecutions.add(saved);
+
+        if (!isEmpty(dtoQuestion.getSubQuestions())) {
+            dtoQuestion.getSubQuestions()
+                    .forEach(q -> processQuestion(q, questionService.findById(q.getQuestionId()), questionExecutions, saved.getId()));
+        }
+    }
+
+    private void validateQuestions(CreateTemplateConfigRequest request) {
+        QuestionEntity objectQuestion = questionService.findById(request.getObjectQuestion().getQuestionId());
+
+        if (!hasIdentifier(objectQuestion))
+            throw new ValidationException("Invalid base question. Answer structure must has identifier fields");
+
+        QuestionEntity authorityQuestion = questionService.findById(request.getAuthorityQuestion().getQuestionId());
+
+        if (!hasIdentifier(authorityQuestion))
+            throw new ValidationException("Invalid authority representative question. Answer structure must has identifier fields");
+    }
+
+    private boolean hasIdentifier(QuestionEntity question) {
+        return question.getAnswerStructure().getFields().stream()
+                .anyMatch(FieldDescriptionEntity::isIdentifier);
     }
 }

@@ -24,18 +24,15 @@ public class QuestionConverter {
 
     private final AnswerConverter answerConverter;
 
-    public QuestionExecutionDTO map(QuestionExecutionEntity entity, AnswerEntity answerEntity) {
+    public QuestionExecutionDTO map(QuestionExecutionEntity entity) {
         QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
         executionDTO.setId(entity.getId());
         executionDTO.setRequired(entity.isRequired());
+        executionDTO.setRoot(entity.isRoot());
         executionDTO.setLinkTypeId(entity.getLinkTypeId());
         executionDTO.setNodeTypeId(entity.getNodeTypeId());
 
-        executionDTO.setParentConditionAnswerId(entity.getConditionAnswerId());
-        executionDTO.setParentQuestionId(entity.getParentQuestionId());
-
         executionDTO.setQuestion(map(entity.getQuestion()));
-        executionDTO.setAnswer(answerConverter.map(answerEntity));
 
         if (!isEmpty(entity.getAutoCompleteConfig())) {
             executionDTO.setAutoCompleteConfigs(
@@ -75,10 +72,6 @@ public class QuestionConverter {
         return dto;
     }
 
-    public QuestionExecutionDTO map(QuestionExecutionEntity entity) {
-        return this.map(entity, null);
-    }
-
     public QuestionSourceDTO map(QuestionSourceEntity entity) {
         QuestionSourceDTO source = new QuestionSourceDTO();
         source.setId(entity.getId());
@@ -90,8 +83,6 @@ public class QuestionConverter {
     public QuestionExecutionEntity map(CreateTemplateRequest.TemplateQuestion q, QuestionEntity question) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setOrderNumber(q.getOrderNumber());
-        execution.setParentQuestionId(q.getParentQuestionId());
-        execution.setConditionAnswerId(q.getParentConditionAnswerId());
         execution.setRequired(q.isRequired());
         execution.setLinkTypeId(q.getLinkTypeId());
         execution.setNodeTypeId(q.getNodeTypeId());
@@ -110,7 +101,6 @@ public class QuestionConverter {
     public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setQuestion(question);
-        execution.setParentQuestionId(q.getParentQuestionId());
         execution.setOrderNumber(q.getOrderNumber());
         execution.setRequired(q.isRequired());
         execution.setLinkTypeId(q.getLinkTypeId());

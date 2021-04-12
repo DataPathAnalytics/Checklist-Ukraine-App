@@ -1,0 +1,67 @@
+CREATE (q:Question {value:'Захід державного фінансового контролю', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Текстове значення (унікальне)'}),
+CREATE (k:KnowledgeClass {outerId:8}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Територіальний орган, що здійснює заходи ДФК', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Текстове значення (унікальне)'}),
+CREATE (k:KnowledgeClass {outerId:7}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Період проведення заходу ДФК', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Період'}),
+CREATE (k:KnowledgeClass {outerId:2}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Об'єкт контролю (ЄДРПОУ)', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Организація'}),
+CREATE (k1:KnowledgeClass {outerId:10}),
+CREATE (k2:KnowledgeClass {outerId:11}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k1), (q)-[IN_KNOWLEDGE_CLASS]->(k2);
+
+CREATE (q:Question {value:'Інформація про оприлюднення (ID номер КОНТРАКТУ)', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Контракт'}),
+CREATE (k:KnowledgeClass {outerId:9}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Ревізійний період', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Період'}),
+CREATE (k:KnowledgeClass {outerId:2}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Інформація про предмет закупівлі', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Текстове значення (унікальне)'}),
+CREATE (k:KnowledgeClass {outerId:12}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Витрати матеріальних ресурсів відповідають нормативним витратам, передбаченим державною ресурсно-елементною кошторисною нормою', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'За замовчуванням'}),
+CREATE (k1:KnowledgeClass {outerId:4}),
+CREATE (k2:KnowledgeClass {outerId:5}),
+CREATE (k3:KnowledgeClass {outerId:6}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k1), (q)-[IN_KNOWLEDGE_CLASS]->(k2), (q)-[IN_KNOWLEDGE_CLASS]->(k3);
+
+CREATE (q:Question {value:'Порушення на суму', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Сума'}),
+CREATE (k:KnowledgeClass {outerId:3}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'В тому числі кошти Фонду COVID-19, грн', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Сума'}),
+CREATE (k:KnowledgeClass {outerId:3}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'В тому числі що призвели до втрат, грн', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Сума'}),
+CREATE (k:KnowledgeClass {outerId:3}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Усунені порушення, грн', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Сума'}),
+CREATE (k:KnowledgeClass {outerId:3}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);
+
+CREATE (q:Question {value:'Начальник ревізії', dateCreated: localdatetime()}),
+MATCH (a:AnswerStructure {name: 'Текстове значення (унікальне)'}),
+CREATE (k:KnowledgeClass {outerId:1}),
+CREATE (a)<-[HAS_ANSWER_STRUCTURE]-(q)-[IN_KNOWLEDGE_CLASS]->(k);

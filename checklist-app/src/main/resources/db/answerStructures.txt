@@ -13,17 +13,17 @@ MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
 MERGE (a:AnswerStructure {name:'Организація', _default: false})
-MERGE (f1:FieldDescription {name:'id', identifier:true, label:'Идентификатор', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
+MERGE (f1:FieldDescription {name:'identifier', identifier:true, label:'Идентификатор', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
 MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Название', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
 MERGE (a:AnswerStructure {name:'Контракт', _default: false})
-MERGE (f1:FieldDescription {name:'contractNumber', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'amount', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
-MERGE (f3:FieldDescription {name:'currency', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f4:FieldDescription {name:'startDate', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
-MERGE (f5:FieldDescription {name:'endDate', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
+MERGE (f1:FieldDescription {name:'contractNumber', label:'Номер контракту', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'amount', label:'Сума договору', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
+MERGE (f3:FieldDescription {name:'currency', label:'Валюта договору', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (f4:FieldDescription {name:'startDate', label:'Початок дії договору', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
+MERGE (f5:FieldDescription {name:'endDate', label:'Кiнець дії договору', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f3)

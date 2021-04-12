@@ -17,7 +17,6 @@ public class AnswerDTO {
 
     private Long valueId;
     private String comment;
-    private Long parentQuestionId;
 
     private Map<String, Object> values;
 }

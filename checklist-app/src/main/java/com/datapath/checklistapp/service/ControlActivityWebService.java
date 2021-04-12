@@ -14,8 +14,8 @@ import com.datapath.checklistapp.dto.request.activity.*;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.PermissionException;
 import com.datapath.checklistapp.exception.ValidationException;
+import com.datapath.checklistapp.service.converter.structure.AnswerConverter;
 import com.datapath.checklistapp.service.converter.structure.ControlActivityConverter;
-import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistapp.util.UserUtils;
 import com.datapath.checklistapp.util.database.Field;
@@ -51,7 +51,7 @@ public class ControlActivityWebService {
     private final SessionStatusDaoService sessionStatusService;
     private final CustomQueryDaoService customQueryService;
 
-    private final QuestionConverter questionConverter;
+    private final AnswerConverter answerConverter;
     private final ControlActivityConverter controlActivityConverter;
     private final ResponseSessionConverter responseSessionConverter;
 
@@ -79,14 +79,25 @@ public class ControlActivityWebService {
 
                     ResponseSessionEntity responseSession = responseSessionService.findById(c.getActivityResponseId());
 
-                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getObjectQuestionExecution();
+                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getObjectQuestion();
 
                     AnswerEntity objectAnswer = responseSession.getAnswers().stream()
                             .filter(a -> objectQuestion.getId().equals(a.getQuestionExecution().getId()))
                             .findFirst()
                             .orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
 
-                    dto.setObjectQuestion(questionConverter.map(objectQuestion, objectAnswer));
+                    dto.setAnswers(
+                            Collections.singletonList(
+                                    answerConverter.mapOnlyFilterFields(
+                                            objectAnswer,
+                                            objectQuestion.getQuestion().getAnswerStructure().getFields().stream()
+                                                    .filter(FieldDescriptionEntity::isTitle)
+                                                    .map(FieldDescriptionEntity::getName)
+                                                    .collect(toSet())
+                                    )
+                            )
+                    );
+
                     return dto;
                 }).collect(toList());
     }
@@ -122,7 +133,6 @@ public class ControlActivityWebService {
                 );
             }
 
-            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
             answerEntity.setQuestionExecution(questionExecution);
 
             if (!isEmpty(a.getValues())) {
@@ -285,7 +295,6 @@ public class ControlActivityWebService {
             }
 
             answerEntity.setQuestionExecution(questionExecution);
-            answerEntity.setParentQuestionId(questionExecution.getParentQuestionId());
 
             entity.getAnswers().add(answerEntity);
         }
@@ -389,10 +398,7 @@ public class ControlActivityWebService {
                     .orElseGet(AnswerEntity::new);
 
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
-
-            answer.setParentQuestionId(questionExecution.getParentQuestionId());
             answer.setQuestionExecution(questionExecution);
-
             answer.setComment(a.getComment());
 
             if (nonNull(a.getValueId())) {
@@ -423,12 +429,12 @@ public class ControlActivityWebService {
 
     private Map<Long, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {
         Map<Long, QuestionExecutionEntity> questionExecutionIdMap = new HashMap<>();
-        templateConfig.getTypeQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
-        templateConfig.getObjectFutureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
-        templateConfig.getAuthorityFeatureQuestionExecutions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getTypeQuestions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getObjectFutureQuestions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
+        templateConfig.getAuthorityFeatureQuestions().forEach((q -> questionExecutionIdMap.put(q.getId(), q)));
         questionExecutionIdMap.put(
-                templateConfig.getObjectQuestionExecution().getId(),
-                templateConfig.getObjectQuestionExecution());
+                templateConfig.getObjectQuestion().getId(),
+                templateConfig.getObjectQuestion());
         return questionExecutionIdMap;
     }
 }

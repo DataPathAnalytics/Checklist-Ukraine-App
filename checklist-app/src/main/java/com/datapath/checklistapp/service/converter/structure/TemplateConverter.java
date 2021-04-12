@@ -4,18 +4,18 @@ import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
 import com.datapath.checklistapp.dao.entity.TemplateEntity;
-import com.datapath.checklistapp.dto.FolderDTO;
-import com.datapath.checklistapp.dto.GroupQuestionsDTO;
-import com.datapath.checklistapp.dto.TemplateDTO;
-import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
+import com.datapath.checklistapp.dto.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
-import static java.util.stream.Collectors.toList;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -32,29 +32,15 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(questionConverter.map(entity.getObjectQuestionExecution()));
-        dto.setAuthorityQuestion(questionConverter.map(entity.getAuthorityQuestionExecution()));
+        dto.setObjectQuestion(processQuestionWithChild(entity.getObjectQuestion(), entity.getObjectFutureQuestions()));
+        dto.setObjectFeatureQuestions(processQuestions(entity.getObjectFutureQuestions()));
 
-        dto.setObjectFeatureQuestions(
-                entity.getObjectFutureQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
+        dto.setTypeQuestions(processQuestions(entity.getTypeQuestions()));
 
-        dto.setTypeQuestions(
-                entity.getTypeQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
-
-        dto.setAuthorityFeatureQuestions(
-                entity.getAuthorityFeatureQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
+        if (nonNull(entity.getAuthorityQuestion())) {
+            dto.setAuthorityQuestion(processQuestionWithChild(entity.getAuthorityQuestion(), entity.getAuthorityFeatureQuestions()));
+            dto.setAuthorityFeatureQuestions(processQuestions(entity.getAuthorityFeatureQuestions()));
+        }
 
         return dto;
     }
@@ -67,60 +53,60 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(questionConverter.map(entity.getConfig().getObjectQuestionExecution()));
-        dto.setAuthorityQuestion(questionConverter.map(entity.getConfig().getAuthorityQuestionExecution()));
+        dto.setObjectQuestion(processQuestionWithChild(entity.getConfig().getObjectQuestion(), entity.getConfig().getObjectFutureQuestions()));
+        dto.setObjectFeatureQuestions(processQuestions(entity.getConfig().getObjectFutureQuestions()));
 
-        dto.setObjectFeatureQuestions(
-                entity.getConfig().getObjectFutureQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
-
-        dto.setAuthorityFeatureQuestions(
-                entity.getConfig().getAuthorityFeatureQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
-
-        dto.setTypeQuestions(
-                entity.getConfig().getTypeQuestionExecutions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
-        );
+        dto.setTypeQuestions(processQuestions(entity.getConfig().getTypeQuestions()));
 
         Optional<QuestionGroupEntity> ungrouped = entity.getGroups().stream()
                 .filter(g -> UNGROUPED_NAME.equals(g.getName()))
                 .findFirst();
 
         ungrouped.ifPresent(questionGroupEntity -> dto.setUngroupedQuestions(
-                questionGroupEntity.getQuestions().stream()
-                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                        .map(questionConverter::map)
-                        .collect(toList())
+                processQuestions(questionGroupEntity.getQuestions())
         ));
 
-        dto.setQuestions(
-                entity.getGroups().stream()
-                        .filter(g -> !UNGROUPED_NAME.equals(g.getName()))
-                        .sorted(Comparator.comparing(QuestionGroupEntity::getOrderNumber))
-                        .map(g -> {
-                                    GroupQuestionsDTO groupQuestionsDTO = new GroupQuestionsDTO();
-                                    groupQuestionsDTO.setGroupName(g.getName());
-                                    groupQuestionsDTO.setQuestions(
-                                            g.getQuestions().stream()
-                                                    .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
-                                                    .map(questionConverter::map)
-                                                    .collect(toList())
-                                    );
-                                    return groupQuestionsDTO;
-                                }
-                        ).collect(toList())
-        );
+        List<GroupQuestionsDTO> groups = new ArrayList<>();
+        entity.getGroups().stream()
+                .filter(g -> !UNGROUPED_NAME.equals(g.getName()))
+                .sorted(Comparator.comparing(QuestionGroupEntity::getOrderNumber))
+                .forEach(qg -> {
+                    GroupQuestionsDTO group = new GroupQuestionsDTO();
+                    group.setGroupName(qg.getName());
+                    group.setOrderNumber(qg.getOrderNumber());
+                    group.setQuestions(processQuestions(qg.getQuestions()));
+                    groups.add(group);
+                });
+        dto.setQuestionGroups(groups);
 
         return dto;
+    }
+
+    private QuestionExecutionDTO processQuestionWithChild(QuestionExecutionEntity questionEntity,
+                                                          Set<QuestionExecutionEntity> subQuestions) {
+        QuestionExecutionDTO question = questionConverter.map(questionEntity);
+        question.addSubQuestions(
+                subQuestions.stream()
+                        .filter(QuestionExecutionEntity::isRoot)
+                        .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                        .map(QuestionExecutionEntity::getId)
+                        .collect(toSet())
+        );
+        return question;
+    }
+
+    private List<QuestionExecutionDTO> processQuestions(Set<QuestionExecutionEntity> questions) {
+        Map<Long, QuestionExecutionDTO> questionMap = questions
+                .stream()
+                .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                .map(questionConverter::map)
+                .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
+
+        questions.stream()
+                .filter(q -> !q.isRoot())
+                .forEach(q -> questionMap.get(q.getParentQuestionId()).addSubQuestion(q.getId(), q.getConditionAnswerId()));
+
+        return new ArrayList<>(questionMap.values());
     }
 
     public List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,

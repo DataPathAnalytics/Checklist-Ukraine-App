@@ -32,6 +32,7 @@ public class DBInitializer implements InitializingBean {
         runLineQueryFromFile("data");
         runQueriesFromFile("answerStructures");
         runLineQueryFromFile("relationship");
+//        runQueriesFromFile("questions");
         log.info("DB initialization finished");
     }
 

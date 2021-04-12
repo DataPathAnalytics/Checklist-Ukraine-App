@@ -19,13 +19,12 @@ public class ControlActivityDTO {
     private LocalDateTime dateModified;
     private Integer statusId;
     private Long authorId;
-    private List<TemplateDTO> templates;
-    private Set<Long> members;
+    private TemplateDTO templateConfig;
 
-    private QuestionExecutionDTO objectQuestion;
-    private List<QuestionExecutionDTO> objectFeatureQuestions;
-    private List<QuestionExecutionDTO> typeQuestions;
-    private List<QuestionExecutionDTO> authorityQuestions;
+    private Set<Long> members;
+    private List<TemplateDTO> templates;
+
+    private List<AnswerDTO> answers;
 
     private SessionPageDTO sessions;
 }

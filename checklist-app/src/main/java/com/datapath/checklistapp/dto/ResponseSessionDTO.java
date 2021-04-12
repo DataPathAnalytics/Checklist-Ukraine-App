@@ -17,9 +17,7 @@ public class ResponseSessionDTO {
     private Long reviewerId;
     private Long authorId;
 
-    private QuestionExecutionDTO objectQuestion;
-    private List<QuestionExecutionDTO> objectFeatureQuestions;
-    private List<QuestionExecutionDTO> typeQuestions;
-    private List<GroupQuestionsDTO> questions;
-    private List<QuestionExecutionDTO> ungroupedQuestions;
+    private TemplateDTO template;
+
+    private List<AnswerDTO> answers;
 }

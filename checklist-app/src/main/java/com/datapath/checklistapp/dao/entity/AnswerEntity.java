@@ -16,7 +16,6 @@ public class AnswerEntity {
 
     private String jsonValues;
     private String comment;
-    private Long parentQuestionId;
 
     @Relationship(type = "EXECUTED_BY")
     private QuestionExecutionEntity questionExecution;

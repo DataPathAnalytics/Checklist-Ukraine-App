@@ -11,8 +11,10 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -28,17 +30,28 @@ public class AnswerConverter {
 
     @SneakyThrows
     public AnswerDTO map(AnswerEntity entity) {
-        if (isNull(entity)) return null;
-
         AnswerDTO dto = new AnswerDTO();
         dto.setComment(entity.getComment());
-        dto.setParentQuestionId(entity.getParentQuestionId());
 
         if (nonNull(entity.getValue())) {
             dto.setValueId(entity.getValue().getId());
         } else {
             dto.setValues(mapper.readValue(entity.getJsonValues(), typeRef));
         }
+
+        return dto;
+    }
+
+    @SneakyThrows
+    public AnswerDTO mapOnlyFilterFields(AnswerEntity entity, Set<String> filterFieldNames) {
+        AnswerDTO dto = new AnswerDTO();
+
+        dto.setValues(
+                mapper.readValue(entity.getJsonValues(), typeRef).entrySet()
+                        .stream()
+                        .filter(e -> filterFieldNames.contains(e.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
 
         return dto;
     }

@@ -14,4 +14,8 @@ public class QuestionExecutionDaoService {
     public void delete(QuestionExecutionEntity entity) {
         repository.delete(entity);
     }
+
+    public QuestionExecutionEntity save(QuestionExecutionEntity entity) {
+        return repository.save(entity);
+    }
 }

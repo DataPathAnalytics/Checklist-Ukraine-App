@@ -18,7 +18,7 @@ public class QuestionExecutionEntity {
     private Long id;
 
     private Long parentQuestionId;
-    private Integer conditionAnswerId;
+    private Long conditionAnswerId;
 
     private Integer orderNumber;
 
@@ -26,6 +26,8 @@ public class QuestionExecutionEntity {
 
     private Long linkTypeId;
     private Long nodeTypeId;
+
+    private boolean root;
 
     @Relationship(type = "OF_QUESTION")
     private QuestionEntity question;

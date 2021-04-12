@@ -44,18 +44,15 @@ public class CreateTemplateRequest {
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
-
-        private Long parentQuestionId;
-        private Integer parentConditionAnswerId;
-
-        private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
+        @NotNull
+        private Integer orderNumber;
 
         private boolean required;
         private Long linkTypeId;
         private Long nodeTypeId;
 
-        @NotNull
-        private Integer orderNumber;
+        private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
+        private List<SubQuestion> subQuestions = new ArrayList<>();
     }
 
     @Data
@@ -65,5 +62,13 @@ public class CreateTemplateRequest {
         private Long riskEventTypeId;
         @NotNull
         private Long conditionAnswerId;
+    }
+
+    @Data
+    public static class SubQuestion {
+        @NotNull
+        private Long conditionAnswerId;
+        @NotNull
+        private TemplateQuestion question;
     }
 }

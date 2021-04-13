@@ -7,8 +7,6 @@ import com.datapath.checklistapp.dto.QuestionExecutionDTO;
 import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
-import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -44,7 +42,7 @@ public class QuestionConverter {
                                 dto.setDatasource(c.getDatasource());
                                 dto.setFieldName(c.getFieldName());
                                 dto.setFilterFieldName(c.getFilterFieldName());
-                                dto.setFieldId(c.getField().getId());
+                                dto.setFieldId(c.getFieldId());
                                 return dto;
                             }).collect(toList())
             );
@@ -114,12 +112,7 @@ public class QuestionConverter {
                 entity.setDatasource(config.getDatasource());
                 entity.setFieldName(config.getFieldName());
                 entity.setFilterFieldName(config.getFilterFieldName());
-                entity.setField(
-                        question.getAnswerStructure().getFields()
-                                .stream()
-                                .filter(f -> f.getId().equals(config.getFieldId()))
-                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.FieldDescription.toString(), config.getFieldId()))
-                );
+                entity.setFieldId(config.getFieldId());
                 execution.getAutoCompleteConfig().add(entity);
             });
         }

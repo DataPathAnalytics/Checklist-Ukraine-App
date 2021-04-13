@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import static com.datapath.checklistapp.util.Constants.ACTIVITY_TEMPLATE_TYPE;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -83,7 +84,7 @@ public class TemplateConfigWebService {
             request.getAuthorityFeatureQuestions().forEach(
                     q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null)
             );
-            entity.setAuthorityFeatureQuestions(objectFeatureQuestions);
+            entity.setAuthorityFeatureQuestions(authorityFeatureQuestions);
         }
 
         Set<QuestionExecutionEntity> typeQuestions = new HashSet<>();
@@ -176,10 +177,12 @@ public class TemplateConfigWebService {
         if (!hasIdentifier(objectQuestion))
             throw new ValidationException("Invalid base question. Answer structure must has identifier fields");
 
-        QuestionEntity authorityQuestion = questionService.findById(request.getAuthorityQuestion().getQuestionId());
+        if (ACTIVITY_TEMPLATE_TYPE.equals(request.getTemplateConfigTypeId())) {
+            QuestionEntity authorityQuestion = questionService.findById(request.getAuthorityQuestion().getQuestionId());
 
-        if (!hasIdentifier(authorityQuestion))
-            throw new ValidationException("Invalid authority representative question. Answer structure must has identifier fields");
+            if (!hasIdentifier(authorityQuestion))
+                throw new ValidationException("Invalid authority representative question. Answer structure must has identifier fields");
+        }
     }
 
     private boolean hasIdentifier(QuestionEntity question) {

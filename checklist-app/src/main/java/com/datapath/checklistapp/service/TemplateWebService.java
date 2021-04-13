@@ -71,7 +71,7 @@ public class TemplateWebService {
                     null,
                     null)
             );
-
+            group.setQuestions(question);
             entity.getGroups().add(group);
         }
 
@@ -91,7 +91,7 @@ public class TemplateWebService {
                             null,
                             null)
                     );
-
+                    group.setQuestions(question);
                     entity.getGroups().add(group);
                 }
             });

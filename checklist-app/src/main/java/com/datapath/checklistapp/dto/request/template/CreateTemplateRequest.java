@@ -66,7 +66,6 @@ public class CreateTemplateRequest {
 
     @Data
     public static class SubQuestion {
-        @NotNull
         private Long conditionAnswerId;
         @NotNull
         private TemplateQuestion question;

@@ -1,12 +1,8 @@
 package com.datapath.checklistapp.dto;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -24,7 +20,6 @@ public class QuestionExecutionDTO {
     private List<AutoCompleteConfigDTO> autoCompleteConfigs = new ArrayList<>();
 
     @Data
-    @NoArgsConstructor
     private static class SubQuestions {
         private Long conditionAnswerId;
         private Set<Long> questionIds = new HashSet<>();
@@ -39,19 +34,23 @@ public class QuestionExecutionDTO {
     }
 
     public void addSubQuestion(Long subQuestionId, Long conditionAnswerId) {
-        SubQuestions sub;
+        Optional<SubQuestions> sub;
 
         if (isNull(conditionAnswerId)) {
             sub = subQuestions.stream()
-                    .findFirst()
-                    .orElseGet(SubQuestions::new);
+                    .findFirst();
         } else {
             sub = subQuestions.stream()
                     .filter(s -> conditionAnswerId.equals(s.conditionAnswerId))
-                    .findFirst()
-                    .orElseGet(() -> new SubQuestions(conditionAnswerId));
+                    .findFirst();
         }
 
-        sub.questionIds.add(subQuestionId);
+        if (sub.isPresent()) {
+            sub.get().questionIds.add(subQuestionId);
+        } else {
+            SubQuestions newSub = new SubQuestions(conditionAnswerId);
+            newSub.questionIds.add(subQuestionId);
+            subQuestions.add(newSub);
+        }
     }
 }

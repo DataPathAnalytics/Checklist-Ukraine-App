@@ -12,9 +12,9 @@ MERGE (f2:FieldDescription {name:'endDate', identifier:false, label:'Кінец�
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
-MERGE (a:AnswerStructure {name:'Организація', _default: false})
+MERGE (a:AnswerStructure {name:'Організація', _default: false})
 MERGE (f1:FieldDescription {name:'identifier', identifier:true, label:'Идентификатор', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Название', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Назва', valueType:'STRING', title:true, required:true, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 

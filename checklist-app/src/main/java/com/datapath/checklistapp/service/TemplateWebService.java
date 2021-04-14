@@ -69,6 +69,7 @@ public class TemplateWebService {
                     questionService.findById(q.getQuestionId()),
                     question,
                     null,
+                    null,
                     null)
             );
             group.setQuestions(question);
@@ -88,6 +89,7 @@ public class TemplateWebService {
                             q,
                             questionService.findById(q.getQuestionId()),
                             question,
+                            null,
                             null,
                             null)
                     );
@@ -150,12 +152,14 @@ public class TemplateWebService {
                                  QuestionEntity daoQuestion,
                                  Set<QuestionExecutionEntity> questionExecutions,
                                  Long parentQuestionId,
-                                 Long conditionAnswerId) {
+                                 Long conditionAnswerId,
+                                 String conditionFieldName) {
         QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion);
 
         if (nonNull(parentQuestionId)) {
             question.setParentQuestionId(parentQuestionId);
             question.setConditionAnswerId(conditionAnswerId);
+            question.setConditionFieldName(conditionFieldName);
         } else {
             question.setRoot(true);
         }
@@ -169,7 +173,8 @@ public class TemplateWebService {
                     questionService.findById(s.getQuestion().getQuestionId()),
                     questionExecutions,
                     saved.getId(),
-                    s.getConditionAnswerId())
+                    s.getConditionAnswerId(),
+                    s.getConditionFieldName())
             );
         }
     }

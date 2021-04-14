@@ -26,10 +26,9 @@ public class QuestionUpdateService {
     public void process(QuestionDTO questionDto) {
         QuestionEntity question = new QuestionEntity();
         question.setOuterId(questionDto.getId());
-        question.setName(questionDto.getName());
+        question.setValue(questionDto.getValue());
         question.setDateCreated(questionDto.getDateCreated());
-        question.setOuterTypeId(questionDto.getQuestionTypeId());
-        question.setKnowledgeClasses(knowledgeClassRepository.findAllById(questionDto.getKnowledgeCategories()));
+        question.setKnowledgeClasses(knowledgeClassRepository.findAllById(questionDto.getKnowledgeClasses()));
 
         AnswerStructureEntity answerStructureEntity = answerStructureRepository.findFirstByOuterId(questionDto.getAnswerStructure().getId());
 
@@ -37,8 +36,6 @@ public class QuestionUpdateService {
             answerStructureEntity = new AnswerStructureEntity();
             answerStructureEntity.setOuterId(questionDto.getAnswerStructure().getId());
             answerStructureEntity.setName(questionDto.getAnswerStructure().getName());
-            answerStructureEntity.setNodeType(questionDto.getAnswerStructure().getNodeType());
-            answerStructureEntity.setLinkType(questionDto.getAnswerStructure().getLinkType());
             answerStructureEntity.setIdentifierFieldName(
                     questionDto.getAnswerStructure().getFieldDescriptions().stream()
                             .filter(QuestionDTO.FieldDescriptionDTO::isIdentifier)

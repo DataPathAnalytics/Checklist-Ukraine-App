@@ -124,20 +124,14 @@ public class ControlActivityWebService {
             answerEntity.setComment(a.getComment());
 
             if (nonNull(a.getValueId())) {
-                answerEntity.setValue(
-                        questionExecution.getQuestion().getAnswerStructure().getFields()
-                                .stream()
-                                .flatMap(f -> f.getValues().stream())
-                                .filter(v -> a.getValueId().equals(v.getId()))
-                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), a.getValueId()))
-                );
+//                answerEntity.setValueId(a.getValueId());
             }
 
             answerEntity.setQuestionExecution(questionExecution);
 
             if (!isEmpty(a.getValues())) {
                 try {
-                    answerEntity.setJsonValues(mapper.writeValueAsString(a.getValues()));
+                    answerEntity.setValues(mapper.writeValueAsString(a.getValues()));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -278,20 +272,14 @@ public class ControlActivityWebService {
 
             if (!isEmpty(answer.getValues())) {
                 try {
-                    answerEntity.setJsonValues(mapper.writeValueAsString(answer.getValues()));
+                    answerEntity.setValues(mapper.writeValueAsString(answer.getValues()));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
             }
 
             if (nonNull(answer.getValueId())) {
-                answerEntity.setValue(
-                        questionExecution.getQuestion().getAnswerStructure().getFields()
-                                .stream()
-                                .flatMap(f -> f.getValues().stream())
-                                .filter(v -> answer.getValueId().equals(v.getId()))
-                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), answer.getValueId()))
-                );
+//                answerEntity.setValueId(answer.getValueId());
             }
 
             answerEntity.setQuestionExecution(questionExecution);
@@ -402,18 +390,12 @@ public class ControlActivityWebService {
             answer.setComment(a.getComment());
 
             if (nonNull(a.getValueId())) {
-                answer.setValue(
-                        questionExecution.getQuestion().getAnswerStructure().getFields()
-                                .stream()
-                                .flatMap(f -> f.getValues().stream())
-                                .filter(v -> a.getValueId().equals(v.getId()))
-                                .findFirst().orElseThrow(() -> new EntityNotFoundException(Node.Value.name(), a.getValueId()))
-                );
+//                answer.setValueId(a.getValueId());
             }
 
             if (!isEmpty(a.getValues())) {
                 try {
-                    answer.setJsonValues(mapper.writeValueAsString(a.getValues()));
+                    answer.setValues(mapper.writeValueAsString(a.getValues()));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -435,6 +417,11 @@ public class ControlActivityWebService {
         questionExecutionIdMap.put(
                 templateConfig.getObjectQuestion().getId(),
                 templateConfig.getObjectQuestion());
+        if (nonNull(templateConfig.getAuthorityQuestion())) {
+            questionExecutionIdMap.put(
+                    templateConfig.getAuthorityQuestion().getId(),
+                    templateConfig.getAuthorityQuestion());
+        }
         return questionExecutionIdMap;
     }
 }

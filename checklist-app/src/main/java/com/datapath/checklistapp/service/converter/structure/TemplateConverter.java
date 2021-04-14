@@ -104,7 +104,7 @@ public class TemplateConverter {
 
         questions.stream()
                 .filter(q -> !q.isRoot())
-                .forEach(q -> questionMap.get(q.getParentQuestionId()).addSubQuestion(q.getId(), q.getConditionAnswerId()));
+                .forEach(q -> questionMap.get(q.getParentQuestionId()).addSubQuestion(q.getId(), q.getConditionAnswerId(), q.getConditionFieldName()));
 
         return new ArrayList<>(questionMap.values());
     }

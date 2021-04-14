@@ -14,12 +14,9 @@ public class AnswerEntity {
     @GeneratedValue
     private Long id;
 
-    private String jsonValues;
+    private String values;
     private String comment;
 
     @Relationship(type = "EXECUTED_BY")
     private QuestionExecutionEntity questionExecution;
-    @Relationship(type = "HAS_ANSWER")
-    private ValueEntity value;
-
 }

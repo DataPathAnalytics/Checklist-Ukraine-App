@@ -4,8 +4,6 @@ import lombok.Data;
 
 import java.util.*;
 
-import static java.util.Objects.isNull;
-
 @Data
 public class QuestionExecutionDTO {
 
@@ -21,36 +19,36 @@ public class QuestionExecutionDTO {
 
     @Data
     private static class SubQuestions {
-        private Long conditionAnswerId;
-        private Set<Long> questionIds = new HashSet<>();
+        private String conditionFieldName;
+        private Map<Long, List<Long>> conditionAnswerQuestionIds = new HashMap<>();
 
-        private SubQuestions(Long conditionAnswerId) {
-            this.conditionAnswerId = conditionAnswerId;
+        private SubQuestions(String conditionFieldName) {
+            this.conditionFieldName = conditionFieldName;
         }
     }
 
     public void addSubQuestions(Set<Long> subQuestionIds) {
-        subQuestionIds.forEach(s -> this.addSubQuestion(s, null));
+//        subQuestionIds.forEach(s -> this.addSubQuestion(s, null));
     }
 
-    public void addSubQuestion(Long subQuestionId, Long conditionAnswerId) {
-        Optional<SubQuestions> sub;
-
-        if (isNull(conditionAnswerId)) {
-            sub = subQuestions.stream()
-                    .findFirst();
-        } else {
-            sub = subQuestions.stream()
-                    .filter(s -> conditionAnswerId.equals(s.conditionAnswerId))
-                    .findFirst();
-        }
-
-        if (sub.isPresent()) {
-            sub.get().questionIds.add(subQuestionId);
-        } else {
-            SubQuestions newSub = new SubQuestions(conditionAnswerId);
-            newSub.questionIds.add(subQuestionId);
-            subQuestions.add(newSub);
-        }
+    public void addSubQuestion(Long subQuestionId, Long conditionAnswerId, String conditionFieldName) {
+//        Optional<SubQuestions> sub;
+//
+//        if (isNull(conditionAnswerId)) {
+//            sub = subQuestions.stream()
+//                    .findFirst();
+//        } else {
+//            sub = subQuestions.stream()
+//                    .filter(s -> conditionAnswerId.equals(s.conditionAnswerId))
+//                    .findFirst();
+//        }
+//
+//        if (sub.isPresent()) {
+//            sub.get().questionIds.add(subQuestionId);
+//        } else {
+//            SubQuestions newSub = new SubQuestions(conditionAnswerId);
+//            newSub.questionIds.add(subQuestionId);
+//            subQuestions.add(newSub);
+//        }
     }
 }

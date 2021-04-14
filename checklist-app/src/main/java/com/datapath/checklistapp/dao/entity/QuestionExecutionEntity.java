@@ -19,6 +19,7 @@ public class QuestionExecutionEntity {
 
     private Long parentQuestionId;
     private Long conditionAnswerId;
+    private String conditionFieldName;
 
     private Integer orderNumber;
 

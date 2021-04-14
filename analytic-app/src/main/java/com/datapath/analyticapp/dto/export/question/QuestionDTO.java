@@ -8,18 +8,15 @@ import java.util.List;
 @Data
 public class QuestionDTO {
     private Long id;
-    private String name;
+    private String value;
     private LocalDateTime dateCreated;
-    private List<Long> knowledgeCategories;
-    private Integer questionTypeId;
+    private List<Long> knowledgeClasses;
     private AnswerStructureDTO answerStructure;
 
     @Data
     public static class AnswerStructureDTO {
         private Long id;
         private String name;
-        private String linkType;
-        private String nodeType;
         private List<FieldDescriptionDTO> fieldDescriptions;
     }
 
@@ -27,5 +24,13 @@ public class QuestionDTO {
     public static class FieldDescriptionDTO {
         private String name;
         private boolean identifier;
+
+        private List<ValueDTO> values;
+    }
+
+    @Data
+    public static class ValueDTO {
+        private Long id;
+        private String value;
     }
 }

@@ -19,11 +19,10 @@ public class QuestionEntity {
     @GeneratedValue
     private Long id;
     private Long outerId;
-    private String name;
+    private String value;
     private LocalDateTime dateCreated;
     @CreatedDate
     private LocalDateTime dateExport;
-    private Integer outerTypeId;
 
     @Relationship(type = "IN_KNOWLEDGE_CLASS")
     private List<KnowledgeClassEntity> knowledgeClasses = new ArrayList<>();

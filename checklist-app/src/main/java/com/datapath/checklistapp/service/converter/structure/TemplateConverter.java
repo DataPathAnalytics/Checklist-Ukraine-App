@@ -14,8 +14,7 @@ import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -98,15 +97,17 @@ public class TemplateConverter {
     private List<QuestionExecutionDTO> processQuestions(Set<QuestionExecutionEntity> questions) {
         Map<Long, QuestionExecutionDTO> questionMap = questions
                 .stream()
-                .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
                 .map(questionConverter::map)
                 .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
 
         questions.stream()
                 .filter(q -> !q.isRoot())
-                .forEach(q -> questionMap.get(q.getParentQuestionId()).addSubQuestion(q.getId(), q.getConditionAnswerId(), q.getConditionFieldName()));
+                .forEach(q -> questionMap.get(q.getParentQuestionId())
+                        .addSubQuestion(q.getId(), q.getConditionFieldName(), q.getConditionAnswerId()));
 
-        return new ArrayList<>(questionMap.values());
+        return questionMap.values().stream()
+                .sorted(Comparator.comparing(QuestionExecutionDTO::getOrderNumber))
+                .collect(toList());
     }
 
     public List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,

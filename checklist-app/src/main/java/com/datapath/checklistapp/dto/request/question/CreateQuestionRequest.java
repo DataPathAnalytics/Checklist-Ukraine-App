@@ -1,9 +1,11 @@
 package com.datapath.checklistapp.dto.request.question;
 
+import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -19,6 +21,7 @@ public class CreateQuestionRequest {
     private List<Long> knowledgeClassIds;
 
     private Long answerStructureId;
-    private String questionSourceName;
-    private String questionSourceLink;
+
+    @Valid
+    private QuestionSourceDTO source;
 }

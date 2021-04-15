@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,25 +22,26 @@ public class CreateTemplateRequest {
     @NotNull
     private Long templateConfigId;
 
+    @Valid
     private List<TemplateQuestion> ungroupedQuestions = new ArrayList<>();
+    @Valid
     private List<QuestionGroup> questionGroups = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Valid
     public static class QuestionGroup {
         @NotNull
         private String name;
         @NotNull
         private Integer orderNumber;
+        @Valid
         private List<TemplateQuestion> questions = new ArrayList<>();
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Valid
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
@@ -52,12 +52,13 @@ public class CreateTemplateRequest {
         private Long linkTypeId;
         private Long nodeTypeId;
 
+        @Valid
         private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
+        @Valid
         private List<SubQuestion> subQuestions = new ArrayList<>();
     }
 
     @Data
-    @Valid
     public static class ConditionCharacteristic {
         @NotNull
         private Long riskEventTypeId;
@@ -69,7 +70,7 @@ public class CreateTemplateRequest {
     public static class SubQuestion {
         private Long conditionAnswerId;
 
-        @NotEmpty
+        @NotBlank
         private String conditionFieldName;
         @NotNull
         private TemplateQuestion question;

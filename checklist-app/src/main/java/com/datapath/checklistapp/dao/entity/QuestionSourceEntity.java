@@ -9,7 +9,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 public class QuestionSourceEntity {
 
     @Id
-    private String id;
+    private Long identifier;
     private String name;
     private String link;
 }

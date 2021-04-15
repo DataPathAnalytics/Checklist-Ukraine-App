@@ -30,17 +30,20 @@ public class CreateTemplateConfigRequest {
     private BaseQuestion objectQuestion;
     private BaseQuestion authorityQuestion;
 
+    @Valid
     private List<TemplateQuestion> objectFeatureQuestions = new ArrayList<>();
+    @Valid
     private List<TemplateQuestion> typeQuestions = new ArrayList<>();
+    @Valid
     private List<TemplateQuestion> authorityFeatureQuestions = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Valid
     public static class BaseQuestion {
         @NotNull
         private Long questionId;
+        @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
 
         public TemplateQuestion asTemplateQuestion() {
@@ -54,7 +57,6 @@ public class CreateTemplateConfigRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Valid
     public static class TemplateQuestion {
         @NotNull
         private Long questionId;
@@ -67,14 +69,15 @@ public class CreateTemplateConfigRequest {
 
         private boolean required;
 
+        @Valid
         private List<TemplateQuestion> subQuestions = new ArrayList<>();
+        @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
     }
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    @Valid
     public static class AutoCompleteConfig {
         @NotNull
         private Long fieldId;

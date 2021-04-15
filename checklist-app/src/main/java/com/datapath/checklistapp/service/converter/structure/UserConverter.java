@@ -1,7 +1,9 @@
 package com.datapath.checklistapp.service.converter.structure;
 
+import com.datapath.checklistapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistapp.dao.entity.EmploymentEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
+import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.UserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,15 @@ public class UserConverter {
         BeanUtils.copyProperties(entity, dto);
 
         lastEmployment.ifPresent(
-                employment -> dto.setDepartmentId(employment.getDepartment().getId())
+                employment -> dto.setDepartment(map(employment.getDepartment()))
         );
 
         dto.setPermissionId(entity.getPermission().getPermissionId());
 
         return dto;
+    }
+
+    private static DepartmentDTO map(DepartmentEntity entity) {
+        return new DepartmentDTO(entity.getIdentifier(), entity.getName());
     }
 }

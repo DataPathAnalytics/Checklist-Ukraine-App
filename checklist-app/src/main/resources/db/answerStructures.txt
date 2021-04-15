@@ -3,8 +3,10 @@ MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'STRING', 
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
 
 MERGE (a:AnswerStructure {name:'Текстове значення (унікальне)', _default: false})
-MERGE (f1:FieldDescription {name:'name', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
+MERGE (f1:FieldDescription {name:'identifier', identifier:true, label:'Идентификатор', valueType:'NUMBER', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Значення', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
 MERGE (a:AnswerStructure {name:'Період', _default: false})
 MERGE (f1:FieldDescription {name:'startDate', identifier:false, label:'Початок періоду', valueType:'DATE', title:false, required:false, componentType:'DATE'})
@@ -20,7 +22,7 @@ MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
 
 MERGE (a:AnswerStructure {name:'Контракт', _default: false})
 MERGE (f1:FieldDescription {name:'contractNumber', label:'Номер контракту', identifier:true, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'amount', label:'Сума договору', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'amount', label:'Сума договору', identifier:false, valueType:'NUMBER', title:false, required:false, componentType:'INPUT'})
 MERGE (f3:FieldDescription {name:'currency', label:'Валюта договору', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
 MERGE (f4:FieldDescription {name:'startDate', label:'Початок дії договору', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
 MERGE (f5:FieldDescription {name:'endDate', label:'Кiнець дії договору', identifier:false, valueType:'DATE', title:false, required:false, componentType:'DATE'})
@@ -41,9 +43,7 @@ MERGE (f)-[:HAS_VALUE]->(d2)
 MERGE (f)-[:HAS_VALUE]->(d3);
 
 MERGE (a:AnswerStructure {name:'Сума', _default: false})
-MERGE (f1:FieldDescription {name:'amount', label:'Сума', identifier:false, valueType:'DOUBLE', title:false, required:false, componentType:'INPUT'})
-MERGE (f2:FieldDescription {name:'currency', label:'Валюта', identifier:false, valueType:'STRING', title:false, required:false, componentType:'SELECT'})
-MERGE (d:Value {value:'UAH'})
+MERGE (f1:FieldDescription {name:'amount', label:'Сума', identifier:false, valueType:'NUMBER', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'currency', label:'Валюта', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
-MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2)
-MERGE (f2)-[:HAS_VALUE]->(d);
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);

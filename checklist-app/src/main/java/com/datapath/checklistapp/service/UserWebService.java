@@ -7,6 +7,7 @@ import com.datapath.checklistapp.dao.entity.classifier.Permission;
 import com.datapath.checklistapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
 import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;
+import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.UserDTO;
 import com.datapath.checklistapp.dto.UserPageDTO;
 import com.datapath.checklistapp.dto.UserStateDTO;
@@ -86,7 +87,7 @@ public class UserWebService {
         user.setSuperAdmin(false);
         user.setPermission(permissionService.findByRole(AUDITOR_ROLE));
 
-        updateDepartmentRelationship(user, request.getDepartmentId());
+        updateDepartmentRelationship(user, request.getDepartment());
 
         userService.save(user);
 
@@ -130,8 +131,8 @@ public class UserWebService {
             }
         }
 
-        if (nonNull(request.getDepartmentId())) {
-            updateDepartmentRelationship(user, request.getDepartmentId());
+        if (nonNull(request.getDepartment())) {
+            updateDepartmentRelationship(user, request.getDepartment());
         }
 
         if (nonNull(request.getPermissionId())) {
@@ -162,9 +163,15 @@ public class UserWebService {
         UsersStorageService.removeUser(user.getId());
     }
 
-    private void updateDepartmentRelationship(UserEntity user, Long departmentId) {
+    private void updateDepartmentRelationship(UserEntity user, DepartmentDTO departmentDTO) {
         List<EmploymentEntity> employments = user.getEmployments();
-        DepartmentEntity department = departmentService.findById(departmentId);
+        DepartmentEntity department = departmentService.findByIdentifier(departmentDTO.getIdentifier());
+
+        if (isNull(department)) {
+            department = new DepartmentEntity();
+            department.setIdentifier(departmentDTO.getIdentifier());
+        }
+        department.setName(departmentDTO.getName());
 
         if (!isEmpty(employments)) {
             Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
@@ -172,7 +179,7 @@ public class UserWebService {
             if (!lastEmployment.isPresent()) {
                 employments.add(new EmploymentEntity(LocalDateTime.now(), null, department));
             } else {
-                if (!lastEmployment.get().getDepartment().getId().equals(departmentId)) {
+                if (!lastEmployment.get().getDepartment().getIdentifier().equals(departmentDTO.getIdentifier())) {
                     LocalDateTime now = LocalDateTime.now();
                     lastEmployment.get().setEnd(now);
                     employments.add(new EmploymentEntity(now, null, department));

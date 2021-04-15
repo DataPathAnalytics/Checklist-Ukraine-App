@@ -1,8 +1,12 @@
 {
   "name": "controlType",
   "description": "Control type list",
-  "key": "name",
+  "key": "identifier",
   "fields": [
+    {
+      "name": "identifier",
+      "description": "Идентификатор"
+    },
     {
       "name": "name",
       "description": "Name"
@@ -10,15 +14,19 @@
   ],
   "items": [
     {
+      "identifier": 1,
       "name": "Ревiзiя фiнансово-господарської дiяльностi"
     },
     {
+      "identifier": 2,
       "name": "Ревiзiя окремих питань господарської дiяльностi"
     },
     {
+      "identifier": 3,
       "name": "Державний фiнансовий адудит"
     },
     {
+      "identifier": 4,
       "name": "Перевiрка закупiвель"
     }
   ]

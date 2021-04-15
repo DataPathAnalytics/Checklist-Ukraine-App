@@ -4,12 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class QuestionSourceDTO {
-    private String id;
+
+    @NotNull
+    private Long identifier;
     private String name;
     private String link;
-    private String paragraph;
 }

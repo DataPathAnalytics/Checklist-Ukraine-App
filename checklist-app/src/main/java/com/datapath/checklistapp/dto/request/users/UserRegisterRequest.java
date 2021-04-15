@@ -1,7 +1,9 @@
 package com.datapath.checklistapp.dto.request.users;
 
+import com.datapath.checklistapp.dto.DepartmentDTO;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -16,6 +18,8 @@ public class UserRegisterRequest {
     private String email;
     @NotBlank
     private String password;
+
     @NotNull
-    private Long departmentId;
+    @Valid
+    private DepartmentDTO department;
 }

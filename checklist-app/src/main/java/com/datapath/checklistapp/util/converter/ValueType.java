@@ -2,8 +2,7 @@ package com.datapath.checklistapp.util.converter;
 
 public enum ValueType {
     STRING,
-    INTEGER,
-    DOUBLE,
+    NUMBER,
     DATE,
     DATETIME,
     LIST

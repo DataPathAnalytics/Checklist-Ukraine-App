@@ -1,7 +1,6 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
-import com.datapath.checklistapp.dto.QuestionSourceDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.CatalogWebService;
@@ -19,12 +18,6 @@ import java.util.List;
 public class CatalogController {
 
     private final CatalogWebService service;
-
-    @ApiOperation(value = "list of available question sources", response = QuestionSourceDTO.class)
-    @GetMapping("question-sources")
-    public List<QuestionSourceDTO> questionSources() {
-        return service.getQuestionSources();
-    }
 
     @ApiOperation(value = "list of available answer structures", response = AnswerStructureDTO.class)
     @GetMapping("answer-structures")

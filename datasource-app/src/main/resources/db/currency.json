@@ -1,0 +1,16 @@
+{
+  "name": "currency",
+  "description": "Currency",
+  "key": "currency",
+  "fields": [
+    {
+      "name": "currency",
+      "description": "Валюта"
+    }
+  ],
+  "items": [
+    {
+      "currency": "UAH"
+    }
+  ]
+}

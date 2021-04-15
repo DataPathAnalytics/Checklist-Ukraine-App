@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -16,5 +17,6 @@ public class UpdateControlActivityRequest {
     @NotNull
     private Long id;
     @NotNull
+    @Valid
     private List<AnswerDTO> answers;
 }

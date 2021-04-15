@@ -2,8 +2,10 @@ package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.entity.KnowledgeClassEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
+import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
+import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
 import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -28,6 +31,7 @@ public class QuestionWebService {
     private final QuestionDaoService service;
     private final AnswerStructureDaoService answerStructureService;
     private final QuestionConverter questionConverter;
+    private final QuestionSourceDaoService questionSourceService;
 
     @Transactional
     public void create(CreateQuestionRequest request) {
@@ -40,9 +44,18 @@ public class QuestionWebService {
                         .collect(toSet())
         );
 
-        if (nonNull(request.getQuestionSourceName())) {
-            entity.setQuestionSourceName(request.getQuestionSourceName());
-            entity.setQuestionSourceLink(request.getQuestionSourceLink());
+        if (nonNull(request.getSource())) {
+            QuestionSourceEntity source = questionSourceService.findByIdentifier(request.getSource().getIdentifier());
+
+            if (isNull(source)) {
+                source = new QuestionSourceEntity();
+                source.setIdentifier(request.getSource().getIdentifier());
+            }
+
+            source.setName(request.getSource().getName());
+            source.setLink(request.getSource().getLink());
+
+            entity.setQuestionSource(source);
         }
 
         if (nonNull(request.getAnswerStructureId())) {

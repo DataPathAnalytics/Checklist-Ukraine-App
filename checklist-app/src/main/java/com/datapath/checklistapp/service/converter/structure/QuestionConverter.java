@@ -29,8 +29,13 @@ public class QuestionConverter {
         executionDTO.setRoot(entity.isRoot());
         executionDTO.setLinkTypeId(entity.getLinkTypeId());
         executionDTO.setNodeTypeId(entity.getNodeTypeId());
+        executionDTO.setOrderNumber(entity.getOrderNumber());
 
         executionDTO.setQuestion(map(entity.getQuestion()));
+
+        executionDTO.setParentQuestionId(entity.getParentQuestionId());
+        executionDTO.setParentConditionFieldName(entity.getConditionFieldName());
+        executionDTO.setParentConditionAnswerId(entity.getConditionAnswerId());
 
         if (!isEmpty(entity.getAutoCompleteConfig())) {
             executionDTO.setAutoCompleteConfigs(
@@ -67,12 +72,16 @@ public class QuestionConverter {
             dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));
         }
 
+        if (nonNull(entity.getQuestionSource())) {
+            dto.setSource(map(entity.getQuestionSource()));
+        }
+
         return dto;
     }
 
     public QuestionSourceDTO map(QuestionSourceEntity entity) {
         QuestionSourceDTO source = new QuestionSourceDTO();
-        source.setId(entity.getId());
+        source.setIdentifier(entity.getIdentifier());
         source.setName(entity.getName());
         source.setLink(entity.getLink());
         return source;

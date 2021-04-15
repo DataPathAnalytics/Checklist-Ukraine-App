@@ -22,12 +22,12 @@ public class QuestionEntity {
     @CreatedDate
     private LocalDateTime dateCreated;
 
-    private String questionSourceName;
-    private String questionSourceLink;
-
     @Relationship(type = "IN_KNOWLEDGE_CLASS")
     private Set<KnowledgeClassEntity> knowledgeClasses = new HashSet<>();
 
     @Relationship(type = "HAS_ANSWER_STRUCTURE")
     private AnswerStructureEntity answerStructure;
+
+    @Relationship(type = "FROM_SOURCE")
+    private QuestionSourceEntity questionSource;
 }

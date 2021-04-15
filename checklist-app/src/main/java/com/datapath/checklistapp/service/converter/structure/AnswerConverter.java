@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.AnswerEntity;
 import com.datapath.checklistapp.dao.entity.AnswerStructureEntity;
 import com.datapath.checklistapp.dto.AnswerDTO;
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -32,12 +33,7 @@ public class AnswerConverter {
         AnswerDTO dto = new AnswerDTO();
         dto.setQuestionId(entity.getQuestionExecution().getId());
         dto.setComment(entity.getComment());
-
-//        if (nonNull(entity.getValueId())) {
-//            dto.setValueId(entity.getValueId());
-//        } else {
-//            dto.setValues(mapper.readValue(entity.getValues(), typeRef));
-//        }
+        dto.setValues(toValues(entity));
 
         return dto;
     }
@@ -47,7 +43,7 @@ public class AnswerConverter {
         AnswerDTO dto = new AnswerDTO();
 
         dto.setValues(
-                mapper.readValue(entity.getValues(), typeRef).entrySet()
+                toValues(entity).entrySet()
                         .stream()
                         .filter(e -> filterFieldNames.contains(e.getKey()))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
@@ -88,5 +84,23 @@ public class AnswerConverter {
         );
 
         return dto;
+    }
+
+    public String toJson(AnswerDTO answer) {
+        try {
+            return mapper.writeValueAsString(answer.getValues());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Map<String, Object> toValues(AnswerEntity entity) {
+        try {
+            return mapper.readValue(entity.getValues(), typeRef);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

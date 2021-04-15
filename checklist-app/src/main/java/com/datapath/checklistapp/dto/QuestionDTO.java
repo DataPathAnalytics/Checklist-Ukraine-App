@@ -14,8 +14,7 @@ public class QuestionDTO {
 
     private List<Long> knowledgeCategories;
 
-    private String questionSourceName;
-    private String questionSourceLink;
+    private QuestionSourceDTO source;
 
     private AnswerStructureDTO answerStructure;
 }

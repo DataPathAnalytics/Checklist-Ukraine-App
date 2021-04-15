@@ -1,15 +1,12 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.service.DepartmentDaoService;
 import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
 import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;
 import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistapp.dao.service.classifier.TemplateConfigTypeDaoService;
-import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.PermissionDTO;
 import com.datapath.checklistapp.dto.response.mapping.MappingPrivateResponse;
-import com.datapath.checklistapp.dto.response.mapping.MappingPublicResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,22 +16,10 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 public class MappingWebService {
 
-    private final DepartmentDaoService departmentDaoService;
     private final PermissionDaoService permissionDaoService;
     private final ActivityStatusDaoService activityStatusService;
     private final SessionStatusDaoService sessionStatusService;
     private final TemplateConfigTypeDaoService templateTypeService;
-
-    public MappingPublicResponse getPublicMappings() {
-        MappingPublicResponse response = new MappingPublicResponse();
-        response.setDepartments(
-                departmentDaoService.findAll()
-                        .stream()
-                        .map(d -> new DepartmentDTO(d.getId(), d.getRegion()))
-                        .collect(toList())
-        );
-        return response;
-    }
 
     public MappingPrivateResponse getPrivateMappings() {
         MappingPrivateResponse response = new MappingPrivateResponse();

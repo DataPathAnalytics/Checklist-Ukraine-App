@@ -3,9 +3,13 @@ package com.datapath.checklistapp.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @AllArgsConstructor
 public class DepartmentDTO {
-    private Long id;
-    private String region;
+
+    @NotNull
+    private Long identifier;
+    private String name;
 }

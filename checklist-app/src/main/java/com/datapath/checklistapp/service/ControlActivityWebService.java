@@ -21,8 +21,6 @@ import com.datapath.checklistapp.util.UserUtils;
 import com.datapath.checklistapp.util.database.Field;
 import com.datapath.checklistapp.util.database.Node;
 import com.datapath.checklistapp.util.database.Relationship;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -54,8 +52,6 @@ public class ControlActivityWebService {
     private final AnswerConverter answerConverter;
     private final ControlActivityConverter controlActivityConverter;
     private final ResponseSessionConverter responseSessionConverter;
-
-    private final ObjectMapper mapper;
 
     @Transactional
     public List<ControlActivityDTO> list() {
@@ -122,20 +118,9 @@ public class ControlActivityWebService {
 
             AnswerEntity answerEntity = new AnswerEntity();
             answerEntity.setComment(a.getComment());
-
-            if (nonNull(a.getValueId())) {
-//                answerEntity.setValueId(a.getValueId());
-            }
-
             answerEntity.setQuestionExecution(questionExecution);
+            answerEntity.setValues(answerConverter.toJson(a));
 
-            if (!isEmpty(a.getValues())) {
-                try {
-                    answerEntity.setValues(mapper.writeValueAsString(a.getValues()));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
             activityResponse.getAnswers().add(answerEntity);
         });
         activityEntity.setActivityResponse(activityResponse);
@@ -269,19 +254,7 @@ public class ControlActivityWebService {
 
             AnswerEntity answerEntity = new AnswerEntity();
             answerEntity.setComment(answer.getComment());
-
-            if (!isEmpty(answer.getValues())) {
-                try {
-                    answerEntity.setValues(mapper.writeValueAsString(answer.getValues()));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            if (nonNull(answer.getValueId())) {
-//                answerEntity.setValueId(answer.getValueId());
-            }
-
+            answerEntity.setValues(answerConverter.toJson(answer));
             answerEntity.setQuestionExecution(questionExecution);
 
             entity.getAnswers().add(answerEntity);
@@ -388,18 +361,7 @@ public class ControlActivityWebService {
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
             answer.setQuestionExecution(questionExecution);
             answer.setComment(a.getComment());
-
-            if (nonNull(a.getValueId())) {
-//                answer.setValueId(a.getValueId());
-            }
-
-            if (!isEmpty(a.getValues())) {
-                try {
-                    answer.setValues(mapper.writeValueAsString(a.getValues()));
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
+            answer.setValues(answerConverter.toJson(a));
 
             if (isNull(answer.getId())) {
                 activityResponse.getAnswers().add(answer);

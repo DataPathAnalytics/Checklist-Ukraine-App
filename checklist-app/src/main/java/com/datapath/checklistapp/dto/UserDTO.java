@@ -12,7 +12,7 @@ public class UserDTO {
     private String firstName;
     private String lastName;
     private Integer permissionId;
-    private Long departmentId;
+    private DepartmentDTO department;
     private LocalDateTime registeredDate;
     private boolean disable;
     private boolean locked;

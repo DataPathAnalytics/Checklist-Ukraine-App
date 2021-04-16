@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.neo4j.core.schema.CompositeProperty;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Node("AnswerStructure")
@@ -28,6 +28,6 @@ public class AnswerStructureEntity {
     @CreatedDate
     private LocalDateTime dateExport;
 
-    @CompositeProperty(prefix = "value")
-    private Map<Long, String> values = new HashMap<>();
+    @Relationship(type = "HAS_FIELD_DESCRIPTION")
+    private List<FieldDescriptionEntity> fields = new ArrayList<>();
 }

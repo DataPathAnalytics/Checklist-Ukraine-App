@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service;
+package com.datapath.analyticapp.service.imported;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

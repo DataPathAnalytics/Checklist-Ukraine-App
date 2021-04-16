@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.dto.export.question;
+package com.datapath.analyticapp.dto.imported.question;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.dto.export.question;
+package com.datapath.analyticapp.dto.imported.question;
 
 import lombok.Data;
 
@@ -22,7 +22,9 @@ public class QuestionDTO {
 
     @Data
     public static class FieldDescriptionDTO {
+        private Long id;
         private String name;
+        private String valueType;
         private boolean identifier;
 
         private List<ValueDTO> values;

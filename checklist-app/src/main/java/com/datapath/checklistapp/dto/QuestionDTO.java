@@ -12,7 +12,7 @@ public class QuestionDTO {
     private String value;
     private LocalDateTime dateCreated;
 
-    private List<Long> knowledgeCategories;
+    private List<Long> knowledgeClasses;
 
     private QuestionSourceDTO source;
 

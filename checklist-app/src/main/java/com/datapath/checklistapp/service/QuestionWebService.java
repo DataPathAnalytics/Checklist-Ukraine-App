@@ -23,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
@@ -38,11 +39,14 @@ public class QuestionWebService {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setValue(request.getValue());
-        entity.getKnowledgeClasses().addAll(
-                request.getKnowledgeClassIds().stream()
-                        .map(KnowledgeClassEntity::new)
-                        .collect(toSet())
-        );
+
+        if (!isEmpty(request.getKnowledgeClassIds())) {
+            entity.getKnowledgeClasses().addAll(
+                    request.getKnowledgeClassIds().stream()
+                            .map(KnowledgeClassEntity::new)
+                            .collect(toSet())
+            );
+        }
 
         if (nonNull(request.getSource())) {
             QuestionSourceEntity source = questionSourceService.findByIdentifier(request.getSource().getIdentifier());

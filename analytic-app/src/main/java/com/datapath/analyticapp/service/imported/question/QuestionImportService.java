@@ -1,10 +1,12 @@
-package com.datapath.analyticapp.service;
+package com.datapath.analyticapp.service.imported.question;
 
 import com.datapath.analyticapp.dao.entity.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;
-import com.datapath.analyticapp.dto.export.question.QuestionApiResponse;
+import com.datapath.analyticapp.dto.imported.question.QuestionApiResponse;
+import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

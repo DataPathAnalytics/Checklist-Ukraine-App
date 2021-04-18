@@ -16,7 +16,7 @@ public class QuestionExecutionDTO {
     private Long linkTypeId;
     private Long nodeTypeId;
     private Integer orderNumber;
-
+    private Long roleId;
     private Long parentQuestionId;
     private String parentConditionFieldName;
     private Long parentConditionAnswerId;

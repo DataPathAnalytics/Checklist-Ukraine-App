@@ -67,6 +67,8 @@ public class CreateTemplateConfigRequest {
         @NotNull
         private Long linkTypeId;
 
+        private Long roleId;
+
         private boolean required;
 
         @Valid

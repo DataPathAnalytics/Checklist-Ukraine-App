@@ -20,14 +20,11 @@ public class QuestionExecutionEntity {
     private Long parentQuestionId;
     private Long conditionAnswerId;
     private String conditionFieldName;
-
     private Integer orderNumber;
-
-    private boolean required;
-
     private Long linkTypeId;
     private Long nodeTypeId;
-
+    private Long roleId;
+    private boolean required;
     private boolean root;
 
     @Relationship(type = "OF_QUESTION")

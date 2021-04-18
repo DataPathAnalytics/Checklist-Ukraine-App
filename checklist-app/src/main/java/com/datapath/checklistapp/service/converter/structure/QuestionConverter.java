@@ -30,6 +30,7 @@ public class QuestionConverter {
         executionDTO.setLinkTypeId(entity.getLinkTypeId());
         executionDTO.setNodeTypeId(entity.getNodeTypeId());
         executionDTO.setOrderNumber(entity.getOrderNumber());
+        executionDTO.setRoleId(entity.getRoleId());
 
         executionDTO.setQuestion(map(entity.getQuestion()));
 
@@ -112,6 +113,7 @@ public class QuestionConverter {
         execution.setRequired(q.isRequired());
         execution.setLinkTypeId(q.getLinkTypeId());
         execution.setNodeTypeId(q.getNodeTypeId());
+        execution.setRoleId(q.getRoleId());
 
         if (!isEmpty(q.getAutoCompleteConfigs())) {
             q.getAutoCompleteConfigs().forEach(config -> {

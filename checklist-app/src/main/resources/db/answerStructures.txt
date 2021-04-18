@@ -2,8 +2,14 @@ MERGE (a:AnswerStructure {name:'Текстове значення', _default: fa
 MERGE (f1:FieldDescription {name:'value', identifier:false, valueType:'STRING', title:false, required:false, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1);
 
-MERGE (a:AnswerStructure {name:'Текстове значення (унікальне)', _default: false})
+MERGE (a:AnswerStructure {name:'Текстове значення (унікальний числовий ідентифікатор)', _default: false})
 MERGE (f1:FieldDescription {name:'identifier', identifier:true, label:'Идентификатор', valueType:'NUMBER', title:false, required:false, componentType:'INPUT'})
+MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Значення', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
+MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);
+
+MERGE (a:AnswerStructure {name:'Текстове значення (унікальний текстовий ідентифікатор)', _default: false})
+MERGE (f1:FieldDescription {name:'identifier', identifier:true, label:'Идентификатор', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
 MERGE (f2:FieldDescription {name:'name', identifier:false, label:'Значення', valueType:'STRING', title:false, required:false, componentType:'INPUT'})
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f1)
 MERGE (a)-[:HAS_FIELD_DESCRIPTION]->(f2);

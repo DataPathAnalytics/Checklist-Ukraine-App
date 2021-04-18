@@ -3,6 +3,7 @@ package com.datapath.analyticapp.controller;
 import com.datapath.analyticapp.dto.EventTypeDTO;
 import com.datapath.analyticapp.dto.KnowledgeClassDTO;
 import com.datapath.analyticapp.dto.NodeTypeDTO;
+import com.datapath.analyticapp.dto.RoleDTO;
 import com.datapath.analyticapp.dto.request.SearchRequest;
 import com.datapath.analyticapp.dto.response.PageableResponse;
 import com.datapath.analyticapp.service.web.CatalogWebService;
@@ -32,5 +33,10 @@ public class CatalogController {
     @PostMapping("node-type")
     public PageableResponse<NodeTypeDTO> searchNodeTypes(@RequestBody SearchRequest request) {
         return service.searchNodeTypes(request);
+    }
+
+    @PostMapping("role")
+    public PageableResponse<RoleDTO> searchRoles(@RequestBody SearchRequest request) {
+        return service.searchRoles(request);
     }
 }

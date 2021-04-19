@@ -1,12 +1,10 @@
 package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
-import com.datapath.checklistapp.dao.domain.UpdateControlActivityDomain;
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -38,18 +36,6 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "collect(id(t)) as templateIds, " +
             "collect(id(m)) as memberIds";
 
-    String UPDATED_CONTROL_ACTIVITIES = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar:ResponseSession), " +
-            "(c)-[:HAS_SESSION_RESPONSE]->(r:ResponseSession)-->(s:SessionStatus {sessionStatusId:2}), " +
-            "(c)-[:HAS_AUTHOR]->(u:User) " +
-            "optional match (c)-[:HAS_MEMBER]->(m:User) " +
-            "where r.dateModified > $dateModified " +
-            "return c, " +
-            "id(ar) as activityResponseId, " +
-            "id(u) as authorId, " +
-            "collect(id(r)) as sessionsIds, " +
-            "collect(id(m)) as memberIds " +
-            "limit $limit";
-
     @Query(value = SHORT_CONTROL_ACTIVITIES_QUERY)
     List<ControlActivityDomain> findControlActivities();
 
@@ -61,7 +47,4 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
 
     @Query(value = FULL_CONTROL_ACTIVITIES_QUERY)
     Optional<ControlActivityDomain> findControlActivity(Long id);
-
-    @Query(value = UPDATED_CONTROL_ACTIVITIES)
-    List<UpdateControlActivityDomain> getUpdateControlActivities(LocalDateTime dateModified, int limit);
 }

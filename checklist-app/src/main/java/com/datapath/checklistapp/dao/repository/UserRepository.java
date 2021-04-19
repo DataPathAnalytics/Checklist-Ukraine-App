@@ -2,10 +2,12 @@ package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserRepository extends Neo4jRepository<UserEntity, Long> {
@@ -24,4 +26,6 @@ public interface UserRepository extends Neo4jRepository<UserEntity, Long> {
     boolean existsNotChecked();
 
     Page<UserEntity> findAllByRemovedIsFalseAndSuperAdminIsFalseOrderByLockedDescRegisteredDateDescFirstNameAsc(Pageable pageable);
+
+    List<UserEntity> findAllByDateModifiedIsNotNullAndDateModifiedAfterOrderByDateModified(LocalDateTime date, PageRequest of);
 }

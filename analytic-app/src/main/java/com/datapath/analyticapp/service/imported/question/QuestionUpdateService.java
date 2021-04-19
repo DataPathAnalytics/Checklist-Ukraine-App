@@ -1,8 +1,8 @@
 package com.datapath.analyticapp.service.imported.question;
 
-import com.datapath.analyticapp.dao.entity.AnswerStructureEntity;
-import com.datapath.analyticapp.dao.entity.FieldDescriptionEntity;
-import com.datapath.analyticapp.dao.entity.QuestionEntity;
+import com.datapath.analyticapp.dao.entity.imported.AnswerStructureEntity;
+import com.datapath.analyticapp.dao.entity.imported.FieldDescriptionEntity;
+import com.datapath.analyticapp.dao.entity.imported.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.AnswerStructureRepository;
 import com.datapath.analyticapp.dao.repository.KnowledgeClassRepository;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;

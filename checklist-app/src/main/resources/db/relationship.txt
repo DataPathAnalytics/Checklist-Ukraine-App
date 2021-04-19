@@ -1,1 +1,0 @@
-MATCH (u:User { email:'andrey.pylypchuk@introlab-systems.com' }), (p:Permission { role: 'admin' }) MERGE (u)-[:HAS_PERMISSION]->(p)

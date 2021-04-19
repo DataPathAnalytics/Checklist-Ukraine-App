@@ -1,6 +1,5 @@
-package com.datapath.checklistapp.dto.response.export;
+package com.datapath.analyticapp.dto.imported.user;
 
-import com.datapath.checklistapp.dto.DepartmentDTO;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class ExportUserDTO {
+public class UserDTO {
     private Long id;
     private String email;
     private String firstName;
@@ -22,5 +21,11 @@ public class ExportUserDTO {
         private LocalDateTime start;
         private LocalDateTime end;
         private DepartmentDTO department;
+    }
+
+    @Data
+    public static class DepartmentDTO {
+        private Long identifier;
+        private String name;
     }
 }

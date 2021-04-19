@@ -1,5 +1,6 @@
 package com.datapath.checklistapp.dao.service;
 
+import com.datapath.checklistapp.dao.domain.ExportResponseSessionDomain;
 import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
@@ -36,5 +37,9 @@ public class ResponseSessionDaoService {
 
     public LocalDateTime getDateCreatedBySessionId(Long id) {
         return repository.getDateCreatedBySessionId(id);
+    }
+
+    public List<ExportResponseSessionDomain> getUpdateResponseSessions(LocalDateTime dateModified, int limit) {
+        return repository.findUpdatedSessions(dateModified, limit);
     }
 }

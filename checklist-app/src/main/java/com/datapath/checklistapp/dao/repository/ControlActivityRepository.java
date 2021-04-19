@@ -38,14 +38,17 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "collect(id(t)) as templateIds, " +
             "collect(id(m)) as memberIds";
 
-    String UPDATED_CONTROL_ACTIVITIES = "match (c:ControlActivity)-->(r:ResponseSession), " +
-            "(r:ResponseSession)-->(s:SessionStatus {sessionStatusId:2}), " +
-            "(c:ControlActivity)-[:HAS_AUTHOR]->(u:User), " +
-            "optional match (c:ControlActivity)-[:HAS_MEMBER]->(m:User) " +
+    String UPDATED_CONTROL_ACTIVITIES = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar:ResponseSession), " +
+            "(c)-[:HAS_SESSION_RESPONSE]->(r:ResponseSession)-->(s:SessionStatus {sessionStatusId:2}), " +
+            "(c)-[:HAS_AUTHOR]->(u:User) " +
+            "optional match (c)-[:HAS_MEMBER]->(m:User) " +
             "where r.dateModified > $dateModified " +
-            "return c, id(u) as authorId, " +
+            "return c, " +
+            "id(ar) as activityResponseId, " +
+            "id(u) as authorId, " +
             "collect(id(r)) as sessionsIds, " +
-            "collect(id(m)) as memberIds";
+            "collect(id(m)) as memberIds " +
+            "limit $limit";
 
     @Query(value = SHORT_CONTROL_ACTIVITIES_QUERY)
     List<ControlActivityDomain> findControlActivities();
@@ -60,5 +63,5 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
     Optional<ControlActivityDomain> findControlActivity(Long id);
 
     @Query(value = UPDATED_CONTROL_ACTIVITIES)
-    List<UpdateControlActivityDomain> getUpdateControlActivities(LocalDateTime dateModified);
+    List<UpdateControlActivityDomain> getUpdateControlActivities(LocalDateTime dateModified, int limit);
 }

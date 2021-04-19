@@ -1,20 +1,28 @@
 package com.datapath.checklistapp.service.export;
 
+import com.datapath.checklistapp.dao.domain.ExportResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
+import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dao.service.ControlActivityDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.ResponseSessionDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
-import com.datapath.checklistapp.dto.response.export.*;
+import com.datapath.checklistapp.dto.response.export.ExportControlActivityResponse;
+import com.datapath.checklistapp.dto.response.export.ExportQuestionResponse;
+import com.datapath.checklistapp.dto.response.export.ExportUserResponse;
 import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
+import com.datapath.checklistapp.service.converter.structure.UserConverter;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.datapath.checklistapp.util.Constants.AUDITOR_ROLE;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -22,18 +30,21 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @AllArgsConstructor
 public class ExportService {
 
+    private static final List<String> EXPORT_USER_ROLES = Arrays.asList(AUDITOR_ROLE);
+
     private final QuestionDaoService questionService;
     private final QuestionConverter questionConverter;
     private final ControlActivityDaoService controlActivityService;
     private final ResponseSessionDaoService responseSessionService;
     private final UserDaoService userService;
+    private final UserConverter userConverter;
 
     public ExportQuestionResponse getNewQuestions(LocalDateTime date, int limit) {
         List<QuestionEntity> questions = questionService.findByDateCreated(date, limit);
 
-        if (isEmpty(questions)) return new ExportQuestionResponse();
-
         ExportQuestionResponse response = new ExportQuestionResponse();
+        if (isEmpty(questions)) return response;
+
         response.setQuestions(questions.stream().map(questionConverter::map).collect(toList()));
         response.setNextOffset(
                 questions.stream()
@@ -49,59 +60,29 @@ public class ExportService {
     public ExportControlActivityResponse getUpdatedSession(LocalDateTime offset, int limit) {
         ExportControlActivityResponse response = new ExportControlActivityResponse();
 
-        List<LocalDateTime> dates = new ArrayList<>();
+        List<ExportResponseSessionDomain> domains = responseSessionService.getUpdateResponseSessions(offset, limit);
 
-        response.setActivities(controlActivityService.getUpdateControlActivities(offset).stream()
-                .map(a -> {
-                    ExportControlActivityDTO activity = new ExportControlActivityDTO();
-                    activity.setId(a.getId());
-                    activity.setAuthorId(a.getAuthorId());
-                    activity.setMemberIds(a.getMemberIds());
-                    activity.setName(a.getName());
-                    activity.setDateCreated(a.getDateCreated());
+        Map<Long, List<ExportResponseSessionDomain>> activitySessionsMap = domains.stream()
+                .collect(Collectors.groupingBy(ExportResponseSessionDomain::getActivityId));
 
-                    activity.setSessions(responseSessionService.findByIds(a.getSessionsIds()).stream()
-                            .map(s -> {
-                                dates.add(s.getDateModified());
-
-                                ExportSessionDTO session = new ExportSessionDTO();
-                                session.setId(s.getId());
-                                session.setName(s.getName());
-                                session.setAuthorId(s.getAuthor().getId());
-                                session.setDateCreated(s.getDateCreated());
-                                session.setDateModified(s.getDateModified());
-                                session.setReviewerId(s.getReviewer().getId());
-//                                session.setExecutions(
-//                                        s.getAnswers().stream()
-//                                                .map(answer -> questionConverter.map(answer.getQuestionExecution(), answer))
-//                                                .collect(toList())
-//                                );
-                                return session;
-                            })
-                            .collect(toList())
-                    );
-
-                    return activity;
-                })
-                .collect(toList())
-        );
-
-        response.setNextOffset(dates.stream().max(LocalDateTime::compareTo).get());
+        activitySessionsMap.forEach((k, v) -> {
+            //TODO:needs complete logic
+        });
 
         return response;
     }
 
-    public List<ExportUserDTO> getUsers(int page, int size) {
-        return userService.findAll(page, size)
-                .stream()
-                .map(u -> {
-                    ExportUserDTO user = new ExportUserDTO();
-                    user.setId(u.getId());
-                    user.setEmail(u.getEmail());
-                    user.setFirstName(u.getFirstName());
-                    user.setLastName(u.getLastName());
-                    return user;
-                })
+    public ExportUserResponse getUpdateUsers(LocalDateTime date, int limit) {
+        List<UserEntity> users = userService.findUpdatedUsers(date, limit).stream()
+                .filter(u -> EXPORT_USER_ROLES.contains(u.getPermission().getRole()))
                 .collect(toList());
+
+        ExportUserResponse response = new ExportUserResponse();
+        if (isEmpty(users)) return response;
+
+        response.setUsers(users.stream().map(userConverter::mapExport).collect(toList()));
+        response.setNextOffset(users.stream().map(UserEntity::getDateModified).max(LocalDateTime::compareTo).get());
+
+        return response;
     }
 }

@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.KnowledgeClassEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
+import com.datapath.checklistapp.dao.service.KnowledgeClassDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
@@ -33,6 +34,7 @@ public class QuestionWebService {
     private final AnswerStructureDaoService answerStructureService;
     private final QuestionConverter questionConverter;
     private final QuestionSourceDaoService questionSourceService;
+    private final KnowledgeClassDaoService knowledgeClassService;
 
     @Transactional
     public void create(CreateQuestionRequest request) {
@@ -43,8 +45,9 @@ public class QuestionWebService {
         if (!isEmpty(request.getKnowledgeClassIds())) {
             entity.getKnowledgeClasses().addAll(
                     request.getKnowledgeClassIds().stream()
-                            .map(KnowledgeClassEntity::new)
-                            .collect(toSet())
+                            .map(id -> knowledgeClassService.findByOuterId(id)
+                                    .orElseGet(() -> new KnowledgeClassEntity(id))
+                            ).collect(toSet())
             );
         }
 

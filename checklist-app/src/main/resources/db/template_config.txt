@@ -1,0 +1,12 @@
+MATCH (type:TemplateConfigType {typeId:1})
+MATCH (u:User {email:'methodolog@datapath.com'})
+MATCH (f:TemplateConfigFolder {name:'Тестовые конфиги'})
+MERGE (t:TemplateConfig {name:'Шаблон кунфигурации для проверки организации'})
+ON CREATE SET t.dateCreated = localdatetime()
+MERGE (t)-[:IN_TYPE]->(type)
+MERGE (t)-[:HAS_AUTHOR]->(u)
+MERGE (t)-[:IN_FOLDER]->(f)
+
+
+
+MERGE (t:TemplateConfig {name:'Шаблон кунфигурации для проверки организации'})

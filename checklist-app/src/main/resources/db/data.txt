@@ -1,14 +1,12 @@
-MERGE (u:User { firstName: 'Иван', lastName: 'Иванов', email:'andrey.pylypchuk@introlab-systems.com', password:'$2a$10$HZZ/FSl2ijIRArq4J/t5MupaLHSZOUulzqivgh5Su.uXwLuJ4TCne', locked: false, disable: false, removed: false, superAdmin:true})
+MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор'});
+MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор'});
+MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог'});
 
-MERGE (p:Permission {permissionId:1, role: 'admin', value: 'Адміністратор'})
-MERGE (p:Permission {permissionId:2, role: 'auditor', value: 'Аудитор'})
-MERGE (p:Permission {permissionId:3, role: 'methodologist', value: 'Методолог'})
+MERGE (c:ActivityStatus {activityStatusId: 1, value:'В процесі'});
+MERGE (c:ActivityStatus {activityStatusId: 2, value:'Завершено'});
 
-MERGE (c:ActivityStatus {activityStatusId: 1, value:'В процесі'})
-MERGE (c:ActivityStatus {activityStatusId: 2, value:'Завершено'})
+MERGE (c:SessionStatus {sessionStatusId: 1, value:'В процесі'});
+MERGE (c:SessionStatus {sessionStatusId: 2, value:'Завершено'});
 
-MERGE (c:SessionStatus {sessionStatusId: 1, value:'В процесі'})
-MERGE (c:SessionStatus {sessionStatusId: 2, value:'Завершено'})
-
-MERGE (c:TemplateConfigType {typeId: 1, value:'ControlActivity'})
-MERGE (c:TemplateConfigType {typeId: 2, value:'ResponseSession'})
+MERGE (c:TemplateConfigType {typeId: 1, value:'ControlActivity'});
+MERGE (c:TemplateConfigType {typeId: 2, value:'ResponseSession'});

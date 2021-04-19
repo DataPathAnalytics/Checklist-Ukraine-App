@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -49,5 +50,9 @@ public class UserDaoService {
 
     public List<UserEntity> findByIds(List<Long> ids) {
         return repository.findAllById(ids);
+    }
+
+    public List<UserEntity> findUpdatedUsers(LocalDateTime date, int limit) {
+        return repository.findAllByDateModifiedIsNotNullAndDateModifiedAfterOrderByDateModified(date, PageRequest.of(0, limit));
     }
 }

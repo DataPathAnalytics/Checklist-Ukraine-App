@@ -1,18 +1,14 @@
 package com.datapath.checklistapp.dto.response.export;
 
+import com.datapath.checklistapp.dto.ControlActivityDTO;
+import com.datapath.checklistapp.dto.ResponseSessionDTO;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 public class ExportControlActivityDTO {
 
-    private Long id;
-    private String name;
-    private Long authorId;
-    private LocalDateTime dateCreated;
-    private List<Long> memberIds;
-
-    private List<ExportSessionDTO> sessions;
+    private ControlActivityDTO activity;
+    private List<ResponseSessionDTO> sessions;
 }

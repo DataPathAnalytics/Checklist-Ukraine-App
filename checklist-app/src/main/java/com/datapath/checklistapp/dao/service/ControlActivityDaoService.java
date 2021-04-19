@@ -38,7 +38,7 @@ public class ControlActivityDaoService {
         return repository.findRelatedUsers(id);
     }
 
-    public List<UpdateControlActivityDomain> getUpdateControlActivities(LocalDateTime dateModified) {
-        return repository.getUpdateControlActivities(dateModified);
+    public List<UpdateControlActivityDomain> getUpdateControlActivities(LocalDateTime dateModified, int limit) {
+        return repository.getUpdateControlActivities(dateModified, limit);
     }
 }

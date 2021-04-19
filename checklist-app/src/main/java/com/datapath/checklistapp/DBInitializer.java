@@ -28,11 +28,12 @@ public class DBInitializer implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         log.info("DB initialization started");
-        runLineQueryFromFile("schema");
-        runLineQueryFromFile("data");
-        runQueriesFromFile("answerStructures");
-        runLineQueryFromFile("relationship");
-//        runQueriesFromFile("questions");
+        runQueriesFromFile("schema");
+        runQueriesFromFile("data");
+        runQueriesFromFile("user");
+        runQueriesFromFile("answer_structure");
+        runQueriesFromFile("question");
+        runQueriesFromFile("folder");
         log.info("DB initialization finished");
     }
 
@@ -44,7 +45,7 @@ public class DBInitializer implements InitializingBean {
 
             List<String> queries = Arrays.asList(br.lines()
                     .filter(Strings::isNotEmpty)
-                    .collect(joining())
+                    .collect(joining(" "))
                     .split(";"));
 
             queries.forEach(l -> {
@@ -55,26 +56,6 @@ public class DBInitializer implements InitializingBean {
                 }
             });
 
-        } catch (Exception e) {
-            log.error("DB initialization failed in file " + fileName, e);
-        }
-    }
-
-    private void runLineQueryFromFile(String fileName) {
-        try {
-            String filePath = String.format("classpath:db/%s.txt", fileName);
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(resourceLoader.getResource(filePath).getInputStream(), UTF_8));
-
-            br.lines()
-                    .filter(Strings::isNotEmpty)
-                    .forEach(l -> {
-                        try {
-                            client.query(l).run();
-                        } catch (DataIntegrityViolationException e) {
-                            log.warn(e.getMessage());
-                        }
-                    });
         } catch (Exception e) {
             log.error("DB initialization failed in file " + fileName, e);
         }

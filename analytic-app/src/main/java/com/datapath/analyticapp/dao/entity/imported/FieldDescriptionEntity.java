@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.dao.entity;
+package com.datapath.analyticapp.dao.entity.imported;
 
 import lombok.Data;
 import org.springframework.data.neo4j.core.schema.CompositeProperty;

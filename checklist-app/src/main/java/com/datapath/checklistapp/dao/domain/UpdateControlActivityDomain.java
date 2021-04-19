@@ -15,6 +15,7 @@ public class UpdateControlActivityDomain {
     private Long id;
     private String name;
     private LocalDateTime dateCreated;
+    private LocalDateTime dateModified;
     private Long authorId;
     private List<Long> memberIds;
     private List<Long> sessionsIds;

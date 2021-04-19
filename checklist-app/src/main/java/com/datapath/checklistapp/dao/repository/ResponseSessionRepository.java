@@ -1,5 +1,6 @@
 package com.datapath.checklistapp.dao.repository;
 
+import com.datapath.checklistapp.dao.domain.ExportResponseSessionDomain;
 import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -21,9 +22,21 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
 
     String DATE_CREATE_REQUEST = "match (s:ResponseSession) where id(s)=$id return s.dateCreated";
 
+    String UPDATED_SESSIONS_REQUEST = "match (sr:ResponseSession)-->(s:SessionStatus {sessionStatusId:2}), " +
+            "(sr)<-[:HAS_SESSION_RESPONSE]-(c:ControlActivity), " +
+            "(ar:ResponseSession)<-[:HAS_ACTIVITY_RESPONSE]-(c) " +
+            "where sr.dateModified > $dateModified" +
+            "return id(sr) as sessionResponseId, " +
+            "id(c) as activityId, " +
+            "id(ar) as activityResponseId " +
+            "order by sr.dateModified limit $limit";
+
     @Query(value = RESPONSE_SESSIONS_BY_ACTIVITY_ID_REQUEST)
     List<ResponseSessionDomain> findResponseSessionByActivityId(Long activityId);
 
     @Query(value = DATE_CREATE_REQUEST)
     LocalDateTime getDateCreatedBySessionId(Long id);
+
+    @Query(value = UPDATED_SESSIONS_REQUEST)
+    List<ExportResponseSessionDomain> findUpdatedSessions(LocalDateTime dateModified, int limit);
 }

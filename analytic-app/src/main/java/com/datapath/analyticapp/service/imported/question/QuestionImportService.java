@@ -1,12 +1,11 @@
 package com.datapath.analyticapp.service.imported.question;
 
-import com.datapath.analyticapp.dao.entity.QuestionEntity;
+import com.datapath.analyticapp.dao.entity.imported.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;
 import com.datapath.analyticapp.dto.imported.question.QuestionApiResponse;
 import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,18 +18,18 @@ public class QuestionImportService {
 
     private static final int QUESTIONS_LIMIT = 10;
 
-    @Value("${checklist.question.url}")
-    private String apiUrl;
+    @Value("${checklist.question.part.url}")
+    private String apiUrlPart;
 
     @Autowired
-    private QuestionRepository questionRepository;
+    private QuestionRepository repository;
     @Autowired
     private RestManager restManager;
     @Autowired
-    private QuestionUpdateService questionUpdateService;
+    private QuestionUpdateService updateService;
 
     public void updateQuestions() {
-        String url = restManager.getUrlByOffset(apiUrl, getLastModifiedTenderDate(), QUESTIONS_LIMIT);
+        String url = restManager.getUrlByOffset(apiUrlPart, getLastModifiedTenderDate(), QUESTIONS_LIMIT);
 
         QuestionApiResponse response;
 
@@ -39,15 +38,15 @@ public class QuestionImportService {
 
             if (isEmpty(response.getQuestions())) break;
 
-            response.getQuestions().forEach(questionUpdateService::process);
+            response.getQuestions().forEach(updateService::process);
 
-            url = restManager.getUrlByOffset(apiUrl, response.getNextOffset(), QUESTIONS_LIMIT);
+            url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), QUESTIONS_LIMIT);
 
         } while (true);
     }
 
     private LocalDateTime getLastModifiedTenderDate() {
-        Optional<QuestionEntity> lastQuestion = questionRepository.findFirstByDateCreatedNotNullOrderByDateCreatedDesc();
+        Optional<QuestionEntity> lastQuestion = repository.findFirstByDateCreatedNotNullOrderByDateCreatedDesc();
         return lastQuestion.map(QuestionEntity::getDateCreated).orElse(null);
     }
 }

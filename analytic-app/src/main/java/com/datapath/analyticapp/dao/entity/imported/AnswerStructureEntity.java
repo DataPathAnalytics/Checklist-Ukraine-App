@@ -1,6 +1,8 @@
-package com.datapath.analyticapp.dao.entity;
+package com.datapath.analyticapp.dao.entity.imported;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
@@ -12,21 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Node("Question")
-public class QuestionEntity {
+@Node("AnswerStructure")
+@NoArgsConstructor
+@AllArgsConstructor
+public class AnswerStructureEntity {
 
     @Id
     @GeneratedValue
     private Long id;
     private Long outerId;
-    private String value;
-    private LocalDateTime dateCreated;
+    private String name;
+    private String identifierFieldName;
     @CreatedDate
     private LocalDateTime dateExport;
 
-    @Relationship(type = "IN_KNOWLEDGE_CLASS")
-    private List<KnowledgeClassEntity> knowledgeClasses = new ArrayList<>();
-
-    @Relationship(type = "HAS_ANSWER_STRUCTURE")
-    private AnswerStructureEntity answerStructure;
+    @Relationship(type = "HAS_FIELD_DESCRIPTION")
+    private List<FieldDescriptionEntity> fields = new ArrayList<>();
 }

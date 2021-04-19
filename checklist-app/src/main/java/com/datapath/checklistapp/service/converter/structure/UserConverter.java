@@ -5,10 +5,13 @@ import com.datapath.checklistapp.dao.entity.EmploymentEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.UserDTO;
+import com.datapath.checklistapp.dto.response.export.ExportUserDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class UserConverter {
@@ -28,5 +31,28 @@ public class UserConverter {
 
     private static DepartmentDTO map(DepartmentEntity entity) {
         return new DepartmentDTO(entity.getIdentifier(), entity.getName());
+    }
+
+    public ExportUserDTO mapExport(UserEntity entity) {
+        ExportUserDTO dto = new ExportUserDTO();
+
+        dto.setId(entity.getId());
+        dto.setEmail(entity.getEmail());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setRegisteredDate(entity.getRegisteredDate());
+        dto.setDateModified(entity.getDateModified());
+        dto.setEmployments(
+                entity.getEmployments().stream()
+                        .map(e -> {
+                            ExportUserDTO.EmploymentDTO eDto = new ExportUserDTO.EmploymentDTO();
+                            eDto.setStart(e.getStart());
+                            eDto.setEnd(e.getEnd());
+                            eDto.setDepartment(map(e.getDepartment()));
+                            return eDto;
+                        }).collect(toList())
+        );
+
+        return dto;
     }
 }

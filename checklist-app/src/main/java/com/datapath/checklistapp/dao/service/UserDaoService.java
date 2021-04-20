@@ -9,7 +9,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -48,8 +50,8 @@ public class UserDaoService {
         return repository.existsNotChecked();
     }
 
-    public List<UserEntity> findByIds(List<Long> ids) {
-        return repository.findAllById(ids);
+    public Set<UserEntity> findByIds(List<Long> ids) {
+        return new HashSet<>(repository.findAllById(ids));
     }
 
     public List<UserEntity> findUpdatedUsers(LocalDateTime date, int limit) {

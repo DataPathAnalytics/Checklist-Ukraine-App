@@ -1,7 +1,6 @@
 package com.datapath.checklistapp.service;
 
 import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
-import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dao.service.*;
 import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
@@ -13,7 +12,6 @@ import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.request.activity.*;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.PermissionException;
-import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.AnswerConverter;
 import com.datapath.checklistapp.service.converter.structure.ControlActivityConverter;
 import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
@@ -22,7 +20,6 @@ import com.datapath.checklistapp.util.database.Field;
 import com.datapath.checklistapp.util.database.Node;
 import com.datapath.checklistapp.util.database.Relationship;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,49 +62,27 @@ public class ControlActivityWebService {
 
         return activities
                 .stream()
-                .sorted(Comparator.comparing(ControlActivityDomain::getDateCreated).reversed())
                 .map(c -> {
                     ControlActivityDTO dto = new ControlActivityDTO();
-                    BeanUtils.copyProperties(c, dto);
-
+                    dto.setId(c.getId());
                     dto.setStatusId(c.getStatusId());
-                    dto.setAuthorId(c.getAuthorId());
-
-                    ResponseSessionEntity responseSession = responseSessionService.findById(c.getActivityResponseId());
-
-                    QuestionExecutionEntity objectQuestion = responseSession.getTemplateConfig().getObjectQuestion();
-
-                    AnswerEntity objectAnswer = responseSession.getAnswers().stream()
-                            .filter(a -> objectQuestion.getId().equals(a.getQuestionExecution().getId()))
-                            .findFirst()
-                            .orElseThrow(() -> new ValidationException("Not found answer to object question. Activity id " + c.getId()));
-
-                    dto.setAnswers(
-                            Collections.singletonList(
-                                    answerConverter.mapOnlyFilterFields(
-                                            objectAnswer,
-                                            objectQuestion.getQuestion().getAnswerStructure().getFields().stream()
-                                                    .filter(FieldDescriptionEntity::isTitle)
-                                                    .map(FieldDescriptionEntity::getName)
-                                                    .collect(toSet())
-                                    )
-                            )
-                    );
-
+                    dto.setActivity(responseSessionConverter.map(responseSessionService.findById(c.getActivityResponseId())));
                     return dto;
-                }).collect(toList());
+                })
+                .sorted((dto1, dto2) -> {
+                    LocalDateTime t1 = dto1.getActivity().getDateModified();
+                    LocalDateTime t2 = dto2.getActivity().getDateModified();
+                    return t1.compareTo(t2);
+                })
+                .collect(toList());
     }
 
     @Transactional
-    public void create(CreateControlActivityRequest request) {
+    public ControlActivityDTO create(CreateControlActivityRequest request) {
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
 
-        Long currentUserId = UserUtils.getCurrentUserId();
-
         ControlActivityEntity activityEntity = new ControlActivityEntity();
-        activityEntity.setName(request.getName());
         activityEntity.setStatus(activityStatusService.findById(IN_PROCESS_STATUS));
-        activityEntity.setAuthor(userService.findById(currentUserId));
 
         ResponseSessionEntity activityResponse = new ResponseSessionEntity();
 
@@ -132,9 +107,15 @@ public class ControlActivityWebService {
                 Relationship.TEMPLATED_BY.name()
         );
 
+        customQueryService.createRelationship(
+                Node.ResponseSession.name(), null, savedEntity.getActivityResponse().getId(),
+                Node.User.name(), null, UserUtils.getCurrentUserId(),
+                Relationship.HAS_AUTHOR.name()
+        );
+
         if (!isEmpty(request.getMemberIds())) {
             request.getMemberIds().forEach(id -> customQueryService.createRelationship(
-                    Node.ControlActivity.name(), null, savedEntity.getId(),
+                    Node.ResponseSession.name(), null, savedEntity.getActivityResponse().getId(),
                     Node.User.name(), null, id,
                     Relationship.HAS_MEMBER.name()
             ));
@@ -147,11 +128,47 @@ public class ControlActivityWebService {
                     Relationship.HAS_TEMPLATE.name()
             ));
         }
+
+        return get(savedEntity.getId());
+    }
+
+    @Transactional
+    public ControlActivityDTO update(UpdateControlActivityRequest request) {
+        ControlActivityDomain domain = controlActivityService.findById(request.getId());
+        ResponseSessionEntity activityResponse = responseSessionService.findById(domain.getActivityResponseId());
+
+        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
+
+        request.getAnswers().forEach(a -> {
+
+            AnswerEntity answer = activityResponse.getAnswers()
+                    .stream()
+                    .filter(ea -> a.getQuestionId().equals(ea.getQuestionExecution().getId()))
+                    .findFirst()
+                    .orElseGet(AnswerEntity::new);
+
+            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
+            answer.setQuestionExecution(questionExecution);
+            answer.setComment(a.getComment());
+            answer.setValues(answerConverter.toJson(a));
+
+            if (isNull(answer.getId())) {
+                activityResponse.getAnswers().add(answer);
+            }
+        });
+
+        if (!isEmpty(request.getMemberIds())) {
+            activityResponse.setMembers(userService.findByIds(request.getMemberIds()));
+        }
+
+        ResponseSessionEntity savedEntity = responseSessionService.save(activityResponse);
+
+        return controlActivityConverter.map(collectControlActivityData(domain, savedEntity));
     }
 
     @Transactional
     public ControlActivityDTO get(Long id) {
-        return controlActivityConverter.map(extractControlActivityById(id));
+        return controlActivityConverter.map(collectControlActivityDataById(id));
     }
 
     @Transactional
@@ -169,7 +186,7 @@ public class ControlActivityWebService {
                 Relationship.IN_STATUS.name()
         );
 
-        return controlActivityConverter.map(extractControlActivityById(id));
+        return controlActivityConverter.map(collectControlActivityDataById(id));
     }
 
     @Transactional
@@ -182,43 +199,58 @@ public class ControlActivityWebService {
                 Relationship.HAS_TEMPLATE.name()
         );
 
-        return controlActivityConverter.map(extractControlActivityById(request.getId()));
+        return controlActivityConverter.map(collectControlActivityDataById(request.getId()));
     }
 
-    private void checkPermission(Long id) {
-        Long currentUserId = UserUtils.getCurrentUserId();
+    @Transactional
+    public ControlActivityDTO deleteTemplate(TemplateOperationRequest request) {
+        checkPermission(request.getId());
 
-        Set<Long> membersIds = controlActivityService.findRelatedUsers(id);
+        ControlActivityEntity activity = collectControlActivityDataById(request.getId());
 
-        if (!membersIds.contains(currentUserId) && !UserUtils.hasRole(METHODOLOGIST_ROLE))
-            throw new PermissionException("You can't modify this control event");
+        boolean existsChecklist = activity.getSessionResponses().stream()
+                .anyMatch(c -> request.getTemplateId().equals(c.getTemplate().getId()));
+
+        if (!existsChecklist) {
+            activity.setTemplates(
+                    activity.getTemplates().stream()
+                            .filter(t -> !request.getTemplateId().equals(t.getId()))
+                            .collect(toSet())
+            );
+        }
+
+        customQueryService.deleteRelationship(
+                Node.ControlActivity.name(), null, request.getId(),
+                Node.Template.name(), null, request.getTemplateId(),
+                Relationship.HAS_TEMPLATE.name()
+        );
+
+        return controlActivityConverter.map(activity);
     }
 
-    public SessionPageDTO getSessions(Long eventId, int page, int size) {
+    public SessionPageDTO getSessions(Long activityId, int page, int size) {
         SessionPageDTO dto = new SessionPageDTO();
 
-        List<ResponseSessionDomain> checklists = responseSessionService.findResponseSessionByActivityId(eventId);
+        ControlActivityDomain activityDomain = controlActivityService.findById(activityId);
+        List<ResponseSessionEntity> sessions = responseSessionService.findByIds(activityDomain.getSessionResponseIds());
 
-        dto.setTotalCount(checklists.size());
-        dto.setTotalPageCount((int) Math.ceil((double) checklists.size() / size));
+        dto.setTotalCount(sessions.size());
+        dto.setTotalPageCount((int) Math.ceil((double) sessions.size() / size));
         dto.setCurrentPage(page);
         dto.setPageSize(size);
         dto.setSessions(
-                checklists.stream()
+                sessions.stream()
                         .skip(page * size)
                         .limit(size)
-                        .map(c -> {
-                            ResponseSessionDTO responseSessionDTO = new ResponseSessionDTO();
-                            BeanUtils.copyProperties(c, responseSessionDTO);
-                            return responseSessionDTO;
-                        }).collect(toList())
+                        .map(responseSessionConverter::map)
+                        .collect(toList())
         );
 
         return dto;
     }
 
     @Transactional
-    public void saveSession(SaveResponseSessionRequest request) {
+    public ResponseSessionDTO saveSession(SaveResponseSessionRequest request) {
         checkPermission(request.getControlActivityId());
 
         TemplateEntity template = templateService.findById(request.getTemplateId());
@@ -227,8 +259,10 @@ public class ControlActivityWebService {
 
         if (nonNull(request.getId())) {
             entity.setId(request.getId());
-            LocalDateTime dateCreated = responseSessionService.getDateCreatedBySessionId(request.getId());
-            entity.setDateCreated(dateCreated);
+            entity.setDateCreated(responseSessionService.getDateCreatedBySessionId(request.getId()));
+            entity.setNumber(responseSessionService.getNumberBySessionId(request.getId()));
+        } else {
+            entity.setNumber(controlActivityService.findSessionMaxNumber(request.getControlActivityId()) + 1);
         }
 
         entity.setName(request.getName());
@@ -279,36 +313,12 @@ public class ControlActivityWebService {
                 Node.User.name(), null, UserUtils.getCurrentUserId(),
                 Relationship.HAS_AUTHOR.name()
         );
+
+        return getSession(entity.getId());
     }
 
     public ResponseSessionDTO getSession(Long id) {
         return responseSessionConverter.map(responseSessionService.findById(id));
-    }
-
-    @Transactional
-    public ControlActivityDTO deleteTemplate(TemplateOperationRequest request) {
-        checkPermission(request.getId());
-
-        ControlActivityEntity activity = extractControlActivityById(request.getId());
-
-        boolean existsChecklist = activity.getSessionResponses().stream()
-                .anyMatch(c -> request.getTemplateId().equals(c.getTemplate().getId()));
-
-        if (!existsChecklist) {
-            activity.setTemplates(
-                    activity.getTemplates().stream()
-                            .filter(t -> !request.getTemplateId().equals(t.getId()))
-                            .collect(toSet())
-            );
-        }
-
-        customQueryService.deleteRelationship(
-                Node.ControlActivity.name(), null, request.getId(),
-                Node.Template.name(), null, request.getTemplateId(),
-                Relationship.HAS_TEMPLATE.name()
-        );
-
-        return controlActivityConverter.map(activity);
     }
 
     @Transactional
@@ -327,48 +337,43 @@ public class ControlActivityWebService {
         return responseSessionConverter.map(responseSessionService.save(entity));
     }
 
-    private ControlActivityEntity extractControlActivityById(Long id) {
+    private ControlActivityEntity collectControlActivityDataById(Long id) {
         ControlActivityDomain domain = controlActivityService.findById(id);
 
-        ControlActivityEntity entity = new ControlActivityEntity();
-        BeanUtils.copyProperties(domain, entity);
+        ControlActivityEntity entity = createNewControlActivityEntity(domain);
 
-        entity.setActivityResponse(responseSessionService.findById(domain.getActivityResponseId()));
-        entity.setAuthor(userService.findById(domain.getAuthorId()));
         entity.setStatus(activityStatusService.findById(domain.getStatusId()));
-        entity.setTemplates(new HashSet<>(templateService.findByIds(domain.getTemplateIds())));
-        entity.setMembers(new HashSet<>(userService.findByIds(domain.getMemberIds())));
+        entity.setActivityResponse(responseSessionService.findById(domain.getActivityResponseId()));
         entity.setSessionResponses(new HashSet<>(responseSessionService.findByIds(domain.getSessionResponseIds())));
+        entity.setTemplates(new HashSet<>(templateService.findByIds(domain.getTemplateIds())));
 
         return entity;
     }
 
-    @Transactional
-    public void update(UpdateControlActivityRequest request) {
-        ControlActivityDomain domain = controlActivityService.findById(request.getId());
-        ResponseSessionEntity activityResponse = responseSessionService.findById(domain.getActivityResponseId());
+    private ControlActivityEntity collectControlActivityData(ControlActivityDomain activity, ResponseSessionEntity activityResponse) {
+        ControlActivityEntity entity = createNewControlActivityEntity(activity);
 
-        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
+        entity.setStatus(activityStatusService.findById(activity.getStatusId()));
+        entity.setActivityResponse(activityResponse);
+        entity.setSessionResponses(new HashSet<>(responseSessionService.findByIds(activity.getSessionResponseIds())));
+        entity.setTemplates(new HashSet<>(templateService.findByIds(activity.getTemplateIds())));
 
-        request.getAnswers().forEach(a -> {
+        return entity;
+    }
 
-            AnswerEntity answer = activityResponse.getAnswers()
-                    .stream()
-                    .filter(ea -> a.getQuestionId().equals(ea.getQuestionExecution().getId()))
-                    .findFirst()
-                    .orElseGet(AnswerEntity::new);
+    private ControlActivityEntity createNewControlActivityEntity(ControlActivityDomain activity) {
+        ControlActivityEntity entity = new ControlActivityEntity();
+        entity.setId(activity.getId());
+        return entity;
+    }
 
-            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
-            answer.setQuestionExecution(questionExecution);
-            answer.setComment(a.getComment());
-            answer.setValues(answerConverter.toJson(a));
+    private void checkPermission(Long id) {
+        Long currentUserId = UserUtils.getCurrentUserId();
 
-            if (isNull(answer.getId())) {
-                activityResponse.getAnswers().add(answer);
-            }
-        });
+        Set<Long> membersIds = controlActivityService.findRelatedUsers(id);
 
-        responseSessionService.save(activityResponse);
+        if (!membersIds.contains(currentUserId) && !UserUtils.hasRole(METHODOLOGIST_ROLE))
+            throw new PermissionException("You can't modify this control event");
     }
 
     private Map<Long, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {

@@ -32,6 +32,10 @@ public class ControlActivityDaoService {
         return repository.findControlActivity(id).orElseThrow(() -> new EntityNotFoundException(Node.ControlActivity.name(), id));
     }
 
+    public Integer findSessionMaxNumber(Long id) {
+        return repository.getSessionMaxNumber(id);
+    }
+
     public Set<Long> findRelatedUsers(Long id) {
         return repository.findRelatedUsers(id);
     }

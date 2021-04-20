@@ -39,7 +39,11 @@ public class ResponseSessionDaoService {
         return repository.getDateCreatedBySessionId(id);
     }
 
-    public List<ExportResponseSessionDomain> getUpdateResponseSessions(LocalDateTime dateModified, int limit) {
-        return repository.findUpdatedSessions(dateModified, limit);
+    public Integer getNumberBySessionId(Long id) {
+        return repository.getNumberBySessionId(id);
+    }
+
+    public List<ExportResponseSessionDomain> findForExport(LocalDateTime dateModified, int limit) {
+        return repository.findForExport(dateModified, limit);
     }
 }

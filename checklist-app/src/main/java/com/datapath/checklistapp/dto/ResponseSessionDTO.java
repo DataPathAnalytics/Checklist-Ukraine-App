@@ -10,12 +10,14 @@ public class ResponseSessionDTO {
 
     private Long id;
     private Integer sessionStatusId;
+    private Integer number;
     private String name;
     private LocalDateTime dateCreated;
-    private Long templateId;
-    private String templateName;
-    private Long reviewerId;
+    private LocalDateTime dateModified;
+
     private Long authorId;
+    private Long reviewerId;
+    private List<Long> members;
 
     private TemplateDTO template;
 

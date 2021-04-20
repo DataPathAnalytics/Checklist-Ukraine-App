@@ -34,14 +34,14 @@ public class ControlActivityController {
     @ApiOperation(value = "create control activity")
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void create(@RequestBody @Valid CreateControlActivityRequest request) {
-        service.create(request);
+    public ControlActivityDTO create(@RequestBody @Valid CreateControlActivityRequest request) {
+        return service.create(request);
     }
 
     @ApiOperation(value = "update control activity")
     @PutMapping
-    public void update(@RequestBody @Valid UpdateControlActivityRequest request) {
-        service.update(request);
+    public ControlActivityDTO update(@RequestBody @Valid UpdateControlActivityRequest request) {
+        return service.update(request);
     }
 
     @ApiOperation(value = "get control activity by id", response = ControlActivityDTO.class)
@@ -79,8 +79,8 @@ public class ControlActivityController {
     @ApiOperation(value = "create/update response session")
     @PostMapping("response-session")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void saveSession(@RequestBody @Valid SaveResponseSessionRequest request) {
-        service.saveSession(request);
+    public ResponseSessionDTO saveSession(@RequestBody @Valid SaveResponseSessionRequest request) {
+        return service.saveSession(request);
     }
 
     @ApiOperation(value = "update response session status", response = ResponseSessionDTO.class)

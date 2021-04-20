@@ -11,30 +11,33 @@ import java.util.Set;
 
 public interface ControlActivityRepository extends Neo4jRepository<ControlActivityEntity, Long> {
 
-    String SHORT_CONTROL_ACTIVITIES_QUERY = "match (c:ControlActivity)-[:HAS_AUTHOR]->(u:User), " +
-            "(c:ControlActivity)-->(s:ActivityStatus), " +
-            "(c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(r:ResponseSession) " +
-            "return c, id(u) as authorId, s.activityStatusId as statusId, id(r) as activityResponseId";
+    String SHORT_CONTROL_ACTIVITIES_QUERY = "match (c:ControlActivity)-->(s:ActivityStatus), " +
+            "(c)-[:HAS_ACTIVITY_RESPONSE]->(r) " +
+            "return c, " +
+            "s.activityStatusId as statusId, " +
+            "id(r) as activityResponseId";
 
-    String RELATED_USER_QUERY = "match (c:ControlActivity)-->(u:User) where id(c) = $id return id(u)";
+    String RELATED_USER_QUERY = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]-(r)-->(u:User) where id(c) = $id return id(u)";
 
-    String CONTROL_ACTIVITY_BY_USER = "match (c:ControlActivity)-[:HAS_AUTHOR]->(u:User), " +
-            "(c:ControlActivity)-->(s:ActivityStatus), " +
-            "(c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(r:ResponseSession) " +
+    String MAX_NUMBER_QUERY = "match (c:ControlActivity)-[:HAS_SESSION_RESPONSE]->(r) where id(c)=$id return coalesce(max(r.number), 0)";
+
+    String CONTROL_ACTIVITY_BY_USER = "match (c:ControlActivity)-->(s:ActivityStatus), " +
+            "(c)-[:HAS_ACTIVITY_RESPONSE]->(r)-[:HAS_AUTHOR]->(u:User) " +
             "where id(u) = $userId " +
-            "return c, id(u) as authorId, s.activityStatusId as statusId, id(r) as activityResponseId";
+            "return c, " +
+            "s.activityStatusId as statusId, " +
+            "id(r) as activityResponseId";
 
-    String FULL_CONTROL_ACTIVITIES_QUERY = "match (c:ControlActivity)-[:HAS_AUTHOR]->(u:User), " +
-            "(c:ControlActivity)-->(s:ActivityStatus), " +
-            "(c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(r:ResponseSession) " +
+    String FULL_CONTROL_ACTIVITIES_QUERY = "match (c:ControlActivity)-->(s:ActivityStatus), " +
+            "(c)-[:HAS_ACTIVITY_RESPONSE]->(r)-[:HAS_AUTHOR]->(u) " +
             "where id(c) = $id " +
-            "optional match (c:ControlActivity)-[:HAS_SESSION_RESPONSE]->(r2:ResponseSession) " +
-            "optional match (c:ControlActivity)-[:HAS_TEMPLATE]->(t:Template) " +
-            "optional match (c:ControlActivity)-[:HAS_MEMBER]->(m:User) " +
-            "return c, id(u) as authorId, s.activityStatusId as statusId, id(r) as activityResponseId, " +
+            "optional match (c)-[:HAS_SESSION_RESPONSE]->(r2) " +
+            "optional match (c)-[:HAS_TEMPLATE]->(t) " +
+            "return c, " +
+            "s.activityStatusId as statusId, " +
+            "id(r) as activityResponseId, " +
             "collect(id(r2)) as sessionResponseIds, " +
-            "collect(id(t)) as templateIds, " +
-            "collect(id(m)) as memberIds";
+            "collect(id(t)) as templateIds";
 
     @Query(value = SHORT_CONTROL_ACTIVITIES_QUERY)
     List<ControlActivityDomain> findControlActivities();
@@ -47,4 +50,7 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
 
     @Query(value = FULL_CONTROL_ACTIVITIES_QUERY)
     Optional<ControlActivityDomain> findControlActivity(Long id);
+
+    @Query(value = MAX_NUMBER_QUERY)
+    Integer getSessionMaxNumber(Long id);
 }

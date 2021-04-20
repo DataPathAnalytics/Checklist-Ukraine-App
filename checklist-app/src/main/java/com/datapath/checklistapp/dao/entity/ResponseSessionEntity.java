@@ -21,22 +21,33 @@ public class ResponseSessionEntity {
     @GeneratedValue
     private Long id;
     private String name;
+    private Integer number;
+    private boolean autoCreated;
+
     @CreatedDate
     private LocalDateTime dateCreated;
     @LastModifiedDate
     private LocalDateTime dateModified;
-    private boolean autoCreated;
 
     @Relationship(type = "TEMPLATED_BY")
     private TemplateEntity template;
+
     @Relationship(type = "TEMPLATED_BY")
     private TemplateConfigEntity templateConfig;
+
     @Relationship(type = "HAS_AUTHOR")
     private UserEntity author;
+
     @Relationship(type = "HAS_REVIEWER")
     private UserEntity reviewer;
+
+    @Relationship(type = "HAS_MEMBER")
+    private Set<UserEntity> members = new HashSet<>();
+
     @Relationship(type = "IN_STATUS")
     private SessionStatus status;
+
     @Relationship(type = "HAS_ANSWER")
     private Set<AnswerEntity> answers = new HashSet<>();
+
 }

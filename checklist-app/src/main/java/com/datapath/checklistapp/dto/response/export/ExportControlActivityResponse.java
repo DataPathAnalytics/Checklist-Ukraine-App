@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class ExportControlActivityResponse {
 
-    private List<ExportControlActivityDTO> activities;
+    private List<ExportControlActivityDTO> controlActivities;
     private LocalDateTime nextOffset;
 }

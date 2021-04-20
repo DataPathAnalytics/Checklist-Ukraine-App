@@ -60,7 +60,7 @@ public class ExportService {
     public ExportControlActivityResponse getUpdatedSession(LocalDateTime offset, int limit) {
         ExportControlActivityResponse response = new ExportControlActivityResponse();
 
-        List<ExportResponseSessionDomain> domains = responseSessionService.getUpdateResponseSessions(offset, limit);
+        List<ExportResponseSessionDomain> domains = responseSessionService.findForExport(offset, limit);
 
         Map<Long, List<ExportResponseSessionDomain>> activitySessionsMap = domains.stream()
                 .collect(Collectors.groupingBy(ExportResponseSessionDomain::getActivityId));

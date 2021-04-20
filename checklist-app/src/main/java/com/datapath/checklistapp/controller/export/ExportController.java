@@ -28,7 +28,7 @@ public class ExportController {
         return service.getNewQuestions(offset, limit);
     }
 
-    @GetMapping("activity-sessions")
+    @GetMapping("control-activities")
     public ExportControlActivityResponse getUpdatedSessions(
             @RequestParam(defaultValue = "2021-01-01T00:00:00.000", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime offset,

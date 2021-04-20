@@ -12,15 +12,17 @@ import java.util.List;
 public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessionEntity, Long> {
 
     String RESPONSE_SESSIONS_BY_ACTIVITY_ID_REQUEST = "match (t:Template)<--(rs:ResponseSession)<-[:HAS_SESSION_RESPONSE]-(c:ControlActivity), " +
-            "(rs:ResponseSession)-[:HAS_AUTHOR]->(a:User), " +
-            "(rs:ResponseSession)-[:IN_STATUS]->(s:SessionStatus) " +
+            "(rs)-[:HAS_AUTHOR]->(a:User), " +
+            "(rs)-[:IN_STATUS]->(s:SessionStatus) " +
             "where id(c)=$activityId " +
-            "optional match (rs:ResponseSession)-[:HAS_REVIEWER]->(r:User) " +
+            "optional match (rs)-[:HAS_REVIEWER]->(r:User) " +
             "return rs, id(t) as templateId, t.name as templateName, id(r) as reviewerId, " +
             "id(a) as authorId, s.sessionStatusId as sessionStatusId " +
             "order by rs.dateCreated, rs.name";
 
     String DATE_CREATE_REQUEST = "match (s:ResponseSession) where id(s)=$id return s.dateCreated";
+
+    String NUMBER_REQUEST = "match (s:ResponseSession) where id(s)=$id return s.number";
 
     String UPDATED_SESSIONS_REQUEST = "match (sr:ResponseSession)-->(s:SessionStatus {sessionStatusId:2}), " +
             "(sr)<-[:HAS_SESSION_RESPONSE]-(c:ControlActivity), " +
@@ -37,6 +39,9 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
     @Query(value = DATE_CREATE_REQUEST)
     LocalDateTime getDateCreatedBySessionId(Long id);
 
+    @Query(value = NUMBER_REQUEST)
+    Integer getNumberBySessionId(Long id);
+
     @Query(value = UPDATED_SESSIONS_REQUEST)
-    List<ExportResponseSessionDomain> findUpdatedSessions(LocalDateTime dateModified, int limit);
+    List<ExportResponseSessionDomain> findForExport(LocalDateTime dateModified, int limit);
 }

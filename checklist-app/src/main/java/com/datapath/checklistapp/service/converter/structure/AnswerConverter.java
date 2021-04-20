@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -34,20 +32,6 @@ public class AnswerConverter {
         dto.setQuestionId(entity.getQuestionExecution().getId());
         dto.setComment(entity.getComment());
         dto.setValues(toValues(entity));
-
-        return dto;
-    }
-
-    @SneakyThrows
-    public AnswerDTO mapOnlyFilterFields(AnswerEntity entity, Set<String> filterFieldNames) {
-        AnswerDTO dto = new AnswerDTO();
-
-        dto.setValues(
-                toValues(entity).entrySet()
-                        .stream()
-                        .filter(e -> filterFieldNames.contains(e.getKey()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-        );
 
         return dto;
     }

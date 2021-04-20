@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,4 +20,6 @@ public class UpdateControlActivityRequest {
     @NotNull
     @Valid
     private List<AnswerDTO> answers;
+
+    private List<Long> memberIds = new ArrayList<>();
 }

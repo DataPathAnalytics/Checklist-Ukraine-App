@@ -1,8 +1,8 @@
-package com.datapath.analyticapp.service.imported.user;
+package com.datapath.analyticapp.service.imported.session;
 
-import com.datapath.analyticapp.dao.entity.imported.UserEntity;
-import com.datapath.analyticapp.dao.repository.UserRepository;
-import com.datapath.analyticapp.dto.imported.user.UserApiResponse;
+import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
+import com.datapath.analyticapp.dao.repository.ResponseSessionRepository;
+import com.datapath.analyticapp.dto.imported.SessionActivityResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,33 +16,31 @@ import java.util.Optional;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
-@Order(1)
-public class UserImportService implements ImportService {
+@Order(4)
+public class SessionImportService implements ImportService {
 
     private static final int LIMIT = 10;
 
-    @Value("${checklist.user.part.url}")
+    @Value("${checklist.sessions.part.url}")
     private String apiUrlPart;
 
     @Autowired
+    private ResponseSessionRepository repository;
+    @Autowired
     private RestManager restManager;
     @Autowired
-    private UserRepository repository;
-    @Autowired
-    private UserUpdateService updateService;
+    private SessionUpdateService updateService;
 
     @Override
     public void update() {
         String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
 
-        UserApiResponse response;
+        SessionActivityResponse response;
 
         do {
-            response = restManager.getData(url, UserApiResponse.class);
+            response = restManager.getData(url, SessionActivityResponse.class);
 
-            if (isEmpty(response.getUsers())) break;
-
-            response.getUsers().forEach(updateService::process);
+            if (isEmpty(response.getData())) break;
 
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 
@@ -51,7 +49,7 @@ public class UserImportService implements ImportService {
 
     @Override
     public LocalDateTime getLastModified() {
-        Optional<UserEntity> lastUser = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
-        return lastUser.map(UserEntity::getDateModified).orElse(null);
+        Optional<ResponseSessionEntity> last = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
+        return last.map(ResponseSessionEntity::getDateModified).orElse(null);
     }
 }

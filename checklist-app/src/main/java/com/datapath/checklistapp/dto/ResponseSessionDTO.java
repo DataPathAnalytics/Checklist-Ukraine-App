@@ -22,4 +22,6 @@ public class ResponseSessionDTO {
     private TemplateDTO template;
 
     private List<AnswerDTO> answers;
+
+    private boolean invalid;
 }

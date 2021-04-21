@@ -23,6 +23,7 @@ public class ResponseSessionEntity {
     private String name;
     private Integer number;
     private boolean autoCreated;
+    private boolean invalid;
 
     @CreatedDate
     private LocalDateTime dateCreated;

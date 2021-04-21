@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ExportControlActivityResponse {
+public class ExportSessionActivityResponse {
 
-    private List<ExportControlActivityDTO> controlActivities;
+    private List<ExportSessionActivityDTO> data;
     private LocalDateTime nextOffset;
 }

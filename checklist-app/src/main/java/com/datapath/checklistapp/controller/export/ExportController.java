@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.controller.export;
 
-import com.datapath.checklistapp.dto.response.export.ExportControlActivityResponse;
 import com.datapath.checklistapp.dto.response.export.ExportQuestionResponse;
+import com.datapath.checklistapp.dto.response.export.ExportSessionActivityResponse;
 import com.datapath.checklistapp.dto.response.export.ExportUserResponse;
 import com.datapath.checklistapp.service.export.ExportService;
 import lombok.AllArgsConstructor;
@@ -29,7 +29,15 @@ public class ExportController {
     }
 
     @GetMapping("control-activities")
-    public ExportControlActivityResponse getUpdatedSessions(
+    public ExportSessionActivityResponse getUpdatedActivities(
+            @RequestParam(defaultValue = "2021-01-01T00:00:00.000", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime offset,
+            @RequestParam(defaultValue = "10", required = false) int limit) {
+        return service.getUpdatedActivities(offset, limit);
+    }
+
+    @GetMapping("response-sessions")
+    public ExportSessionActivityResponse getUpdatedSessions(
             @RequestParam(defaultValue = "2021-01-01T00:00:00.000", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime offset,
             @RequestParam(defaultValue = "10", required = false) int limit) {

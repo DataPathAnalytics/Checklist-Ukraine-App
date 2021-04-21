@@ -3,9 +3,11 @@ package com.datapath.analyticapp.service.imported.question;
 import com.datapath.analyticapp.dao.entity.imported.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.QuestionRepository;
 import com.datapath.analyticapp.dto.imported.question.QuestionApiResponse;
+import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,9 +16,10 @@ import java.util.Optional;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
-public class QuestionImportService {
+@Order(2)
+public class QuestionImportService implements ImportService {
 
-    private static final int QUESTIONS_LIMIT = 10;
+    private static final int LIMIT = 10;
 
     @Value("${checklist.question.part.url}")
     private String apiUrlPart;
@@ -28,8 +31,9 @@ public class QuestionImportService {
     @Autowired
     private QuestionUpdateService updateService;
 
-    public void updateQuestions() {
-        String url = restManager.getUrlByOffset(apiUrlPart, getLastModifiedTenderDate(), QUESTIONS_LIMIT);
+    @Override
+    public void update() {
+        String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
 
         QuestionApiResponse response;
 
@@ -40,12 +44,13 @@ public class QuestionImportService {
 
             response.getQuestions().forEach(updateService::process);
 
-            url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), QUESTIONS_LIMIT);
+            url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 
         } while (true);
     }
 
-    private LocalDateTime getLastModifiedTenderDate() {
+    @Override
+    public LocalDateTime getLastModified() {
         Optional<QuestionEntity> lastQuestion = repository.findFirstByDateCreatedNotNullOrderByDateCreatedDesc();
         return lastQuestion.map(QuestionEntity::getDateCreated).orElse(null);
     }

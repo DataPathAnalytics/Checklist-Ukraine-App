@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
+import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
 import com.datapath.checklistapp.dao.repository.ControlActivityRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
@@ -8,6 +9,7 @@ import com.datapath.checklistapp.util.database.Node;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -38,5 +40,9 @@ public class ControlActivityDaoService {
 
     public Set<Long> findRelatedUsers(Long id) {
         return repository.findRelatedUsers(id);
+    }
+
+    public List<ExportActivityDataDomain> findForExport(LocalDateTime offset, int limit) {
+        return repository.findForExport(offset, limit);
     }
 }

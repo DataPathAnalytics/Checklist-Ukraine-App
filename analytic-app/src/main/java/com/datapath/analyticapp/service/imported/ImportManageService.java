@@ -1,20 +1,19 @@
 package com.datapath.analyticapp.service.imported;
 
-import com.datapath.analyticapp.service.imported.question.QuestionImportService;
-import com.datapath.analyticapp.service.imported.user.UserImportService;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class ImportManageService {
 
-    private final QuestionImportService questionImportService;
-    private final UserImportService userImportService;
+    private final List<ImportService> importServices;
 
-//    @Scheduled(fixedDelay = 1000 * 60)
+    @Scheduled(fixedDelay = 1000 * 60)
     public void update() {
-        userImportService.updateUsers();
-        questionImportService.updateQuestions();
+        importServices.forEach(ImportService::update);
     }
 }

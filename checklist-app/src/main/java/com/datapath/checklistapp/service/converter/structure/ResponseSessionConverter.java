@@ -23,6 +23,7 @@ public class ResponseSessionConverter {
 
         BeanUtils.copyProperties(entity, dto);
         dto.setAuthorId(entity.getAuthor().getId());
+        dto.setInvalid(entity.isInvalid());
 
         if (nonNull(entity.getTemplateConfig())) {
             dto.setTemplate(templateConverter.map(entity.getTemplateConfig()));

@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static java.util.stream.Collectors.toList;
-
 @Service
 public class UserConverter {
 
@@ -42,16 +40,6 @@ public class UserConverter {
         dto.setLastName(entity.getLastName());
         dto.setRegisteredDate(entity.getRegisteredDate());
         dto.setDateModified(entity.getDateModified());
-        dto.setEmployments(
-                entity.getEmployments().stream()
-                        .map(e -> {
-                            ExportUserDTO.EmploymentDTO eDto = new ExportUserDTO.EmploymentDTO();
-                            eDto.setStart(e.getStart());
-                            eDto.setEnd(e.getEnd());
-                            eDto.setDepartment(map(e.getDepartment()));
-                            return eDto;
-                        }).collect(toList())
-        );
 
         return dto;
     }

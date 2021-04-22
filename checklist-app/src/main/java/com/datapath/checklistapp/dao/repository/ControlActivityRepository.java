@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
-import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
+import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.query.Query;
@@ -41,7 +41,8 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "collect(id(r2)) as sessionResponseIds, " +
             "collect(id(t)) as templateIds";
 
-    String UPDATED_ACTIVITIES_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar) " +
+    String UPDATED_ACTIVITIES_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar), " +
+            "(c)-[:HAS_SESSION_RESPONSE]->(sr)-->(s:SessionStatus {sessionStatusId:2}) " +
             "where ar.dateModified > $offset " +
             "return c, id(ar) as activityResponseId, " +
             "ar.dateModified as dateModified " +
@@ -63,5 +64,5 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
     Integer getSessionMaxNumber(Long id);
 
     @Query(value = UPDATED_ACTIVITIES_REQUEST)
-    List<ExportActivityDataDomain> findForExport(LocalDateTime offset, int limit);
+    List<ExportControlActivityDomain> findForExport(LocalDateTime offset, int limit);
 }

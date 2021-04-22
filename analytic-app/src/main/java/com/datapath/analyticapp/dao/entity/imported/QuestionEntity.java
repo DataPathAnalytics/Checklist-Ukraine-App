@@ -27,7 +27,4 @@ public class QuestionEntity {
 
     @Relationship(type = "IN_KNOWLEDGE_CLASS")
     private List<KnowledgeClassEntity> knowledgeClasses = new ArrayList<>();
-
-    @Relationship(type = "HAS_ANSWER_STRUCTURE")
-    private AnswerStructureEntity answerStructure;
 }

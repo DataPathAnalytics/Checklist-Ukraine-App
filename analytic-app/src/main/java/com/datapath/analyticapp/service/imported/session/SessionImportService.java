@@ -2,7 +2,7 @@ package com.datapath.analyticapp.service.imported.session;
 
 import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
 import com.datapath.analyticapp.dao.repository.ResponseSessionRepository;
-import com.datapath.analyticapp.dto.imported.SessionActivityResponse;
+import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class SessionImportService implements ImportService {
     private SessionUpdateService updateService;
 
     @Override
-    public void update() {
+    public void upload() {
         String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
 
         SessionActivityResponse response;

@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.dao.service;
 
-import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
+import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
@@ -43,7 +43,7 @@ public class ResponseSessionDaoService {
         return repository.getNumberBySessionId(id);
     }
 
-    public List<ExportActivityDataDomain> findForExport(LocalDateTime dateModified, int limit) {
+    public List<ExportSessionResponseDomain> findForExport(LocalDateTime dateModified, int limit) {
         return repository.findForExport(dateModified, limit);
     }
 }

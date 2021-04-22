@@ -1,10 +1,7 @@
 package com.datapath.checklistapp.service.converter.structure;
 
 import com.datapath.checklistapp.dao.entity.*;
-import com.datapath.checklistapp.dto.AutoCompleteConfigDTO;
-import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.QuestionExecutionDTO;
-import com.datapath.checklistapp.dto.QuestionSourceDTO;
+import com.datapath.checklistapp.dto.*;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
 import lombok.AllArgsConstructor;
@@ -51,6 +48,15 @@ public class QuestionConverter {
                                 dto.setFieldId(c.getFieldId());
                                 return dto;
                             }).collect(toList())
+            );
+        }
+
+        if (!isEmpty(entity.getConditionCharacteristics())) {
+            executionDTO.setConditionCharacteristics(
+                    entity.getConditionCharacteristics()
+                            .stream()
+                            .map(this::map)
+                            .collect(toList())
             );
         }
 
@@ -129,5 +135,9 @@ public class QuestionConverter {
         }
 
         return execution;
+    }
+
+    private ConditionCharacteristicDTO map(ConditionCharacteristicEntity entity) {
+        return new ConditionCharacteristicDTO(entity.getOuterRiskEventTypeId(), entity.getConditionAnswerId());
     }
 }

@@ -2,7 +2,7 @@ package com.datapath.analyticapp.service.imported.activity;
 
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.repository.ControlActivityRepository;
-import com.datapath.analyticapp.dto.imported.SessionActivityResponse;
+import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class ActivityImportService implements ImportService {
     private ActivityUpdateService updateService;
 
     @Override
-    public void update() {
+    public void upload() {
         String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
 
         SessionActivityResponse response;
@@ -41,6 +41,8 @@ public class ActivityImportService implements ImportService {
             response = restManager.getData(url, SessionActivityResponse.class);
 
             if (isEmpty(response.getData())) break;
+
+            response.getData().forEach(updateService::update);
 
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 

@@ -14,7 +14,7 @@ public class UserUpdateService {
     private final UserRepository repository;
 
     @Transactional
-    public void process(UserDTO dto) {
+    public void update(UserDTO dto) {
         UserEntity entity = repository.findFirstByEmail(dto.getEmail()).orElseGet(UserEntity::new);
 
         entity.setOuterId(dto.getId());

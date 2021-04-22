@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.service.export;
 
-import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
+import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
+import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dao.service.ControlActivityDaoService;
@@ -77,14 +78,14 @@ public class ExportService {
     public ExportSessionActivityResponse getUpdatedSession(LocalDateTime offset, int limit) {
         ExportSessionActivityResponse response = new ExportSessionActivityResponse();
 
-        List<ExportActivityDataDomain> sessions = responseSessionService.findForExport(offset, limit);
+        List<ExportSessionResponseDomain> sessions = responseSessionService.findForExport(offset, limit);
 
         if (isEmpty(sessions)) return response;
 
         Map<Long, List<Long>> activitySessions = sessions.stream()
                 .collect(Collectors.groupingBy(
-                        ExportActivityDataDomain::getId,
-                        Collectors.mapping(ExportActivityDataDomain::getSessionResponseId, Collectors.toList()))
+                        ExportSessionResponseDomain::getActivityId,
+                        Collectors.mapping(ExportSessionResponseDomain::getSessionResponseId, Collectors.toList()))
                 );
 
         response.setData(
@@ -104,7 +105,7 @@ public class ExportService {
 
         response.setNextOffset(
                 sessions.stream()
-                        .map(ExportActivityDataDomain::getDateModified)
+                        .map(ExportSessionResponseDomain::getDateModified)
                         .max(LocalDateTime::compareTo)
                         .get()
         );
@@ -116,7 +117,7 @@ public class ExportService {
     public ExportSessionActivityResponse getUpdatedActivities(LocalDateTime offset, int limit) {
         ExportSessionActivityResponse response = new ExportSessionActivityResponse();
 
-        List<ExportActivityDataDomain> sessions = controlActivityService.findForExport(offset, limit);
+        List<ExportControlActivityDomain> sessions = controlActivityService.findForExport(offset, limit);
 
         if (isEmpty(sessions)) return response;
 
@@ -133,7 +134,7 @@ public class ExportService {
 
         response.setNextOffset(
                 sessions.stream()
-                        .map(ExportActivityDataDomain::getDateModified)
+                        .map(ExportControlActivityDomain::getDateModified)
                         .max(LocalDateTime::compareTo)
                         .get()
         );

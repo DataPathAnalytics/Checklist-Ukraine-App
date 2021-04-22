@@ -32,7 +32,7 @@ public class UserImportService implements ImportService {
     private UserUpdateService updateService;
 
     @Override
-    public void update() {
+    public void upload() {
         String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
 
         UserApiResponse response;
@@ -42,7 +42,7 @@ public class UserImportService implements ImportService {
 
             if (isEmpty(response.getUsers())) break;
 
-            response.getUsers().forEach(updateService::process);
+            response.getUsers().forEach(updateService::update);
 
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 

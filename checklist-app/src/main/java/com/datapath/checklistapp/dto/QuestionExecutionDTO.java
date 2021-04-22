@@ -21,8 +21,9 @@ public class QuestionExecutionDTO {
     private String parentConditionFieldName;
     private Long parentConditionAnswerId;
 
+    private List<ConditionCharacteristicDTO> conditionCharacteristics;
     private List<SubQuestions> subQuestions = new ArrayList<>();
-    private List<AutoCompleteConfigDTO> autoCompleteConfigs = new ArrayList<>();
+    private List<AutoCompleteConfigDTO> autoCompleteConfigs;
 
     @Data
     private static class SubQuestions {

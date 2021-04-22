@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ConditionCharacteristicDTO {
-    private boolean evaluation;
     private Long outerRiskEventId;
-    private Integer conditionAnswerId;
+    private Long conditionAnswerId;
 }

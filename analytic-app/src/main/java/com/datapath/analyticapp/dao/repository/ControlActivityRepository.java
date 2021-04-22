@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ControlActivityRepository extends Neo4jRepository<ControlActivityEntity, Long> {
     Optional<ControlActivityEntity> findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
+
+    ControlActivityEntity findByOuterId(Long id);
 }

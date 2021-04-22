@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.dao.repository;
 
-import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
+import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import org.springframework.data.neo4j.repository.Neo4jRepository;
@@ -26,8 +26,8 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
 
     String UPDATED_SESSIONS_REQUEST = "match (c:ControlActivity)-[:HAS_SESSION_RESPONSE]->(sr)-->(s:SessionStatus {sessionStatusId:2}), " +
             "(c)-[:HAS_ACTIVITY_RESPONSE]->(ar {invalid: false}) " +
-            "where sr.dateModified > $dateModified " +
-            "return c, id(sr) as sessionResponseId, " +
+            "where sr.dateModified > $offset " +
+            "return sr, id(c) as activityId, id(sr) as sessionResponseId, " +
             "sr.dateModified as dateModified " +
             "order by sr.dateModified limit $limit";
 
@@ -42,5 +42,5 @@ public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessi
 
     //TODO: needs fix this logic
     @Query(value = UPDATED_SESSIONS_REQUEST)
-    List<ExportActivityDataDomain> findForExport(LocalDateTime dateModified, int limit);
+    List<ExportSessionResponseDomain> findForExport(LocalDateTime offset, int limit);
 }

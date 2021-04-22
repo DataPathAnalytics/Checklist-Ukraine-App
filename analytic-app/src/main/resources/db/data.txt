@@ -59,3 +59,7 @@ MERGE (n)-[:HAS_LINK_TYPE]->(l2)
 MERGE (n)-[:HAS_LINK_TYPE]->(l3)
 MERGE (n)-[:HAS_LINK_TYPE]->(l4);
 
+MERGE (n:NodeType {nodeTypeName:'Human'})
+MERGE (l:LinkType {linkTypeName:'HAS_AUTHORITY', linkTypeDescription:''})
+MERGE (n)-[:HAS_LINK_TYPE]->(l);
+

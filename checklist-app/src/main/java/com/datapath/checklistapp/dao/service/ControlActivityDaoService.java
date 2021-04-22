@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
-import com.datapath.checklistapp.dao.domain.ExportActivityDataDomain;
+import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
 import com.datapath.checklistapp.dao.repository.ControlActivityRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
@@ -42,7 +42,7 @@ public class ControlActivityDaoService {
         return repository.findRelatedUsers(id);
     }
 
-    public List<ExportActivityDataDomain> findForExport(LocalDateTime offset, int limit) {
+    public List<ExportControlActivityDomain> findForExport(LocalDateTime offset, int limit) {
         return repository.findForExport(offset, limit);
     }
 }

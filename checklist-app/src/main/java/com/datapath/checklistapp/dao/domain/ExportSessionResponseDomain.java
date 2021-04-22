@@ -5,9 +5,8 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ExportActivityDataDomain {
-    private Long id;
-    private Long activityResponseId;
+public class ExportSessionResponseDomain {
+    private Long activityId;
     private Long sessionResponseId;
     private LocalDateTime dateModified;
 }

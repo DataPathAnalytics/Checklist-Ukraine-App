@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SessionUpdateService {
 
     @Transactional
-    public void process() {
+    public void update() {
 
     }
 }

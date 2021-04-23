@@ -8,6 +8,5 @@ import java.util.Optional;
 
 public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long> {
 
-    Optional<QuestionEntity> findFirstByDateCreatedNotNullOrderByDateCreatedDesc();
-
+    Optional<QuestionEntity> findFirstByOuterId(Long id);
 }

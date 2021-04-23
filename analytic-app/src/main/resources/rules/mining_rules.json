@@ -1,0 +1,54 @@
+[
+  {
+    "place": "control_activity",
+    "role": "authority_representative",
+    "direction": "IN",
+    "linkType": "HAS_AUTHORITY",
+    "secondNodeType": "ControlActivity"
+  },
+  {
+    "place": "control_activity",
+    "role": "owner",
+    "direction": "IN",
+    "linkType": "HAS_OWNER",
+    "secondNodeType": "ControlActivity"
+  },
+  {
+    "place": "control_activity",
+    "role": "owner",
+    "direction": "IN",
+    "linkType": "HAS_AUTHORITY_ON",
+    "parentOfSecondNode": "ControlActivity",
+    "parentOfSecondNodeLinkType": "HAS_AUTHORITY"
+  },
+  {
+    "place": "response_session",
+    "role": "subject",
+    "direction": "IN",
+    "linkType": "HAS_SUBJECT",
+    "secondNodeType": "ResponseSession"
+  },
+  {
+    "place": "response_session",
+    "role": "subject",
+    "direction": "IN",
+    "linkType": "HAS_SUBJECT",
+    "parentOfSecondNode": "ControlActivity",
+    "parentOfSecondNodeLinkType": "HAS_OWNER"
+  },
+  {
+    "place": "rs_facts",
+    "role": "fact",
+    "direction": "IN",
+    "linkType": "HAS_FACT",
+    "parentOfSecondNode": "ResponseSession",
+    "parentOfSecondNodeLinkType": "HAS_SUBJECT"
+  },
+  {
+    "place": "rs_facts",
+    "role": "fact_feature",
+    "direction": "IN",
+    "linkType": "CREATED",
+    "secondNodeType": "ResponseSession"
+  }
+]

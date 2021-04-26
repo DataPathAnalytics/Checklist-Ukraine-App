@@ -4,21 +4,21 @@
     "role": "authority_representative",
     "direction": "IN",
     "linkType": "HAS_AUTHORITY",
-    "secondNodeType": "ControlActivity"
+    "secondNodeType": "control_activity"
   },
   {
     "place": "control_activity",
     "role": "owner",
     "direction": "IN",
     "linkType": "HAS_OWNER",
-    "secondNodeType": "ControlActivity"
+    "secondNodeType": "control_activity"
   },
   {
     "place": "control_activity",
     "role": "owner",
     "direction": "IN",
     "linkType": "HAS_AUTHORITY_ON",
-    "parentOfSecondNode": "ControlActivity",
+    "parentOfSecondNode": "control_activity",
     "parentOfSecondNodeLinkType": "HAS_AUTHORITY"
   },
   {
@@ -26,14 +26,14 @@
     "role": "subject",
     "direction": "IN",
     "linkType": "HAS_SUBJECT",
-    "secondNodeType": "ResponseSession"
+    "secondNodeType": "response_session"
   },
   {
     "place": "response_session",
     "role": "subject",
     "direction": "IN",
     "linkType": "HAS_SUBJECT",
-    "parentOfSecondNode": "ControlActivity",
+    "parentOfSecondNode": "control_activity",
     "parentOfSecondNodeLinkType": "HAS_OWNER"
   },
   {
@@ -41,7 +41,7 @@
     "role": "fact",
     "direction": "IN",
     "linkType": "HAS_FACT",
-    "parentOfSecondNode": "ResponseSession",
+    "parentOfSecondNode": "response_session",
     "parentOfSecondNodeLinkType": "HAS_SUBJECT"
   },
   {
@@ -49,6 +49,6 @@
     "role": "fact_feature",
     "direction": "IN",
     "linkType": "CREATED",
-    "secondNodeType": "ResponseSession"
+    "secondNodeType": "response_session"
   }
 ]

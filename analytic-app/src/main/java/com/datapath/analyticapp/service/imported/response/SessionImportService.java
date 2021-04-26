@@ -1,7 +1,7 @@
-package com.datapath.analyticapp.service.imported.activity;
+package com.datapath.analyticapp.service.imported.response;
 
-import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
-import com.datapath.analyticapp.dao.repository.ControlActivityRepository;
+import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
+import com.datapath.analyticapp.dao.repository.ResponseSessionRepository;
 import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
@@ -16,20 +16,20 @@ import java.util.Optional;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
-@Order(3)
-public class ActivityImportService implements ImportService {
+@Order(4)
+public class SessionImportService implements ImportService {
 
     private static final int LIMIT = 10;
 
-    @Value("${checklist.activity.part.url}")
+    @Value("${checklist.sessions.part.url}")
     private String apiUrlPart;
 
     @Autowired
-    private ControlActivityRepository repository;
+    private ResponseSessionRepository repository;
     @Autowired
     private RestManager restManager;
     @Autowired
-    private ActivityUpdateService updateService;
+    private SessionUpdateService updateService;
 
     @Override
     public void upload() {
@@ -51,7 +51,7 @@ public class ActivityImportService implements ImportService {
 
     @Override
     public LocalDateTime getLastModified() {
-        Optional<ControlActivityEntity> lastActivity = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
-        return lastActivity.map(ControlActivityEntity::getDateModified).orElse(null);
+        Optional<ResponseSessionEntity> last = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
+        return last.map(ResponseSessionEntity::getDateModified).orElse(null);
     }
 }

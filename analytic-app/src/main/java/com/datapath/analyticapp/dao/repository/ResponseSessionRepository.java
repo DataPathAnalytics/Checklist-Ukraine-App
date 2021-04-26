@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessionEntity, Long> {
     Optional<ResponseSessionEntity> findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
+
+    ResponseSessionEntity findByOuterId(Long outerId);
 }

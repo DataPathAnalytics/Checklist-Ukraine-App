@@ -12,6 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class AnswerDTO {
 
+    private Long id;
     @NotNull
     private Long questionId;
 

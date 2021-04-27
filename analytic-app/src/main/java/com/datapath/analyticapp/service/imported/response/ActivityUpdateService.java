@@ -2,10 +2,10 @@ package com.datapath.analyticapp.service.imported.response;
 
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.repository.*;
+import com.datapath.analyticapp.dao.service.CypherQueryService;
+import com.datapath.analyticapp.dao.service.QueryRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
-import com.datapath.analyticapp.service.db.DatabaseUtils;
-import com.datapath.analyticapp.service.db.QueryRequest;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class ActivityUpdateService extends BaseUpdateService {
                                  KnowledgeClassRepository knowledgeClassRepository,
                                  NodeTypeRepository nodeTypeRepository,
                                  MinerRuleProvider minerRuleProvider,
-                                 DatabaseUtils dbUtils,
+                                 CypherQueryService dbUtils,
                                  RoleRepository roleRepository) {
         super(dbUtils, minerRuleProvider, roleRepository, nodeTypeRepository, userRepository, questionRepository, knowledgeClassRepository);
         this.controlActivityRepository = controlActivityRepository;
@@ -87,14 +87,14 @@ public class ActivityUpdateService extends BaseUpdateService {
 
         String nodeType = getNodeType(authorityQuestion, AUTHORITY_DEFAULT_NODE);
 
-        Long nodeId = dbUtils.mergeIdentifierNode(
-                QueryRequest.builder()
-                        .parentNodeType(nodeType)
-                        .identifierField(identifier.getName())
-                        .identifierValue(answerValue.get(identifier.getName()))
-                        .identifierType(identifier.getValueType())
-                        .params(answerValue)
-                        .build());
+        Long nodeId = queryService.mergeIdentifierNode(
+                QueryRequest.forIdentifier(
+                        nodeType,
+                        identifier.getName(),
+                        answerValue.get(identifier.getName()),
+                        identifier.getValueType(),
+                        answerValue)
+        );
 
         handleRuleProcessing(nodeId, AUTHORITY_REPRESENTATIVE_ROLE, roleNodeId);
         handleSubQuestions(authorityQuestion, nodeId, questions, questionAnswers, roleNodeId);
@@ -117,14 +117,13 @@ public class ActivityUpdateService extends BaseUpdateService {
 
         String nodeType = getNodeType(ownerQuestion, OWNER_DEFAULT_NODE);
 
-        Long nodeId = dbUtils.mergeIdentifierNode(
-                QueryRequest.builder()
-                        .parentNodeType(nodeType)
-                        .identifierField(identifier.getName())
-                        .identifierValue(answerValue.get(identifier.getName()))
-                        .identifierType(identifier.getValueType())
-                        .params(answerValue)
-                        .build()
+        Long nodeId = queryService.mergeIdentifierNode(
+                QueryRequest.forIdentifier(
+                        nodeType,
+                        identifier.getName(),
+                        answerValue.get(identifier.getName()),
+                        identifier.getValueType(),
+                        answerValue)
         );
 
         handleRuleProcessing(nodeId, OWNER_ROLE, roleNodeId);

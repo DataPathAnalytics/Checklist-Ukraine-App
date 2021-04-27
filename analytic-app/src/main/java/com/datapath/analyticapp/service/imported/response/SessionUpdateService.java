@@ -3,10 +3,10 @@ package com.datapath.analyticapp.service.imported.response;
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
 import com.datapath.analyticapp.dao.repository.*;
+import com.datapath.analyticapp.dao.service.CypherQueryService;
+import com.datapath.analyticapp.dao.service.QueryRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
-import com.datapath.analyticapp.service.db.DatabaseUtils;
-import com.datapath.analyticapp.service.db.QueryRequest;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class SessionUpdateService extends BaseUpdateService {
     private final ResponseSessionRepository responseSessionRepository;
     private final ControlActivityRepository controlActivityRepository;
 
-    public SessionUpdateService(DatabaseUtils dbUtils,
+    public SessionUpdateService(CypherQueryService dbUtils,
                                 MinerRuleProvider minerRuleProvider,
                                 RoleRepository roleRepository,
                                 NodeTypeRepository nodeTypeRepository,
@@ -79,11 +79,9 @@ public class SessionUpdateService extends BaseUpdateService {
         Long savedId = responseSessionRepository.save(sessionEntity).getId();
         roleNodeId.put(RESPONSE_SESSION_ROLE, Collections.singletonList(savedId));
 
-        dbUtils.buildRelationship(QueryRequest.builder()
-                .parentId(roleNodeId.get(CONTROL_ACTIVITY_ROLE).get(0))
-                .childId(savedId)
-                .relType(ACTIVITY_SESSION_LINK)
-                .build());
+        queryService.buildRelationship(
+                QueryRequest.forRelationship(roleNodeId.get(CONTROL_ACTIVITY_ROLE).get(0), savedId, ACTIVITY_SESSION_LINK)
+        );
     }
 
     private void handleSubject(SessionDTO session, Map<String, List<Long>> roleNodeId) {
@@ -103,17 +101,17 @@ public class SessionUpdateService extends BaseUpdateService {
 
         String nodeType = getNodeType(subjectQuestion, SUBJECT_DEFAULT_NODE);
 
-        Long nodeId = dbUtils.mergeIdentifierNode(
-                QueryRequest.builder()
-                        .parentNodeType(nodeType)
-                        .identifierField(identifier.getName())
-                        .identifierValue(answerValue.get(identifier.getName()))
-                        .identifierType(identifier.getValueType())
-                        .params(answerValue)
-                        .build());
+        Long nodeId = queryService.mergeIdentifierNode(
+                QueryRequest.forIdentifier(
+                        nodeType,
+                        identifier.getName(),
+                        answerValue.get(identifier.getName()),
+                        identifier.getValueType(),
+                        answerValue)
+        );
 
         handleRuleProcessing(nodeId, SUBJECT_ROLE, roleNodeId);
-        handleSubQuestions(subjectQuestion, nodeId, questions, questionAnswers, roleNodeId);
+        super.handleSubQuestions(subjectQuestion, nodeId, questions, questionAnswers, roleNodeId);
     }
 
     private void handleQuestions(SessionDTO session, Map<String, List<Long>> roleNodeId) {
@@ -127,34 +125,98 @@ public class SessionUpdateService extends BaseUpdateService {
         session.getTemplate().getUngroupedQuestions()
                 .stream()
                 .filter(QuestionExecutionDTO::isRoot)
-                .forEach(execution -> {
-                    Map<String, Object> answerValues = questionAnswers.get(execution.getId()).getValues();
-//                    if (!isEmpty(answerValues)) {
-//                        handleQ(execution, roleNodeId.get(RESPONSE_SESSION_ROLE).get(0));
-//
-//                        if (isFact(execution)) {
-//                            handleFactQuestion(execution, answerValues, roleNodeId);
-//                        } else {
-//                            handleNotFactQuestion(execution, answerValues, roleNodeId);
-//                        }
-//                    }
-                });
+                .forEach(execution -> handleQuestion(execution, roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questions, questionAnswers, roleNodeId));
+
+        session.getTemplate().getQuestionGroups()
+                .forEach(qg -> qg.getQuestions().stream()
+                        .filter(QuestionExecutionDTO::isRoot)
+                        .forEach(execution -> handleQuestion(execution, roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questions, questionAnswers, roleNodeId)));
     }
 
-//    private void handleQ(QuestionExecutionDTO execution,
-//                                Long parentId,
-//                                Map<Long, QuestionExecutionDTO> questions,
-//                                Map<Long, AnswerDTO> questionAnswers,
-//                                Map<String, List<Long>> roleNodeId) {
-//        if (isFact(execution)) {
-//            handleFactQuestion(execution, answerValues, roleNodeId);
-//        } else {
-//            handleNotFactQuestion(execution, answerValues, roleNodeId);
-//        }
-//    }
+    protected void handleQuestion(QuestionExecutionDTO execution,
+                                  Long parentId,
+                                  Map<Long, QuestionExecutionDTO> questions,
+                                  Map<Long, AnswerDTO> questionAnswers,
+                                  Map<String, List<Long>> roleNodeId) {
+        AnswerDTO answer = questionAnswers.get(execution.getId());
+        if (isNull(answer)) return;
+        Map<String, Object> answerValue = answer.getValues();
+        if (isEmpty(answerValue)) return;
 
-    private void handleFactQuestion(QuestionExecutionDTO execution, Map<String, Object> answerValues, Map<String, List<Long>> roleNodeId) {
+        if (isFact(execution)) {
+            handleFactQuestion(execution, parentId, questions, questionAnswers, roleNodeId);
+        } else {
+            super.handleQuestion(execution, parentId, questions, questionAnswers, roleNodeId);
+        }
+    }
 
+    private void handleFactQuestion(QuestionExecutionDTO execution,
+                                    Long parentId,
+                                    Map<Long, QuestionExecutionDTO> questions,
+                                    Map<Long, AnswerDTO> questionAnswers,
+                                    Map<String, List<Long>> roleNodeId) {
+        Long questionId = getUpdatedQuestionId(execution.getQuestion());
+
+        String fieldName = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0).getName();
+        AnswerDTO answer = questionAnswers.get(execution.getId());
+        Long answerValueId = Long.parseLong(answer.getValues().get(fieldName).toString());
+        String answerValue = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0).getValues()
+                .stream()
+                .filter(v -> v.getId().equals(answerValueId))
+                .findFirst()
+                .map(FieldDescriptionDTO.ValueDTO::getValue).orElseThrow(() -> new ValidationException("Not found value for fact answer"));
+
+        Map<String, Object> props = new HashMap<>();
+        props.put(fieldName, answerValue);
+        props.put("questionValue", execution.getQuestion().getValue());
+
+        Long nodeId = queryService.mergeFactNode(
+                QueryRequest.forFactNode(parentId, answer.getId(), props)
+        );
+
+        handleQuestionRelationship(nodeId, questionId, roleNodeId);
+        handleRuleProcessing(nodeId, FACT_ROLE, roleNodeId);
+        handleEventProcessing(nodeId, answerValueId, execution.getConditionCharacteristics(), roleNodeId);
+        handleSubQuestions(execution, answerValueId, nodeId, questions, questionAnswers, roleNodeId);
+    }
+
+    private void handleQuestionRelationship(Long nodeId, Long questionId, Map<String, List<Long>> roleNodeId) {
+        queryService.buildRelationship(QueryRequest.forRelationship(nodeId, questionId, FACT_QUESTION_LINK));
+        queryService.buildRelationship(QueryRequest.forRelationship(roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
+        queryService.buildRelationship(QueryRequest.forRelationship(roleNodeId.get(SUBJECT_ROLE).get(0), questionId, SUBJECT_QUESTION_LINK));
+    }
+
+    private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics, Map<String, List<Long>> roleNodeId) {
+        QueryRequest request = QueryRequest.forEventNode(factNodeId);
+        queryService.delete(request);
+        if (!isEmpty(conditionCharacteristics)) {
+            conditionCharacteristics
+                    .stream()
+                    .filter(cc -> cc.getConditionAnswerId().equals(answerValueId))
+                    .findFirst()
+                    .ifPresent(cc -> {
+                        request.setEventTypeId(cc.getOuterRiskEventId());
+                        Long eventId = queryService.createEvent(request);
+                        handleRuleProcessing(eventId, EVENT_ROLE, roleNodeId);
+                    });
+        }
+    }
+
+    private void handleSubQuestions(QuestionExecutionDTO execution,
+                                    Long answerValueId,
+                                    Long parentId,
+                                    Map<Long, QuestionExecutionDTO> questions,
+                                    Map<Long, AnswerDTO> questionAnswers,
+                                    Map<String, List<Long>> roleNodeId) {
+        if (!isEmpty(execution.getSubQuestions())) {
+            execution.getSubQuestions().forEach(sub -> {
+                List<Long> subQuestionIds = sub.getConditionAnswerQuestionIds().get(answerValueId);
+                if (!isEmpty(subQuestionIds)) {
+                    subQuestionIds
+                            .forEach(subQ -> handleQuestion(questions.get(subQ), parentId, questions, questionAnswers, roleNodeId));
+                }
+            });
+        }
     }
 
     private void setAuthor(ResponseSessionEntity session, Long authorId) {

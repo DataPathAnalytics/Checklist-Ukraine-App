@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class ConditionCharacteristicDTO {
     private Long outerRiskEventId;
-    private Integer conditionAnswerId;
+    private Long conditionAnswerId;
 }

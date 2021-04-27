@@ -5,22 +5,21 @@ import com.datapath.analyticapp.dao.entity.NodeTypeEntity;
 import com.datapath.analyticapp.dao.entity.RoleEntity;
 import com.datapath.analyticapp.dao.entity.imported.QuestionEntity;
 import com.datapath.analyticapp.dao.repository.*;
+import com.datapath.analyticapp.dao.service.CypherQueryService;
+import com.datapath.analyticapp.dao.service.QueryRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
-import com.datapath.analyticapp.service.db.DatabaseUtils;
-import com.datapath.analyticapp.service.db.QueryRequest;
 import com.datapath.analyticapp.service.miner.MinerRule;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.datapath.analyticapp.Constants.DEFAULT_LINK;
-import static com.datapath.analyticapp.Constants.DEFAULT_NODE;
+import static com.datapath.analyticapp.Constants.*;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
@@ -31,7 +30,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class BaseUpdateService {
 
 
-    protected final DatabaseUtils dbUtils;
+    protected final CypherQueryService queryService;
     protected final MinerRuleProvider minerRuleProvider;
     protected final RoleRepository roleRepository;
     protected final NodeTypeRepository nodeTypeRepository;
@@ -80,11 +79,10 @@ public class BaseUpdateService {
                                   Map<Long, QuestionExecutionDTO> questions,
                                   Map<Long, AnswerDTO> questionAnswers,
                                   Map<String, List<Long>> roleNodeId) {
-        //TODO:needs solve question about question relationship
-        //Long questionId = getUpdatedQuestionId(execution.getQuestion());
-
-        Map<String, Object> answerValues = questionAnswers.get(execution.getId()).getValues();
-        if (isEmpty(answerValues)) return;
+        AnswerDTO answer = questionAnswers.get(execution.getId());
+        if (isNull(answer)) return;
+        Map<String, Object> answerValue = answer.getValues();
+        if (isEmpty(answerValue)) return;
 
         Optional<FieldDescriptionDTO> identifier = getIdentifierField(execution);
 
@@ -102,72 +100,73 @@ public class BaseUpdateService {
 
         Long nodeId;
         if (!identifier.isPresent()) {
-            nodeId = dbUtils.updateNotIdentifierNode(
-                    QueryRequest.builder()
-                            .parentId(parentId)
-                            .relType(linkType)
-                            .childNodeType(nodeType)
-                            .params(answerValues)
-                            .build());
+            nodeId = queryService.mergeNotIdentifierNode(
+                    QueryRequest.forNonIdentifier(parentId, answer.getId(), nodeType, linkType, answerValue)
+            );
         } else {
-            nodeId = dbUtils.mergeIdentifierNode(
-                    QueryRequest.builder()
-                            .parentId(parentId)
-                            .parentNodeType(nodeType)
-                            .identifierField(identifier.get().getName())
-                            .identifierValue(answerValues.get(identifier.get().getName()))
-                            .identifierType(identifier.get().getValueType())
-                            .params(answerValues)
-                            .build());
-            dbUtils.buildRelationship(QueryRequest.builder()
-                    .parentId(parentId)
-                    .childId(nodeId)
-                    .relType(linkType)
-                    .build());
+            nodeId = queryService.mergeIdentifierNode(
+                    QueryRequest.forIdentifier(
+                            nodeType,
+                            identifier.get().getName(),
+                            answerValue.get(identifier.get().getName()),
+                            identifier.get().getValueType(),
+                            answerValue)
+            );
+            queryService.buildRelationship(QueryRequest.forRelationship(parentId, nodeId, linkType));
         }
 
+        handleRuleProcessing(nodeId, FACT_FEATURE_ROLE, roleNodeId);
         handleRuleProcessing(execution, nodeId, roleNodeId);
         handleSubQuestions(execution, nodeId, questions, questionAnswers, roleNodeId);
     }
 
     protected void handleRuleProcessing(Long nodeId, String roleName, Map<String, List<Long>> roleNodeId) {
-        roleNodeId.computeIfPresent(roleName, (k, v) -> {
-                    v.add(nodeId);
-                    return v;
-                }
-        );
-        roleNodeId.computeIfAbsent(roleName, k -> Arrays.asList(nodeId));
-
         List<MinerRule> minerRules = minerRuleProvider.getByRole(roleName);
-        minerRules.forEach(rule -> {
-            if (nonNull(rule.getSecondNodeType())) {
-                dbUtils.buildRelationshipUseRule(rule, nodeId, roleNodeId.get(rule.getSecondNodeType()));
-            } else {
-                dbUtils.buildRelationshipUseRule(rule, nodeId, roleNodeId.get(rule.getParentOfSecondNode()), rule.getParentOfSecondNodeLinkType());
-            }
-        });
+        minerRules.forEach(rule -> processRule(rule, nodeId, roleNodeId));
+        addNewRoleNodeId(roleName, nodeId, roleNodeId);
     }
 
     protected void handleRuleProcessing(QuestionExecutionDTO execution, Long nodeId, Map<String, List<Long>> roleNodeId) {
         if (nonNull(execution.getRoleId())) {
             Optional<RoleEntity> roleEntity = roleRepository.findById(execution.getRoleId());
-
-            roleNodeId.computeIfPresent(roleEntity.get().getRoleName(), (k, v) -> {
-                        v.add(nodeId);
-                        return v;
-                    }
-            );
-            roleNodeId.computeIfAbsent(roleEntity.get().getRoleName(), k -> Arrays.asList(nodeId));
-
             List<MinerRule> minerRules = minerRuleProvider.getByRole(roleEntity.get().getRoleName());
-            minerRules.forEach(rule -> {
-                if (nonNull(rule.getSecondNodeType())) {
-                    dbUtils.buildRelationshipUseRule(rule, nodeId, roleNodeId.get(rule.getSecondNodeType()));
-                } else {
-                    dbUtils.buildRelationshipUseRule(rule, nodeId, roleNodeId.get(rule.getParentOfSecondNode()), rule.getParentOfSecondNodeLinkType());
-                }
-            });
+            minerRules.forEach(rule -> processRule(rule, nodeId, roleNodeId));
+            addNewRoleNodeId(roleEntity.get().getRoleName(), nodeId, roleNodeId);
         }
+    }
+
+    private void addNewRoleNodeId(String roleName, Long nodeId, Map<String, List<Long>> roleNodeId) {
+        roleNodeId.computeIfPresent(roleName, (k, v) -> {
+                    v.add(nodeId);
+                    return v;
+                }
+        );
+        roleNodeId.computeIfAbsent(roleName, k -> {
+            ArrayList<Long> v = new ArrayList<>();
+            v.add(nodeId);
+            return v;
+        });
+    }
+
+    private void processRule(MinerRule rule, Long nodeId, Map<String, List<Long>> roleNodeId) {
+        List<Long> secondNodeId = roleNodeId.get(rule.getSecondNodeType());
+        List<Long> parentOfSecondNodeId = roleNodeId.get(rule.getParentOfSecondNode());
+
+        if (hasNoRuleData(secondNodeId, parentOfSecondNodeId)) return;
+
+        queryService.buildRelationshipUseRule(
+                QueryRequest.forRuleRelationship(
+                        rule,
+                        nodeId,
+                        roleNodeId.get(rule.getSecondNodeType()),
+                        roleNodeId.get(rule.getParentOfSecondNode()),
+                        rule.getParentOfSecondNodeLinkType()
+                )
+        );
+    }
+
+    private boolean hasNoRuleData(List<Long> secondNodeId, List<Long> parentOfSecondNodeId) {
+        return isEmpty(secondNodeId) && isEmpty(parentOfSecondNodeId);
     }
 
     protected void handleSubQuestions(QuestionExecutionDTO execution,
@@ -203,7 +202,7 @@ public class BaseUpdateService {
         return nodeTypeEntity.map(NodeTypeEntity::getNodeTypeName).orElse(defaultNodeType);
     }
 
-    private Optional<String> getLinkType(QuestionExecutionDTO execution, NodeTypeEntity nodeType) {
+    protected Optional<String> getLinkType(QuestionExecutionDTO execution, NodeTypeEntity nodeType) {
         if (isNull(execution.getLinkTypeId())) return Optional.empty();
         return nodeType.getLinkTypes()
                 .stream()
@@ -212,7 +211,7 @@ public class BaseUpdateService {
                 .map(LinkTypeEntity::getLinkTypeName);
     }
 
-    private boolean conditionMet(SubQuestionDTO sub, AnswerDTO answer) {
+    protected boolean conditionMet(SubQuestionDTO sub, AnswerDTO answer) {
         return isNull(sub.getConditionFieldName()) || nonNull(answer.getValues().get(sub.getConditionFieldName()));
     }
 }

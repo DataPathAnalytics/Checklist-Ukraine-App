@@ -29,6 +29,7 @@ public class AnswerConverter {
     @SneakyThrows
     public AnswerDTO map(AnswerEntity entity) {
         AnswerDTO dto = new AnswerDTO();
+        dto.setId(entity.getId());
         dto.setQuestionId(entity.getQuestionExecution().getId());
         dto.setComment(entity.getComment());
         dto.setValues(toValues(entity));

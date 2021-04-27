@@ -50,5 +50,20 @@
     "direction": "IN",
     "linkType": "CREATED",
     "secondNodeType": "response_session"
+  },
+  {
+    "place": "rs_facts",
+    "role": "event",
+    "direction": "IN",
+    "linkType": "HAS_EVENT",
+    "secondNodeType": "response_session"
+  },
+  {
+    "place": "rs_facts",
+    "role": "event",
+    "direction": "IN",
+    "linkType": "HAS_EVENT",
+    "parentOfSecondNode": "response_session",
+    "parentOfSecondNodeLinkType": "HAS_SUBJECT"
   }
 ]

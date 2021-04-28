@@ -21,7 +21,7 @@ public class Constants {
     public final static String SUBJECT_DEFAULT_NODE = "Subject";
 
     public final static String FACT_DEFAULT_NODE = "Fact";
-    public final static String FACT_DEFAULT_LINK = "CREATED_FACT";
+    public final static String FACT_DEFAULT_LINK = "HAS_FACT";
 
     public final static String EVENT_DEFAULT_NODE = "Event";
     public final static String EVENT_DEFAULT_LINK = "HAS_EVENT";

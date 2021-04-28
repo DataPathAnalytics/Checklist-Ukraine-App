@@ -3,7 +3,7 @@ package com.datapath.analyticapp.service.imported.response;
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.repository.*;
 import com.datapath.analyticapp.dao.service.CypherQueryService;
-import com.datapath.analyticapp.dao.service.QueryRequest;
+import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,15 +47,16 @@ public class ActivityUpdateService extends BaseUpdateService {
 //        if (response.getActivity().isInvalid()) {
 //        }
 
-        Map<String, List<Long>> roleNodeId = new HashMap<>();
+        roleNodeIdMap = new HashMap<>();
 
-        handleControlActivity(response, roleNodeId);
-        handleAuthority(response.getActivity(), roleNodeId);
-        handleOwner(response.getActivity(), roleNodeId);
-        handleTypeQuestions(response.getActivity(), roleNodeId, CONTROL_ACTIVITY_ROLE);
+        handleControlActivity(response);
+        handleAuthority(response.getActivity());
+        handleOwner(response.getActivity());
+        handleTypeQuestions(response.getActivity(), CONTROL_ACTIVITY_ROLE);
+        handleRuleMining();
     }
 
-    private void handleControlActivity(ResponseDataDTO response, Map<String, List<Long>> roleNodeId) {
+    private void handleControlActivity(ResponseDataDTO response) {
         ControlActivityEntity activity = controlActivityRepository.findByOuterId(response.getId());
 
         if (isNull(activity)) {
@@ -67,10 +67,11 @@ public class ActivityUpdateService extends BaseUpdateService {
         }
         setMembers(activity, response.getActivity().getMembers());
 //        activity.setDateModified(response.getActivity().getDateModified());
-        roleNodeId.put(CONTROL_ACTIVITY_ROLE, Collections.singletonList(controlActivityRepository.save(activity).getId()));
+
+        addNewRoleNodeId(CONTROL_ACTIVITY_ROLE, controlActivityRepository.save(activity).getId());
     }
 
-    private void handleAuthority(SessionDTO activity, Map<String, List<Long>> roleNodeId) {
+    private void handleAuthority(SessionDTO activity) {
         Map<Long, AnswerDTO> questionAnswers = activity.getAnswers().stream()
                 .collect(toMap(AnswerDTO::getQuestionId, Function.identity()));
 
@@ -88,19 +89,19 @@ public class ActivityUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(authorityQuestion, AUTHORITY_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequest.forIdentifier(
+                QueryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
                         identifier.getValueType(),
                         answerValue)
         );
+        addNewRoleNodeId(AUTHORITY_REPRESENTATIVE_ROLE, nodeId);
 
-        handleRuleProcessing(nodeId, AUTHORITY_REPRESENTATIVE_ROLE, roleNodeId);
-        handleSubQuestions(authorityQuestion, nodeId, questions, questionAnswers, roleNodeId);
+        handleSubQuestions(authorityQuestion, nodeId, questions, questionAnswers);
     }
 
-    private void handleOwner(SessionDTO activity, Map<String, List<Long>> roleNodeId) {
+    private void handleOwner(SessionDTO activity) {
         Map<Long, AnswerDTO> questionAnswers = activity.getAnswers().stream()
                 .collect(toMap(AnswerDTO::getQuestionId, Function.identity()));
 
@@ -118,16 +119,16 @@ public class ActivityUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(ownerQuestion, OWNER_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequest.forIdentifier(
+                QueryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
                         identifier.getValueType(),
                         answerValue)
         );
+        addNewRoleNodeId(OWNER_ROLE, nodeId);
 
-        handleRuleProcessing(nodeId, OWNER_ROLE, roleNodeId);
-        handleSubQuestions(ownerQuestion, nodeId, questions, questionAnswers, roleNodeId);
+        handleSubQuestions(ownerQuestion, nodeId, questions, questionAnswers);
     }
 
     private void setMembers(ControlActivityEntity activity, List<Long> members) {

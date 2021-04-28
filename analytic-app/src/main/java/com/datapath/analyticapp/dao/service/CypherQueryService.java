@@ -1,5 +1,6 @@
 package com.datapath.analyticapp.dao.service;
 
+import com.datapath.analyticapp.dao.service.request.*;
 import com.datapath.analyticapp.exception.CypherOperationException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -30,7 +31,7 @@ public class CypherQueryService {
             "match (n1), (n2) where id(n1) = $parentId and id(n2) = $childId merge (n1)-[:%s]->(n2)";
 
     private static final String MERGE_FACT_QUESTION_REQUEST =
-            "match (n) where id(n) = $parentId merge (n)-[:%s {answerId: $answerId}]->(f:%s) on create set f = $props on match set f += $props return id(f)";
+            "match (n) where id(n) = $parentId merge (n)-[:%s]->(f:%s {%s: $value, questionValue: $questionValue}) return id(f)";
 
     private static final String DELETE_REQUEST =
             "match (n)-[:%s]->(d:%s) where id(n) = $parentId detach delete d";
@@ -40,7 +41,7 @@ public class CypherQueryService {
 
     private final Neo4jClient client;
 
-    public Long mergeNotIdentifierNode(QueryRequest request) {
+    public Long mergeNotIdentifierNode(NonIdentifierRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("props", request.getProps());
@@ -49,10 +50,10 @@ public class CypherQueryService {
                 String.format(MERGE_NON_IDENTIFIER_NODE_REQUEST,
                         request.getLinkType(),
                         request.getNodeType())
-        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request));
+        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
     }
 
-    public Long mergeIdentifierNode(QueryRequest request) {
+    public Long mergeIdentifierNode(IdentifierRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("props", request.getProps());
         return client.query(
@@ -60,10 +61,10 @@ public class CypherQueryService {
                         request.getNodeType(),
                         request.getIdentifierField(),
                         request.getIdentifierValue())
-        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request));
+        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
     }
 
-    public void buildRelationship(QueryRequest request) {
+    public void buildRelationship(RelationshipRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("childId", request.getChildId());
@@ -71,7 +72,7 @@ public class CypherQueryService {
                 .bindAll(param).run();
     }
 
-    public void buildRelationshipUseRule(QueryRequest request) {
+    public void buildRelationshipUseRule(RuleRelationshipRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("nodeId", request.getNodeId());
 
@@ -94,26 +95,28 @@ public class CypherQueryService {
         client.query(query).bindAll(param).run();
     }
 
-    public Long mergeFactNode(QueryRequest request) {
+    public Long mergeFactNode(FactRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
-        param.put("props", request.getProps());
-        param.put("answerId", request.getAnswerId());
+        param.put("value", request.getValue());
+        param.put("questionValue", request.getQuestionValue());
+
         return client.query(
                 String.format(MERGE_FACT_QUESTION_REQUEST,
                         request.getLinkType(),
-                        request.getNodeType())
-        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request));
+                        request.getNodeType(),
+                        request.getValueName())
+        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
     }
 
-    public void delete(QueryRequest request) {
+    public void delete(DeleteRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         client.query(String.format(DELETE_REQUEST, request.getLinkType(), request.getNodeType()))
                 .bindAll(param).run();
     }
 
-    public Long createEvent(QueryRequest request) {
+    public Long createEvent(EventRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("eventTypeId", request.getEventTypeId());
@@ -121,6 +124,6 @@ public class CypherQueryService {
                 String.format(EVENT_REQUEST,
                         request.getLinkType(),
                         request.getNodeType())
-        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request));
+        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
     }
 }

@@ -23,6 +23,13 @@
   },
   {
     "place": "response_session",
+    "role": "response_session",
+    "direction": "IN",
+    "linkType": "HAS_RESPONSE_SESSION",
+    "secondNodeType": "control_activity"
+  },
+  {
+    "place": "response_session",
     "role": "subject",
     "direction": "IN",
     "linkType": "HAS_SUBJECT",
@@ -40,9 +47,8 @@
     "place": "rs_facts",
     "role": "fact",
     "direction": "IN",
-    "linkType": "HAS_FACT",
-    "parentOfSecondNode": "response_session",
-    "parentOfSecondNodeLinkType": "HAS_SUBJECT"
+    "linkType": "CREATED_FACT",
+    "secondNodeType": "response_session"
   },
   {
     "place": "rs_facts",

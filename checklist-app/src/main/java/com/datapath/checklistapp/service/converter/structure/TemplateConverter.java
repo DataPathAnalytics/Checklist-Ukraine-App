@@ -31,13 +31,13 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(processQuestionWithChild(entity.getObjectQuestion(), entity.getObjectFutureQuestions()));
+        dto.setObjectQuestion(processQuestionWithChild(entity.getObjectQuestion(), entity.getObjectFutureQuestions(), null));
         dto.setObjectFeatureQuestions(processQuestions(entity.getObjectFutureQuestions()));
 
         dto.setTypeQuestions(processQuestions(entity.getTypeQuestions()));
 
         if (nonNull(entity.getAuthorityQuestion())) {
-            dto.setAuthorityQuestion(processQuestionWithChild(entity.getAuthorityQuestion(), entity.getAuthorityFeatureQuestions()));
+            dto.setAuthorityQuestion(processQuestionWithChild(entity.getAuthorityQuestion(), entity.getAuthorityFeatureQuestions(), null));
             dto.setAuthorityFeatureQuestions(processQuestions(entity.getAuthorityFeatureQuestions()));
         }
 
@@ -52,7 +52,7 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(processQuestionWithChild(entity.getConfig().getObjectQuestion(), entity.getConfig().getObjectFutureQuestions()));
+        dto.setObjectQuestion(processQuestionWithChild(entity.getConfig().getObjectQuestion(), entity.getConfig().getObjectFutureQuestions(), entity.getGroups()));
         dto.setObjectFeatureQuestions(processQuestions(entity.getConfig().getObjectFutureQuestions()));
 
         dto.setTypeQuestions(processQuestions(entity.getConfig().getTypeQuestions()));
@@ -82,7 +82,7 @@ public class TemplateConverter {
     }
 
     private QuestionExecutionDTO processQuestionWithChild(QuestionExecutionEntity questionEntity,
-                                                          Set<QuestionExecutionEntity> subQuestions) {
+                                                          Set<QuestionExecutionEntity> subQuestions, Set<QuestionGroupEntity> groups) {
         QuestionExecutionDTO question = questionConverter.map(questionEntity);
         question.addSubQuestions(
                 subQuestions.stream()
@@ -91,6 +91,15 @@ public class TemplateConverter {
                         .map(QuestionExecutionEntity::getId)
                         .collect(toSet())
         );
+
+        if (!isEmpty(groups)) {
+            groups.forEach(group -> question.addSubQuestions(group.getQuestions().stream()
+                    .filter(QuestionExecutionEntity::isRoot)
+                    .sorted(Comparator.comparing(QuestionExecutionEntity::getOrderNumber))
+                    .map(QuestionExecutionEntity::getId)
+                    .collect(toSet())));
+        }
+
         return question;
     }
 

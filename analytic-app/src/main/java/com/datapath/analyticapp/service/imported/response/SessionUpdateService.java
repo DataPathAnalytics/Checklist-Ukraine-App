@@ -4,7 +4,9 @@ import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
 import com.datapath.analyticapp.dao.repository.*;
 import com.datapath.analyticapp.dao.service.CypherQueryService;
-import com.datapath.analyticapp.dao.service.QueryRequest;
+import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
+import com.datapath.analyticapp.dao.service.request.DeleteRequest;
+import com.datapath.analyticapp.dao.service.request.EventRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
@@ -12,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @Service
 @Slf4j
 public class SessionUpdateService extends BaseUpdateService {
-
-    private final static String ACTIVITY_SESSION_LINK = "HAS_RESPONSE_SESSION";
 
     private final ResponseSessionRepository responseSessionRepository;
     private final ControlActivityRepository controlActivityRepository;
@@ -55,17 +54,17 @@ public class SessionUpdateService extends BaseUpdateService {
         response.getSessions().forEach(session -> {
             log.info("Updating response session {}", session.getId());
 
-            Map<String, List<Long>> roleNodeId = new HashMap<>();
-            roleNodeId.put(CONTROL_ACTIVITY_ROLE, Collections.singletonList(activity.getId()));
+            roleNodeIdMap = new HashMap<>();
+            addNewRoleNodeId(CONTROL_ACTIVITY_ROLE, activity.getId());
 
-            handleResponseSession(session, roleNodeId);
-            handleSubject(session, roleNodeId);
-            handleTypeQuestions(session, roleNodeId, RESPONSE_SESSION_ROLE);
-            handleQuestions(session, roleNodeId);
+            handleResponseSession(session);
+            handleSubject(session);
+            handleTypeQuestions(session, RESPONSE_SESSION_ROLE);
+            handleRuleMining();
         });
     }
 
-    private void handleResponseSession(SessionDTO session, Map<String, List<Long>> roleNodeId) {
+    private void handleResponseSession(SessionDTO session) {
         ResponseSessionEntity sessionEntity = responseSessionRepository.findByOuterId(session.getId());
         if (isNull(sessionEntity)) {
             sessionEntity = new ResponseSessionEntity();
@@ -76,21 +75,24 @@ public class SessionUpdateService extends BaseUpdateService {
         setReviewer(sessionEntity, session.getReviewerId());
 //        sessionEntity.setDateModified(sessionEntity.getDateModified());
 
-        Long savedId = responseSessionRepository.save(sessionEntity).getId();
-        roleNodeId.put(RESPONSE_SESSION_ROLE, Collections.singletonList(savedId));
-
-        queryService.buildRelationship(
-                QueryRequest.forRelationship(roleNodeId.get(CONTROL_ACTIVITY_ROLE).get(0), savedId, ACTIVITY_SESSION_LINK)
-        );
+        addNewRoleNodeId(RESPONSE_SESSION_ROLE, responseSessionRepository.save(sessionEntity).getId());
     }
 
-    private void handleSubject(SessionDTO session, Map<String, List<Long>> roleNodeId) {
+    private void handleSubject(SessionDTO session) {
         Map<Long, AnswerDTO> questionAnswers = session.getAnswers().stream()
                 .collect(toMap(AnswerDTO::getQuestionId, Function.identity()));
 
         Map<Long, QuestionExecutionDTO> questions = session.getTemplate().getObjectFeatureQuestions()
                 .stream()
                 .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
+
+        questions.putAll(session.getTemplate().getUngroupedQuestions()
+                .stream()
+                .collect(toMap(QuestionExecutionDTO::getId, Function.identity())));
+
+        questions.putAll(session.getTemplate().getQuestionGroups().stream()
+                .flatMap(group -> group.getQuestions().stream())
+                .collect(toMap(QuestionExecutionDTO::getId, Function.identity())));
 
         QuestionExecutionDTO subjectQuestion = session.getTemplate().getObjectQuestion();
         Map<String, Object> answerValue = questionAnswers.get(subjectQuestion.getId()).getValues();
@@ -102,62 +104,42 @@ public class SessionUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(subjectQuestion, SUBJECT_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequest.forIdentifier(
+                QueryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
                         identifier.getValueType(),
                         answerValue)
         );
+        addNewRoleNodeId(SUBJECT_ROLE, nodeId);
 
-        handleRuleProcessing(nodeId, SUBJECT_ROLE, roleNodeId);
-        super.handleSubQuestions(subjectQuestion, nodeId, questions, questionAnswers, roleNodeId);
-    }
-
-    private void handleQuestions(SessionDTO session, Map<String, List<Long>> roleNodeId) {
-        Map<Long, AnswerDTO> questionAnswers = session.getAnswers().stream()
-                .collect(toMap(AnswerDTO::getQuestionId, Function.identity()));
-
-        Map<Long, QuestionExecutionDTO> questions = session.getTemplate().getUngroupedQuestions()
-                .stream()
-                .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
-
-        session.getTemplate().getUngroupedQuestions()
-                .stream()
-                .filter(QuestionExecutionDTO::isRoot)
-                .forEach(execution -> handleQuestion(execution, roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questions, questionAnswers, roleNodeId));
-
-        session.getTemplate().getQuestionGroups()
-                .forEach(qg -> qg.getQuestions().stream()
-                        .filter(QuestionExecutionDTO::isRoot)
-                        .forEach(execution -> handleQuestion(execution, roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questions, questionAnswers, roleNodeId)));
+        handleSubQuestions(subjectQuestion, nodeId, questions, questionAnswers);
     }
 
     protected void handleQuestion(QuestionExecutionDTO execution,
                                   Long parentId,
                                   Map<Long, QuestionExecutionDTO> questions,
-                                  Map<Long, AnswerDTO> questionAnswers,
-                                  Map<String, List<Long>> roleNodeId) {
+                                  Map<Long, AnswerDTO> questionAnswers) {
         AnswerDTO answer = questionAnswers.get(execution.getId());
         if (isNull(answer)) return;
         Map<String, Object> answerValue = answer.getValues();
         if (isEmpty(answerValue)) return;
 
         if (isFact(execution)) {
-            handleFactQuestion(execution, parentId, questions, questionAnswers, roleNodeId);
+            handleFactQuestion(execution, parentId, questions, questionAnswers);
         } else {
-            super.handleQuestion(execution, parentId, questions, questionAnswers, roleNodeId);
+            super.handleQuestion(execution, parentId, questions, questionAnswers);
         }
     }
 
     private void handleFactQuestion(QuestionExecutionDTO execution,
                                     Long parentId,
                                     Map<Long, QuestionExecutionDTO> questions,
-                                    Map<Long, AnswerDTO> questionAnswers,
-                                    Map<String, List<Long>> roleNodeId) {
+                                    Map<Long, AnswerDTO> questionAnswers) {
         Long questionId = getUpdatedQuestionId(execution.getQuestion());
 
-        String fieldName = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0).getName();
+        FieldDescriptionDTO fieldDescription = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0);
+        String fieldName = fieldDescription.getName();
         AnswerDTO answer = questionAnswers.get(execution.getId());
         Long answerValueId = Long.parseLong(answer.getValues().get(fieldName).toString());
         String answerValue = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0).getValues()
@@ -166,28 +148,25 @@ public class SessionUpdateService extends BaseUpdateService {
                 .findFirst()
                 .map(FieldDescriptionDTO.ValueDTO::getValue).orElseThrow(() -> new ValidationException("Not found value for fact answer"));
 
-        Map<String, Object> props = new HashMap<>();
-        props.put(fieldName, answerValue);
-        props.put("questionValue", execution.getQuestion().getValue());
-
         Long nodeId = queryService.mergeFactNode(
-                QueryRequest.forFactNode(parentId, answer.getId(), props)
+                QueryRequestBuilder.factRequest(parentId, answerValue, fieldName, fieldDescription.getValueType(), execution.getQuestion().getValue())
         );
 
-        handleQuestionRelationship(nodeId, questionId, roleNodeId);
-        handleRuleProcessing(nodeId, FACT_ROLE, roleNodeId);
-        handleEventProcessing(nodeId, answerValueId, execution.getConditionCharacteristics(), roleNodeId);
-        handleSubQuestions(execution, answerValueId, nodeId, questions, questionAnswers, roleNodeId);
+        addNewRoleNodeId(FACT_ROLE, nodeId);
+        addNewRoleNodeId(execution, nodeId);
+        handleQuestionRelationship(nodeId, questionId);
+        handleEventProcessing(nodeId, answerValueId, execution.getConditionCharacteristics());
+        handleSubQuestions(execution, answerValueId, nodeId, questions, questionAnswers);
     }
 
-    private void handleQuestionRelationship(Long nodeId, Long questionId, Map<String, List<Long>> roleNodeId) {
-        queryService.buildRelationship(QueryRequest.forRelationship(nodeId, questionId, FACT_QUESTION_LINK));
-        queryService.buildRelationship(QueryRequest.forRelationship(roleNodeId.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
-        queryService.buildRelationship(QueryRequest.forRelationship(roleNodeId.get(SUBJECT_ROLE).get(0), questionId, SUBJECT_QUESTION_LINK));
+    private void handleQuestionRelationship(Long nodeId, Long questionId) {
+        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(nodeId, questionId, FACT_QUESTION_LINK));
+        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
+        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(roleNodeIdMap.get(SUBJECT_ROLE).get(0), questionId, SUBJECT_QUESTION_LINK));
     }
 
-    private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics, Map<String, List<Long>> roleNodeId) {
-        QueryRequest request = QueryRequest.forEventNode(factNodeId);
+    private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
+        DeleteRequest request = QueryRequestBuilder.deleteRequest(factNodeId, EVENT_DEFAULT_NODE, EVENT_DEFAULT_LINK);
         queryService.delete(request);
         if (!isEmpty(conditionCharacteristics)) {
             conditionCharacteristics
@@ -195,9 +174,9 @@ public class SessionUpdateService extends BaseUpdateService {
                     .filter(cc -> cc.getConditionAnswerId().equals(answerValueId))
                     .findFirst()
                     .ifPresent(cc -> {
-                        request.setEventTypeId(cc.getOuterRiskEventId());
-                        Long eventId = queryService.createEvent(request);
-                        handleRuleProcessing(eventId, EVENT_ROLE, roleNodeId);
+                        EventRequest eventRequest = QueryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId());
+                        Long eventId = queryService.createEvent(eventRequest);
+                        addNewRoleNodeId(EVENT_ROLE, eventId);
                     });
         }
     }
@@ -206,14 +185,13 @@ public class SessionUpdateService extends BaseUpdateService {
                                     Long answerValueId,
                                     Long parentId,
                                     Map<Long, QuestionExecutionDTO> questions,
-                                    Map<Long, AnswerDTO> questionAnswers,
-                                    Map<String, List<Long>> roleNodeId) {
+                                    Map<Long, AnswerDTO> questionAnswers) {
         if (!isEmpty(execution.getSubQuestions())) {
             execution.getSubQuestions().forEach(sub -> {
                 List<Long> subQuestionIds = sub.getConditionAnswerQuestionIds().get(answerValueId);
                 if (!isEmpty(subQuestionIds)) {
                     subQuestionIds
-                            .forEach(subQ -> handleQuestion(questions.get(subQ), parentId, questions, questionAnswers, roleNodeId));
+                            .forEach(subQ -> handleQuestion(questions.get(subQ), parentId, questions, questionAnswers));
                 }
             });
         }

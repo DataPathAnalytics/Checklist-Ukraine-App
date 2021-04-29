@@ -8,6 +8,13 @@
   },
   {
     "place": "control_activity",
+    "role": "authority_representative",
+    "direction": "IN",
+    "linkType": "SOURCED",
+    "secondNodeType": "control_activity"
+  },
+  {
+    "place": "control_activity",
     "role": "owner",
     "direction": "IN",
     "linkType": "HAS_OWNER",
@@ -17,9 +24,23 @@
     "place": "control_activity",
     "role": "owner",
     "direction": "IN",
+    "linkType": "SOURCED",
+    "secondNodeType": "control_activity"
+  },
+  {
+    "place": "control_activity",
+    "role": "owner",
+    "direction": "IN",
     "linkType": "HAS_AUTHORITY_ON",
     "parentOfSecondNode": "control_activity",
     "parentOfSecondNodeLinkType": "HAS_AUTHORITY"
+  },
+  {
+    "place": "control_activity",
+    "role": "feature",
+    "direction": "IN",
+    "linkType": "CREATED",
+    "secondNodeType": "control_activity"
   },
   {
     "place": "response_session",
@@ -39,33 +60,47 @@
     "place": "response_session",
     "role": "subject",
     "direction": "IN",
+    "linkType": "SOURCED",
+    "secondNodeType": "response_session"
+  },
+  {
+    "place": "response_session",
+    "role": "subject",
+    "direction": "IN",
     "linkType": "HAS_SUBJECT",
     "parentOfSecondNode": "control_activity",
     "parentOfSecondNodeLinkType": "HAS_OWNER"
   },
   {
-    "place": "rs_facts",
+    "place": "response_session",
     "role": "fact",
     "direction": "IN",
-    "linkType": "CREATED_FACT",
+    "linkType": "SOURCED",
     "secondNodeType": "response_session"
   },
   {
-    "place": "rs_facts",
-    "role": "fact_feature",
+    "place": "response_session",
+    "role": "feature",
     "direction": "IN",
     "linkType": "CREATED",
     "secondNodeType": "response_session"
   },
   {
-    "place": "rs_facts",
+    "place": "response_session",
     "role": "event",
     "direction": "IN",
     "linkType": "HAS_EVENT",
     "secondNodeType": "response_session"
   },
   {
-    "place": "rs_facts",
+    "place": "response_session",
+    "role": "event",
+    "direction": "IN",
+    "linkType": "SOURCED",
+    "secondNodeType": "response_session"
+  },
+  {
+    "place": "response_session",
     "role": "event",
     "direction": "IN",
     "linkType": "HAS_EVENT",

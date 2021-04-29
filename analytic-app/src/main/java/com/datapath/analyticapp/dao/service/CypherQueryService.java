@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
@@ -19,7 +20,7 @@ public class CypherQueryService {
             "merge (n:%s {%s : %s}) on create set n = $props on match set n += $props return id(n)";
 
     private static final String MERGE_NON_IDENTIFIER_NODE_REQUEST =
-            "match (n) where id(n)=$parentId MERGE (n)-[:%s {answerId: $answerId}]->(a:%s) on create set a = $props on match set a += $props return id(a)";
+            "match (n) where id(n)=$parentId MERGE (n)-[:%s]->(a:%s) on create set a = $props on match set a += $props return id(a)";
 
     private static final String SIMPLE_RULE_RELATIONSHIP_REQUEST =
             "match (n), (sn) where id(n) = $nodeId and id(sn) in $secondNodeIds merge (n)%s[:%s]%s(sn)";
@@ -30,8 +31,14 @@ public class CypherQueryService {
     private static final String CREATE_RELATIONSHIP_REQUEST =
             "match (n1), (n2) where id(n1) = $parentId and id(n2) = $childId merge (n1)-[:%s]->(n2)";
 
-    private static final String MERGE_FACT_QUESTION_REQUEST =
-            "match (n) where id(n) = $parentId merge (n)-[:%s]->(f:%s {%s: $value, questionValue: $questionValue}) return id(f)";
+    private static final String CREATE_FACT_QUESTION_REQUEST =
+            "";
+
+    private static final String UPDATE_FACT_QUESTION_REQUEST =
+            "match (n) where id(n) = $factId set n.value = $value";
+
+    private static final String FACT_QUESTION_REQUEST =
+            "match (n)-[:%s]->(f:%s {questionValue: $questionValue}) where id(n) = $parentId return id(f)";
 
     private static final String DELETE_REQUEST =
             "match (n)-[:%s]->(d:%s) where id(n) = $parentId detach delete d";
@@ -45,7 +52,6 @@ public class CypherQueryService {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("props", request.getProps());
-        param.put("answerId", request.getAnswerId());
         return client.query(
                 String.format(MERGE_NON_IDENTIFIER_NODE_REQUEST,
                         request.getLinkType(),
@@ -95,18 +101,33 @@ public class CypherQueryService {
         client.query(query).bindAll(param).run();
     }
 
+
+    //TODO:needs complete update
     public Long mergeFactNode(FactRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("value", request.getValue());
         param.put("questionValue", request.getQuestionValue());
 
-        return client.query(
-                String.format(MERGE_FACT_QUESTION_REQUEST,
+        Optional<Long> existedFact = client.query(
+                String.format(FACT_QUESTION_REQUEST,
                         request.getLinkType(),
-                        request.getNodeType(),
-                        request.getValueName())
-        ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
+                        request.getNodeType())
+        ).bindAll(param).fetchAs(Long.class).one();
+
+        if (existedFact.isPresent()) {
+            return client.query(UPDATE_FACT_QUESTION_REQUEST)
+                    .bindAll(param)
+                    .fetchAs(Long.class)
+                    .one()
+                    .orElseThrow(() -> new CypherOperationException(request.toString()));
+        } else {
+            return client.query(CREATE_FACT_QUESTION_REQUEST)
+                    .bindAll(param)
+                    .fetchAs(Long.class)
+                    .one()
+                    .orElseThrow(() -> new CypherOperationException(request.toString()));
+        }
     }
 
     public void delete(DeleteRequest request) {

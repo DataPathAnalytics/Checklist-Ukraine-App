@@ -10,7 +10,7 @@ public class Constants {
     public static final String CONTROL_ACTIVITY_ROLE = "control_activity";
     public static final String RESPONSE_SESSION_ROLE = "response_session";
     public static final String FACT_ROLE = "fact";
-    public static final String FACT_FEATURE_ROLE = "fact_feature";
+    public static final String FEATURE_ROLE = "feature";
     public static final String EVENT_ROLE = "event";
 
     public final static String DEFAULT_NODE = "Data";
@@ -28,5 +28,5 @@ public class Constants {
 
     public final static String FACT_QUESTION_LINK = "IS_FACT_OF";
     public final static String SESSION_QUESTION_LINK = "HAS_QUESTION";
-    public final static String SUBJECT_QUESTION_LINK = "WAS_CHECKED_BY";
+    public final static String PARENT_QUESTION_LINK = "WAS_CHECKED_BY";
 }

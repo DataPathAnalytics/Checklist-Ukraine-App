@@ -1,5 +1,6 @@
 package com.datapath.analyticapp.service.miner;
 
+import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -11,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.stream.Collectors.toCollection;
 
 @Service
 public class MinerRuleProvider {
@@ -26,7 +28,9 @@ public class MinerRuleProvider {
                 );
     }
 
-    public Set<MinerRule> getRules() {
-        return rules;
+    public Set<MinerRule> getRulesByPlace(MinerRulePlace place) {
+        return rules.stream()
+                .filter(r -> place.equals(r.getPlace()))
+                .collect(toCollection(LinkedHashSet::new));
     }
 }

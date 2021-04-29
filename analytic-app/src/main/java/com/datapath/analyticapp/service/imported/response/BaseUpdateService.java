@@ -10,6 +10,7 @@ import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.service.miner.MinerRule;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
+import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class BaseUpdateService {
         Long nodeId;
         if (!identifier.isPresent()) {
             nodeId = queryService.mergeNotIdentifierNode(
-                    QueryRequestBuilder.nonIdentifierRequest(parentId, answer.getId(), nodeType, linkType, answerValue)
+                    QueryRequestBuilder.nonIdentifierRequest(parentId, nodeType, linkType, answerValue)
             );
         } else {
             nodeId = queryService.mergeIdentifierNode(
@@ -126,13 +127,14 @@ public class BaseUpdateService {
             );
             queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(parentId, nodeId, linkType));
         }
-        addNewRoleNodeId(FACT_FEATURE_ROLE, nodeId);
-        addNewRoleNodeId(execution, nodeId);
+
+        addRoleNodeId(FEATURE_ROLE, nodeId);
+        addRoleNodeId(execution, nodeId);
 
         handleSubQuestions(execution, nodeId, questions, questionAnswers);
     }
 
-    protected void addNewRoleNodeId(String roleName, Long nodeId) {
+    protected void addRoleNodeId(String roleName, Long nodeId) {
         roleNodeIdMap.computeIfPresent(roleName, (k, v) -> {
                     v.add(nodeId);
                     return v;
@@ -145,10 +147,10 @@ public class BaseUpdateService {
         });
     }
 
-    protected void addNewRoleNodeId(QuestionExecutionDTO execution, Long nodeId) {
+    protected void addRoleNodeId(QuestionExecutionDTO execution, Long nodeId) {
         if (nonNull(execution.getRoleId())) {
             Optional<RoleEntity> roleEntity = roleRepository.findById(execution.getRoleId());
-            roleEntity.ifPresent(role -> addNewRoleNodeId(role.getRoleName(), nodeId));
+            roleEntity.ifPresent(role -> addRoleNodeId(role.getRoleName(), nodeId));
         }
     }
 
@@ -197,8 +199,8 @@ public class BaseUpdateService {
         return isNull(sub.getConditionFieldName()) || nonNull(answer.getValues().get(sub.getConditionFieldName()));
     }
 
-    protected void handleRuleMining() {
-        minerRuleProvider.getRules().forEach(this::processRule);
+    protected void handleRuleMining(MinerRulePlace place) {
+        minerRuleProvider.getRulesByPlace(place).forEach(this::processRule);
     }
 
     private void processRule(MinerRule rule) {

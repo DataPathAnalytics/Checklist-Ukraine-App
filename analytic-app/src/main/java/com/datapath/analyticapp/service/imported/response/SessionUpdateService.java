@@ -10,6 +10,7 @@ import com.datapath.analyticapp.dao.service.request.EventRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
+import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,24 +48,31 @@ public class SessionUpdateService extends BaseUpdateService {
 
     @Transactional
     public void update(ResponseDataDTO response) {
-        log.info("Updating response session in control activity {}", response.getId());
+        log.info("Updating response sessions in control activity {}", response.getId());
 
         ControlActivityEntity activity = controlActivityRepository.findByOuterId(response.getId());
 
-        response.getSessions().forEach(session -> {
-            log.info("Updating response session {}", session.getId());
+        response.getSessions().forEach(session -> handle(session, activity));
+    }
 
-            roleNodeIdMap = new HashMap<>();
-            addNewRoleNodeId(CONTROL_ACTIVITY_ROLE, activity.getId());
+    private void handle(SessionDTO session, ControlActivityEntity activity) {
+        log.info("Updating response session {}", session.getId());
 
-            handleResponseSession(session);
-            handleSubject(session);
-            handleTypeQuestions(session, RESPONSE_SESSION_ROLE);
-            handleRuleMining();
-        });
+//      deleteSessionCurrentState(session.getId());
+
+        if (session.isInvalid()) return;
+
+        roleNodeIdMap = new HashMap<>();
+        addRoleNodeId(CONTROL_ACTIVITY_ROLE, activity.getId());
+
+        handleResponseSession(session);
+        handleTypeQuestions(session, RESPONSE_SESSION_ROLE);
+        handleSubject(session);
+        handleRuleMining(MinerRulePlace.response_session);
     }
 
     private void handleResponseSession(SessionDTO session) {
+        //TODO: remove this logic after delete session logic implemented
         ResponseSessionEntity sessionEntity = responseSessionRepository.findByOuterId(session.getId());
         if (isNull(sessionEntity)) {
             sessionEntity = new ResponseSessionEntity();
@@ -73,9 +81,10 @@ public class SessionUpdateService extends BaseUpdateService {
             setAuthor(sessionEntity, session.getAuthorId());
         }
         setReviewer(sessionEntity, session.getReviewerId());
+        //TODO: remove this logic after logic implemented
 //        sessionEntity.setDateModified(sessionEntity.getDateModified());
 
-        addNewRoleNodeId(RESPONSE_SESSION_ROLE, responseSessionRepository.save(sessionEntity).getId());
+        addRoleNodeId(RESPONSE_SESSION_ROLE, responseSessionRepository.save(sessionEntity).getId());
     }
 
     private void handleSubject(SessionDTO session) {
@@ -111,7 +120,7 @@ public class SessionUpdateService extends BaseUpdateService {
                         identifier.getValueType(),
                         answerValue)
         );
-        addNewRoleNodeId(SUBJECT_ROLE, nodeId);
+        addRoleNodeId(SUBJECT_ROLE, nodeId);
 
         handleSubQuestions(subjectQuestion, nodeId, questions, questionAnswers);
     }
@@ -152,17 +161,17 @@ public class SessionUpdateService extends BaseUpdateService {
                 QueryRequestBuilder.factRequest(parentId, answerValue, fieldName, fieldDescription.getValueType(), execution.getQuestion().getValue())
         );
 
-        addNewRoleNodeId(FACT_ROLE, nodeId);
-        addNewRoleNodeId(execution, nodeId);
-        handleQuestionRelationship(nodeId, questionId);
+        addRoleNodeId(FACT_ROLE, nodeId);
+        addRoleNodeId(execution, nodeId);
+        handleQuestionRelationship(nodeId, parentId, questionId);
         handleEventProcessing(nodeId, answerValueId, execution.getConditionCharacteristics());
         handleSubQuestions(execution, answerValueId, nodeId, questions, questionAnswers);
     }
 
-    private void handleQuestionRelationship(Long nodeId, Long questionId) {
+    private void handleQuestionRelationship(Long nodeId, Long parentId, Long questionId) {
         queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(nodeId, questionId, FACT_QUESTION_LINK));
         queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
-        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(roleNodeIdMap.get(SUBJECT_ROLE).get(0), questionId, SUBJECT_QUESTION_LINK));
+        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(parentId, questionId, PARENT_QUESTION_LINK));
     }
 
     private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
@@ -176,7 +185,7 @@ public class SessionUpdateService extends BaseUpdateService {
                     .ifPresent(cc -> {
                         EventRequest eventRequest = QueryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId());
                         Long eventId = queryService.createEvent(eventRequest);
-                        addNewRoleNodeId(EVENT_ROLE, eventId);
+                        addRoleNodeId(EVENT_ROLE, eventId);
                     });
         }
     }

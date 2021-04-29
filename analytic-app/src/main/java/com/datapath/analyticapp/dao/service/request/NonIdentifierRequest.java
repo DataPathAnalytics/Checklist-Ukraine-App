@@ -9,7 +9,6 @@ import java.util.Map;
 @Builder
 public class NonIdentifierRequest {
     private Long parentId;
-    private Long answerId;
     private String nodeType;
     private String linkType;
     private Map<String, Object> props;

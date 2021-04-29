@@ -7,6 +7,7 @@ import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
+import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,16 +45,18 @@ public class ActivityUpdateService extends BaseUpdateService {
         log.info("Updating control activity {}", response.getId());
 
         //TODO:handle remove logic
-//        if (response.getActivity().isInvalid()) {
-//        }
+        if (response.getActivity().isInvalid()) {
+//            deleteActivityCurrentState(response.getId());
+//            return;
+        }
 
         roleNodeIdMap = new HashMap<>();
 
         handleControlActivity(response);
+        handleTypeQuestions(response.getActivity(), CONTROL_ACTIVITY_ROLE);
         handleAuthority(response.getActivity());
         handleOwner(response.getActivity());
-        handleTypeQuestions(response.getActivity(), CONTROL_ACTIVITY_ROLE);
-        handleRuleMining();
+        handleRuleMining(MinerRulePlace.control_activity);
     }
 
     private void handleControlActivity(ResponseDataDTO response) {
@@ -68,7 +71,7 @@ public class ActivityUpdateService extends BaseUpdateService {
         setMembers(activity, response.getActivity().getMembers());
 //        activity.setDateModified(response.getActivity().getDateModified());
 
-        addNewRoleNodeId(CONTROL_ACTIVITY_ROLE, controlActivityRepository.save(activity).getId());
+        addRoleNodeId(CONTROL_ACTIVITY_ROLE, controlActivityRepository.save(activity).getId());
     }
 
     private void handleAuthority(SessionDTO activity) {
@@ -96,7 +99,7 @@ public class ActivityUpdateService extends BaseUpdateService {
                         identifier.getValueType(),
                         answerValue)
         );
-        addNewRoleNodeId(AUTHORITY_REPRESENTATIVE_ROLE, nodeId);
+        addRoleNodeId(AUTHORITY_REPRESENTATIVE_ROLE, nodeId);
 
         handleSubQuestions(authorityQuestion, nodeId, questions, questionAnswers);
     }
@@ -126,7 +129,7 @@ public class ActivityUpdateService extends BaseUpdateService {
                         identifier.getValueType(),
                         answerValue)
         );
-        addNewRoleNodeId(OWNER_ROLE, nodeId);
+        addRoleNodeId(OWNER_ROLE, nodeId);
 
         handleSubQuestions(ownerQuestion, nodeId, questions, questionAnswers);
     }

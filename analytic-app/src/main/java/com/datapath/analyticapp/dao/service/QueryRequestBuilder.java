@@ -28,14 +28,12 @@ public class QueryRequestBuilder {
     }
 
     public static NonIdentifierRequest nonIdentifierRequest(Long parentId,
-                                                            Long answerId,
                                                             String nodeType,
                                                             String linkType,
                                                             Map<String, Object> props) {
         return NonIdentifierRequest.builder()
                 .nodeType(nodeType)
                 .parentId(parentId)
-                .answerId(answerId)
                 .linkType(linkType)
                 .props(props)
                 .build();

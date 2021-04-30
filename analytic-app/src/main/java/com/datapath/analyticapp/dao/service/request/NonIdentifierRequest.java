@@ -1,5 +1,6 @@
 package com.datapath.analyticapp.dao.service.request;
 
+import com.datapath.analyticapp.dto.imported.response.ValueType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,4 +13,5 @@ public class NonIdentifierRequest {
     private String nodeType;
     private String linkType;
     private Map<String, Object> props;
+    private Map<String, ValueType> fieldTypes;
 }

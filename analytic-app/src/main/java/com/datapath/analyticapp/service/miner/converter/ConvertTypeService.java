@@ -1,6 +1,6 @@
-package com.datapath.checklistapp.service.converter.type;
+package com.datapath.analyticapp.service.miner.converter;
 
-import com.datapath.checklistapp.util.converter.ValueType;
+import com.datapath.analyticapp.dto.imported.response.ValueType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class ConvertTypeService {
         converters.forEach(c -> answerTypeConverterMap.put(c.type(), c));
     }
 
-    public Object convert(String value, ValueType type) {
+    public Object convert(Object value, ValueType type) {
         return answerTypeConverterMap.get(type).convert(value);
     }
 }

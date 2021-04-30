@@ -41,9 +41,9 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "collect(id(r2)) as sessionResponseIds, " +
             "collect(id(t)) as templateIds";
 
-    String UPDATED_ACTIVITIES_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar), " +
-            "(c)-[:HAS_SESSION_RESPONSE]->(sr)-->(s:SessionStatus {sessionStatusId:2}) " +
-            "where ar.dateModified > $offset " +
+    String UPDATED_ACTIVITIES_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar) " +
+            "where exists( (c)-[:HAS_SESSION_RESPONSE]->()-[:IN_STATUS]->({sessionStatusId:2}) ) " +
+            "and ar.dateModified > $offset " +
             "return c, id(ar) as activityResponseId, " +
             "ar.dateModified as dateModified " +
             "order by ar.dateModified limit $limit";

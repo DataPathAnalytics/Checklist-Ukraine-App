@@ -1,6 +1,5 @@
 package com.datapath.checklistapp.controller.export;
 
-import com.datapath.checklistapp.dto.response.export.ExportQuestionResponse;
 import com.datapath.checklistapp.dto.response.export.ExportSessionActivityResponse;
 import com.datapath.checklistapp.dto.response.export.ExportUserResponse;
 import com.datapath.checklistapp.service.export.ExportService;
@@ -19,14 +18,6 @@ import java.time.LocalDateTime;
 public class ExportController {
 
     private final ExportService service;
-
-    @GetMapping("questions")
-    public ExportQuestionResponse getNewQuestions(
-            @RequestParam(defaultValue = "2021-01-01T00:00:00.000", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime offset,
-            @RequestParam(defaultValue = "10", required = false) int limit) {
-        return service.getNewQuestions(offset, limit);
-    }
 
     @GetMapping("control-activities")
     public ExportSessionActivityResponse getUpdatedActivities(

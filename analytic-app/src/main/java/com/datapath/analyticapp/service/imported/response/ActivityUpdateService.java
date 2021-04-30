@@ -35,8 +35,16 @@ public class ActivityUpdateService extends BaseUpdateService {
                                  NodeTypeRepository nodeTypeRepository,
                                  MinerRuleProvider minerRuleProvider,
                                  CypherQueryService dbUtils,
-                                 RoleRepository roleRepository) {
-        super(dbUtils, minerRuleProvider, roleRepository, nodeTypeRepository, userRepository, questionRepository, knowledgeClassRepository);
+                                 RoleRepository roleRepository,
+                                 QueryRequestBuilder queryRequestBuilder) {
+        super(dbUtils,
+                minerRuleProvider,
+                roleRepository,
+                nodeTypeRepository,
+                userRepository,
+                questionRepository,
+                knowledgeClassRepository,
+                queryRequestBuilder);
         this.controlActivityRepository = controlActivityRepository;
     }
 
@@ -92,12 +100,12 @@ public class ActivityUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(authorityQuestion, AUTHORITY_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequestBuilder.identifierRequest(
+                queryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
-                        identifier.getValueType(),
-                        answerValue)
+                        answerValue,
+                        getFieldTypes(authorityQuestion))
         );
         addRoleNodeId(AUTHORITY_REPRESENTATIVE_ROLE, nodeId);
 
@@ -122,12 +130,12 @@ public class ActivityUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(ownerQuestion, OWNER_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequestBuilder.identifierRequest(
+                queryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
-                        identifier.getValueType(),
-                        answerValue)
+                        answerValue,
+                        getFieldTypes(ownerQuestion))
         );
         addRoleNodeId(OWNER_ROLE, nodeId);
 

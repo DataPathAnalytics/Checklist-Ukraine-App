@@ -39,7 +39,7 @@
     "place": "control_activity",
     "role": "feature",
     "direction": "IN",
-    "linkType": "CREATED",
+    "linkType": "SOURCED",
     "secondNodeType": "control_activity"
   },
   {
@@ -82,7 +82,7 @@
     "place": "response_session",
     "role": "feature",
     "direction": "IN",
-    "linkType": "CREATED",
+    "linkType": "SOURCED",
     "secondNodeType": "response_session"
   },
   {

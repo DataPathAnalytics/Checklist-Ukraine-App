@@ -5,7 +5,6 @@ import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
 import com.datapath.analyticapp.dao.repository.*;
 import com.datapath.analyticapp.dao.service.CypherQueryService;
 import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
-import com.datapath.analyticapp.dao.service.request.DeleteRequest;
 import com.datapath.analyticapp.dao.service.request.EventRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
@@ -40,8 +39,16 @@ public class SessionUpdateService extends BaseUpdateService {
                                 ResponseSessionRepository responseSessionRepository,
                                 QuestionRepository questionRepository,
                                 KnowledgeClassRepository knowledgeClassRepository,
-                                ControlActivityRepository controlActivityRepository) {
-        super(dbUtils, minerRuleProvider, roleRepository, nodeTypeRepository, userRepository, questionRepository, knowledgeClassRepository);
+                                ControlActivityRepository controlActivityRepository,
+                                QueryRequestBuilder queryRequestBuilder) {
+        super(dbUtils,
+                minerRuleProvider,
+                roleRepository,
+                nodeTypeRepository,
+                userRepository,
+                questionRepository,
+                knowledgeClassRepository,
+                queryRequestBuilder);
         this.responseSessionRepository = responseSessionRepository;
         this.controlActivityRepository = controlActivityRepository;
     }
@@ -113,12 +120,12 @@ public class SessionUpdateService extends BaseUpdateService {
         String nodeType = getNodeType(subjectQuestion, SUBJECT_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
-                QueryRequestBuilder.identifierRequest(
+                queryRequestBuilder.identifierRequest(
                         nodeType,
                         identifier.getName(),
                         answerValue.get(identifier.getName()),
-                        identifier.getValueType(),
-                        answerValue)
+                        answerValue,
+                        getFieldTypes(subjectQuestion))
         );
         addRoleNodeId(SUBJECT_ROLE, nodeId);
 
@@ -151,14 +158,18 @@ public class SessionUpdateService extends BaseUpdateService {
         String fieldName = fieldDescription.getName();
         AnswerDTO answer = questionAnswers.get(execution.getId());
         Long answerValueId = Long.parseLong(answer.getValues().get(fieldName).toString());
+
         String answerValue = execution.getQuestion().getAnswerStructure().getFieldDescriptions().get(0).getValues()
                 .stream()
                 .filter(v -> v.getId().equals(answerValueId))
                 .findFirst()
                 .map(FieldDescriptionDTO.ValueDTO::getValue).orElseThrow(() -> new ValidationException("Not found value for fact answer"));
 
+        Map<String, Object> props = new HashMap<>();
+        props.put(fieldName, answerValue);
+
         Long nodeId = queryService.mergeFactNode(
-                QueryRequestBuilder.factRequest(parentId, answerValue, fieldName, fieldDescription.getValueType(), execution.getQuestion().getValue())
+                queryRequestBuilder.factRequest(parentId, fieldName, execution.getQuestion().getValue(), props, getFieldTypes(execution))
         );
 
         addRoleNodeId(FACT_ROLE, nodeId);
@@ -169,21 +180,19 @@ public class SessionUpdateService extends BaseUpdateService {
     }
 
     private void handleQuestionRelationship(Long nodeId, Long parentId, Long questionId) {
-        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(nodeId, questionId, FACT_QUESTION_LINK));
-        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
-        queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(parentId, questionId, PARENT_QUESTION_LINK));
+        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(nodeId, questionId, FACT_QUESTION_LINK));
+        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
+        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(parentId, questionId, PARENT_QUESTION_LINK));
     }
 
     private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
-        DeleteRequest request = QueryRequestBuilder.deleteRequest(factNodeId, EVENT_DEFAULT_NODE, EVENT_DEFAULT_LINK);
-        queryService.delete(request);
         if (!isEmpty(conditionCharacteristics)) {
             conditionCharacteristics
                     .stream()
                     .filter(cc -> cc.getConditionAnswerId().equals(answerValueId))
                     .findFirst()
                     .ifPresent(cc -> {
-                        EventRequest eventRequest = QueryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId());
+                        EventRequest eventRequest = queryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId());
                         Long eventId = queryService.createEvent(eventRequest);
                         addRoleNodeId(EVENT_ROLE, eventId);
                     });

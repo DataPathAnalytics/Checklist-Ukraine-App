@@ -35,6 +35,7 @@ public class BaseUpdateService {
     protected final UserRepository userRepository;
     protected final QuestionRepository questionRepository;
     protected final KnowledgeClassRepository knowledgeClassRepository;
+    protected final QueryRequestBuilder queryRequestBuilder;
     protected Map<String, List<Long>> roleNodeIdMap;
 
     public BaseUpdateService(CypherQueryService queryService,
@@ -43,7 +44,8 @@ public class BaseUpdateService {
                              NodeTypeRepository nodeTypeRepository,
                              UserRepository userRepository,
                              QuestionRepository questionRepository,
-                             KnowledgeClassRepository knowledgeClassRepository) {
+                             KnowledgeClassRepository knowledgeClassRepository,
+                             QueryRequestBuilder queryRequestBuilder) {
         this.queryService = queryService;
         this.minerRuleProvider = minerRuleProvider;
         this.roleRepository = roleRepository;
@@ -51,6 +53,7 @@ public class BaseUpdateService {
         this.userRepository = userRepository;
         this.questionRepository = questionRepository;
         this.knowledgeClassRepository = knowledgeClassRepository;
+        this.queryRequestBuilder = queryRequestBuilder;
     }
 
     protected Long getUpdatedQuestionId(QuestionDTO question) {
@@ -71,6 +74,7 @@ public class BaseUpdateService {
 
         Map<Long, QuestionExecutionDTO> questionMap = session.getTemplate().getTypeQuestions()
                 .stream()
+                .filter(q -> !q.isRoot())
                 .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
 
         session.getTemplate().getTypeQuestions()
@@ -114,18 +118,22 @@ public class BaseUpdateService {
         Long nodeId;
         if (!identifier.isPresent()) {
             nodeId = queryService.mergeNotIdentifierNode(
-                    QueryRequestBuilder.nonIdentifierRequest(parentId, nodeType, linkType, answerValue)
+                    queryRequestBuilder.nonIdentifierRequest(parentId,
+                            nodeType,
+                            linkType,
+                            answerValue,
+                            getFieldTypes(execution))
             );
         } else {
             nodeId = queryService.mergeIdentifierNode(
-                    QueryRequestBuilder.identifierRequest(
+                    queryRequestBuilder.identifierRequest(
                             nodeType,
                             identifier.get().getName(),
                             answerValue.get(identifier.get().getName()),
-                            identifier.get().getValueType(),
-                            answerValue)
+                            answerValue,
+                            getFieldTypes(execution))
             );
-            queryService.buildRelationship(QueryRequestBuilder.relationshipRequest(parentId, nodeId, linkType));
+            queryService.buildRelationship(queryRequestBuilder.relationshipRequest(parentId, nodeId, linkType));
         }
 
         addRoleNodeId(FEATURE_ROLE, nodeId);
@@ -212,7 +220,7 @@ public class BaseUpdateService {
         List<Long> parentOfSecondNodeId = roleNodeIdMap.get(rule.getParentOfSecondNode());
 
         nodeIds.forEach(nodeId -> queryService.buildRelationshipUseRule(
-                QueryRequestBuilder.ruleRelationshipRequest(
+                queryRequestBuilder.ruleRelationshipRequest(
                         rule,
                         nodeId,
                         secondNodeId,
@@ -220,5 +228,11 @@ public class BaseUpdateService {
                         rule.getParentOfSecondNodeLinkType())
                 )
         );
+    }
+
+    protected Map<String, ValueType> getFieldTypes(QuestionExecutionDTO execution) {
+        return execution.getQuestion().getAnswerStructure().getFieldDescriptions()
+                .stream()
+                .collect(toMap(FieldDescriptionDTO::getName, FieldDescriptionDTO::getValueType));
     }
 }

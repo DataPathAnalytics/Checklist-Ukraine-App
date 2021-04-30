@@ -5,6 +5,7 @@ import com.datapath.analyticapp.dao.repository.ResponseSessionRepository;
 import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
@@ -17,6 +18,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Order(4)
+@Slf4j
 public class SessionImportService implements ImportService {
 
     private static final int LIMIT = 10;
@@ -47,6 +49,8 @@ public class SessionImportService implements ImportService {
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 
         } while (true);
+
+        log.info("Updating response sessions completed");
     }
 
     @Override

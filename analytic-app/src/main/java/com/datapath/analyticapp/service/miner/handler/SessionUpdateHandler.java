@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.imported.response;
+package com.datapath.analyticapp.service.miner.handler;
 
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
@@ -9,7 +9,7 @@ import com.datapath.analyticapp.dao.service.request.EventRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
-import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
+import com.datapath.analyticapp.service.miner.config.Place;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +26,12 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Slf4j
-public class SessionUpdateService extends BaseUpdateService {
+public class SessionUpdateHandler extends BaseUpdateHandler {
 
     private final ResponseSessionRepository responseSessionRepository;
     private final ControlActivityRepository controlActivityRepository;
 
-    public SessionUpdateService(CypherQueryService dbUtils,
+    public SessionUpdateHandler(CypherQueryService dbUtils,
                                 MinerRuleProvider minerRuleProvider,
                                 RoleRepository roleRepository,
                                 NodeTypeRepository nodeTypeRepository,
@@ -54,44 +54,40 @@ public class SessionUpdateService extends BaseUpdateService {
     }
 
     @Transactional
-    public void update(ResponseDataDTO response) {
-        log.info("Updating response sessions in control activity {}", response.getId());
+    public void update(ControlActivitySessionDTO sessionDTO) {
+        log.info("Updating response session {}", sessionDTO.getSession().getId());
 
-        ControlActivityEntity activity = controlActivityRepository.findByOuterId(response.getId());
-
-        response.getSessions().forEach(session -> handle(session, activity));
+        delete(sessionDTO.getSession());
+        ControlActivityEntity activity = controlActivityRepository.findByOuterId(sessionDTO.getControlActivityId());
+        save(sessionDTO.getSession(), activity.getId());
     }
 
-    private void handle(SessionDTO session, ControlActivityEntity activity) {
-        log.info("Updating response session {}", session.getId());
-
-//      deleteSessionCurrentState(session.getId());
-
-        if (session.isInvalid()) return;
+    @Transactional
+    public void save(SessionDTO sessionDTO, Long controlActivityId) {
+        if (sessionDTO.isInvalid()) return;
 
         roleNodeIdMap = new HashMap<>();
-        addRoleNodeId(CONTROL_ACTIVITY_ROLE, activity.getId());
+        addRoleNodeId(CONTROL_ACTIVITY_ROLE, controlActivityId);
 
-        handleResponseSession(session);
-        handleTypeQuestions(session, RESPONSE_SESSION_ROLE);
-        handleSubject(session);
-        handleRuleMining(MinerRulePlace.response_session);
+        handleResponseSession(sessionDTO);
+        handleTypeQuestions(sessionDTO, RESPONSE_SESSION_ROLE);
+        handleSubject(sessionDTO);
+        handleRuleMining(Place.response_session);
+    }
+
+    public void delete(SessionDTO sessionDTO) {
+        queryService.deleteInitiatorByOuterId(sessionDTO.getId());
     }
 
     private void handleResponseSession(SessionDTO session) {
-        //TODO: remove this logic after delete session logic implemented
-        ResponseSessionEntity sessionEntity = responseSessionRepository.findByOuterId(session.getId());
-        if (isNull(sessionEntity)) {
-            sessionEntity = new ResponseSessionEntity();
-            sessionEntity.setOuterId(session.getId());
-            sessionEntity.setDateCreated(session.getDateCreated());
-            setAuthor(sessionEntity, session.getAuthorId());
-        }
+        ResponseSessionEntity sessionEntity = new ResponseSessionEntity();
+        sessionEntity.setOuterId(session.getId());
+        sessionEntity.setDateCreated(session.getDateCreated());
+        sessionEntity.setDateModified(session.getDateModified());
+        setAuthor(sessionEntity, session.getAuthorId());
         setReviewer(sessionEntity, session.getReviewerId());
-        //TODO: remove this logic after logic implemented
-//        sessionEntity.setDateModified(sessionEntity.getDateModified());
-
         addRoleNodeId(RESPONSE_SESSION_ROLE, responseSessionRepository.save(sessionEntity).getId());
+        addRoleNodeId(INITIATOR_ROLE, responseSessionRepository.save(sessionEntity).getId());
     }
 
     private void handleSubject(SessionDTO session) {
@@ -169,7 +165,9 @@ public class SessionUpdateService extends BaseUpdateService {
         props.put(fieldName, answerValue);
 
         Long nodeId = queryService.mergeFactNode(
-                queryRequestBuilder.factRequest(parentId, fieldName, execution.getQuestion().getValue(), props, getFieldTypes(execution))
+                queryRequestBuilder.factRequest(
+                        parentId, fieldName, execution.getQuestion().getValue(), props, getFieldTypes(execution), getInitiatorId()
+                )
         );
 
         addRoleNodeId(FACT_ROLE, nodeId);
@@ -180,9 +178,23 @@ public class SessionUpdateService extends BaseUpdateService {
     }
 
     private void handleQuestionRelationship(Long nodeId, Long parentId, Long questionId) {
-        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(nodeId, questionId, FACT_QUESTION_LINK));
-        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK));
-        queryService.buildRelationship(queryRequestBuilder.relationshipRequest(parentId, questionId, PARENT_QUESTION_LINK));
+        queryService.buildRelationship(
+                queryRequestBuilder.relationshipRequest(
+                        nodeId, questionId, FACT_QUESTION_LINK, getInitiatorId()
+                )
+        );
+
+        queryService.buildRelationship(
+                queryRequestBuilder.relationshipRequest(
+                        roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK, getInitiatorId()
+                )
+        );
+
+        queryService.buildRelationship(
+                queryRequestBuilder.relationshipRequest(
+                        parentId, questionId, PARENT_QUESTION_LINK, getInitiatorId()
+                )
+        );
     }
 
     private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
@@ -192,7 +204,7 @@ public class SessionUpdateService extends BaseUpdateService {
                     .filter(cc -> cc.getConditionAnswerId().equals(answerValueId))
                     .findFirst()
                     .ifPresent(cc -> {
-                        EventRequest eventRequest = queryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId());
+                        EventRequest eventRequest = queryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId(), getInitiatorId());
                         Long eventId = queryService.createEvent(eventRequest);
                         addRoleNodeId(EVENT_ROLE, eventId);
                     });
@@ -226,5 +238,10 @@ public class SessionUpdateService extends BaseUpdateService {
     private boolean isFact(QuestionExecutionDTO execution) {
         List<FieldDescriptionDTO> fields = execution.getQuestion().getAnswerStructure().getFieldDescriptions();
         return fields.size() == 1 && !isEmpty(fields.get(0).getValues());
+    }
+
+    public boolean needToUpdate(ChecklistDateDTO dto) {
+        ResponseSessionEntity session = responseSessionRepository.findByOuterId(dto.getId());
+        return isNull(session) || dto.getDateModified().isAfter(session.getDateModified());
     }
 }

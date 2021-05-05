@@ -23,41 +23,41 @@ public class CypherQueryService {
             "merge (n:%s {%s : $identifierValue}) on create set n = $props on match set n += $props return id(n)";
 
     private static final String CREATE_NON_IDENTIFIER_NODE_REQUEST =
-            "match (n) where id(n)=$parentId CREATE (n)-[r:%s {sourcedCount: 1}]->(a:%s $props) return id(a)";
+            "match (n) where id(n)=$parentId CREATE (n)-[r:%s {sourcedCount: 1, initiators: [$initiatorId]}]->(a:%s $props) return id(a)";
 
     private static final String NON_IDENTIFIER_NODE_EXISTS_REQUEST =
             "match (n)-[:%s]->(d:%s) where id(n)=$parentId return d";
 
     private static final String SIMPLE_RULE_RELATIONSHIP_REQUEST =
-            "match (n), (sn) where id(n) = $nodeId and id(sn) in $secondNodeIds merge (n)%s[:%s]%s(sn)";
+            "match (n), (sn) where id(n) = $nodeId and id(sn) in $secondNodeIds merge (n)%s[r:%s]%s(sn) " +
+                    "on create set r.sourcedCount = 1, r.initiators = [$initiatorId] " +
+                    "on match set r.sourcedCount = r.sourcedCount + 1, r.initiators = coalesce(r.initiators, []) + $initiatorId";
 
     private static final String BASED_ON_PARENT_RULE_RELATIONSHIP_REQUEST =
             "match (pn)-[:%s]->(sn), (n) where id(pn) in $parentNodeIds and id(n) = $nodeId merge (n)%s[r:%s]%s(sn) " +
-                    "on create set r.sourcedCount = 1 " +
-                    "on match set r.sourcedCount = r.sourcedCount + 1";
+                    "on create set r.sourcedCount = 1, r.initiators = [$initiatorId] " +
+                    "on match set r.sourcedCount = r.sourcedCount + 1, r.initiators = coalesce(r.initiators, []) + $initiatorId";
 
     private static final String CREATE_RELATIONSHIP_REQUEST =
             "match (n1), (n2) where id(n1) = $parentId and id(n2) = $childId merge (n1)-[r:%s]->(n2) " +
-                    "on create set r.sourcedCount = 1 " +
-                    "on match set r.sourcedCount = r.sourcedCount + 1";
+                    "on create set r.sourcedCount = 1, r.initiators = [$initiatorId] " +
+                    "on match set r.sourcedCount = r.sourcedCount + 1, r.initiators = coalesce(r.initiators, []) + $initiatorId";
 
     private static final String CREATE_FACT_QUESTION_REQUEST =
-            "match (n) where id(n) = $parentId create (n)-[r:%s {sourcedCount: 1}]->(f:%s $props) return id(f)";
+            "match (n) where id(n) = $parentId create (n)-[r:%s {sourcedCount: 1, initiators: [$initiatorId]}]->(f:%s $props) return id(f)";
 
     private static final String FACT_QUESTION_EXISTS_REQUEST =
             "match (n)-[:%s]->(f:%s {questionValue: $questionValue, %s: $value}) where id(n) = $parentId return id(f)";
 
-    private static final String DELETE_REQUEST =
-            "match (n)-[:%s]->(d:%s) where id(n) = $parentId detach delete d";
-
     private static final String EVENT_REQUEST =
             "match (n), (et:EventType) where id(n) = $parentId and id(et) = $eventTypeId " +
                     "merge (n)-[r:%s]->(e:%s)-[:HAS_EVENT_TYPE]->(et) " +
-                    "on create set r.sourcedCount = 1, e.dateCreated = localdatetime() " +
-                    "on match set r.sourcedCount = r.sourcedCount + 1, e.dateModified = localdatetime() return id(e)";
+                    "on create set r.sourcedCount = 1, e.dateCreated = localdatetime(), r.initiators = [$initiatorId] " +
+                    "on match set r.sourcedCount = r.sourcedCount + 1, e.dateModified = localdatetime(), r.initiators = coalesce(r.initiators, []) + $initiatorId return id(e)";
 
     private static final String UPDATE_SOURCED_COUNT_REQUEST =
-            "match (n)-[r]->(d) where id(n) = $parentId and id(d) = $childId set r.sourcedCount = r.sourcedCount + 1";
+            "match (n)-[r]->(d) where id(n) = $parentId and id(d) = $childId set r.sourcedCount = r.sourcedCount + 1, " +
+                    "r.initiators = coalesce(r.initiators, []) + $initiatorId";
 
     private final Neo4jClient client;
     private final ConvertTypeService convertService;
@@ -66,6 +66,7 @@ public class CypherQueryService {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("props", request.getProps());
+        param.put("initiatorId", request.getInitiatorId());
 
         List<NodeValue> nodes = new ArrayList<>(client.query(
                 String.format(NON_IDENTIFIER_NODE_EXISTS_REQUEST,
@@ -79,7 +80,7 @@ public class CypherQueryService {
                     .findFirst();
 
             if (existedNode.isPresent()) {
-                updateRelationshipSourceCount(request.getParentId(), existedNode.get().asNode().id());
+                updateRelationshipSourceCount(request.getParentId(), existedNode.get().asNode().id(), request.getInitiatorId());
                 return existedNode.get().asNode().id();
             }
         }
@@ -87,10 +88,11 @@ public class CypherQueryService {
         return creteNonIdentifierNode(request, param);
     }
 
-    private void updateRelationshipSourceCount(Long parentId, Long childId) {
+    private void updateRelationshipSourceCount(Long parentId, Long childId, Long initiatorId) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", parentId);
         param.put("childId", childId);
+        param.put("initiatorId", initiatorId);
         client.query(UPDATE_SOURCED_COUNT_REQUEST).bindAll(param).run();
     }
 
@@ -135,6 +137,7 @@ public class CypherQueryService {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("childId", request.getChildId());
+        param.put("initiatorId", request.getInitiatorId());
         client.query(String.format(CREATE_RELATIONSHIP_REQUEST, request.getLinkType()))
                 .bindAll(param).run();
     }
@@ -142,6 +145,7 @@ public class CypherQueryService {
     public void buildRelationshipUseRule(RuleRelationshipRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("nodeId", request.getNodeId());
+        param.put("initiatorId", request.getInitiatorId());
 
         String query;
         if (nonNull(request.getRule().getSecondNodeType())) {
@@ -168,6 +172,7 @@ public class CypherQueryService {
         param.put("questionValue", request.getQuestionValue());
         param.put("value", request.getProps().get(request.getFieldName()));
         param.put("props", request.getProps());
+        param.put("initiatorId", request.getInitiatorId());
 
         Optional<Long> existedFact = client.query(
                 String.format(FACT_QUESTION_EXISTS_REQUEST,
@@ -177,7 +182,7 @@ public class CypherQueryService {
         ).bindAll(param).fetchAs(Long.class).one();
 
         if (existedFact.isPresent()) {
-            updateRelationshipSourceCount(request.getParentId(), existedFact.get());
+            updateRelationshipSourceCount(request.getParentId(), existedFact.get(), request.getInitiatorId());
             return existedFact.get();
         }
 
@@ -192,21 +197,19 @@ public class CypherQueryService {
                 .orElseThrow(() -> new CypherOperationException(request.toString()));
     }
 
-    public void delete(DeleteRequest request) {
-        Map<String, Object> param = new HashMap<>();
-        param.put("parentId", request.getParentId());
-        client.query(String.format(DELETE_REQUEST, request.getLinkType(), request.getNodeType()))
-                .bindAll(param).run();
-    }
-
     public Long createEvent(EventRequest request) {
         Map<String, Object> param = new HashMap<>();
         param.put("parentId", request.getParentId());
         param.put("eventTypeId", request.getEventTypeId());
+        param.put("initiatorId", request.getInitiatorId());
         return client.query(
                 String.format(EVENT_REQUEST,
                         request.getLinkType(),
                         request.getNodeType())
         ).bindAll(param).fetchAs(Long.class).one().orElseThrow(() -> new CypherOperationException(request.toString()));
+    }
+
+    public void deleteInitiatorByOuterId(Long outerId) {
+        //todo: needs complete logic
     }
 }

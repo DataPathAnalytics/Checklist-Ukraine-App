@@ -1,14 +1,13 @@
 package com.datapath.checklistapp.service.export;
 
+import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dao.service.ControlActivityDaoService;
 import com.datapath.checklistapp.dao.service.ResponseSessionDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
-import com.datapath.checklistapp.dto.response.export.ExportSessionActivityDTO;
-import com.datapath.checklistapp.dto.response.export.ExportSessionActivityResponse;
-import com.datapath.checklistapp.dto.response.export.ExportUserResponse;
+import com.datapath.checklistapp.dto.response.export.*;
 import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistapp.service.converter.structure.UserConverter;
 import lombok.AllArgsConstructor;
@@ -18,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.datapath.checklistapp.util.Constants.AUDITOR_ROLE;
 import static java.util.stream.Collectors.toList;
@@ -52,29 +49,19 @@ public class ExportService {
     }
 
     @Transactional
-    public ExportSessionActivityResponse getUpdatedSession(LocalDateTime offset, int limit) {
-        ExportSessionActivityResponse response = new ExportSessionActivityResponse();
+    public ExportChecklistDateResponse getResponseSessionDates(LocalDateTime offset, int limit) {
+        ExportChecklistDateResponse response = new ExportChecklistDateResponse();
 
-        List<ExportSessionResponseDomain> sessions = responseSessionService.findForExport(offset, limit);
+        List<ExportSessionResponseDomain> sessions = responseSessionService.getResponseSessionDates(offset, limit);
 
         if (isEmpty(sessions)) return response;
 
-        Map<Long, List<Long>> activitySessions = sessions.stream()
-                .collect(Collectors.groupingBy(
-                        ExportSessionResponseDomain::getActivityId,
-                        Collectors.mapping(ExportSessionResponseDomain::getSessionResponseId, Collectors.toList()))
-                );
-
         response.setData(
-                activitySessions.entrySet().stream()
-                        .map(e -> {
-                            ExportSessionActivityDTO dto = new ExportSessionActivityDTO();
-                            dto.setId(e.getKey());
-                            dto.setSessions(
-                                    responseSessionService.findByIds(e.getValue()).stream()
-                                            .map(responseSessionConverter::map)
-                                            .collect(toList())
-                            );
+                sessions.stream()
+                        .map(s -> {
+                            ExportChecklistDateDTO dto = new ExportChecklistDateDTO();
+                            dto.setId(s.getId());
+                            dto.setDateModified(s.getDateModified());
                             return dto;
                         })
                         .collect(toList())
@@ -91,19 +78,19 @@ public class ExportService {
     }
 
     @Transactional
-    public ExportSessionActivityResponse getUpdatedActivities(LocalDateTime offset, int limit) {
-        ExportSessionActivityResponse response = new ExportSessionActivityResponse();
+    public ExportChecklistDateResponse getControlActivityDates(LocalDateTime offset, int limit) {
+        ExportChecklistDateResponse response = new ExportChecklistDateResponse();
 
-        List<ExportControlActivityDomain> sessions = controlActivityService.findForExport(offset, limit);
+        List<ExportControlActivityDomain> sessions = controlActivityService.getControlActivityDates(offset, limit);
 
         if (isEmpty(sessions)) return response;
 
         response.setData(
                 sessions.stream()
                         .map(e -> {
-                            ExportSessionActivityDTO dto = new ExportSessionActivityDTO();
+                            ExportChecklistDateDTO dto = new ExportChecklistDateDTO();
                             dto.setId(e.getId());
-                            dto.setActivity(responseSessionConverter.map(responseSessionService.findById(e.getActivityResponseId())));
+                            dto.setDateModified(e.getDateModified());
                             return dto;
                         })
                         .collect(toList())
@@ -116,6 +103,31 @@ public class ExportService {
                         .get()
         );
 
+        return response;
+    }
+
+    @Transactional
+    public ExportControlActivityDTO getControlActivity(Long id) {
+        ExportControlActivityDTO response = new ExportControlActivityDTO();
+
+        ControlActivityDomain controlActivity = controlActivityService.findById(id);
+
+        response.setId(controlActivity.getId());
+        response.setActivity(responseSessionConverter.map(responseSessionService.findById(controlActivity.getActivityResponseId())));
+        response.setSessions(responseSessionService.findByIds(controlActivity.getSessionResponseIds())
+                .stream()
+                .map(responseSessionConverter::map)
+                .collect(toList())
+        );
+
+        return response;
+    }
+
+    @Transactional
+    public ExportResponseSessionDTO getResponseSession(Long id) {
+        ExportResponseSessionDTO response = new ExportResponseSessionDTO();
+        response.setControlActivityId(controlActivityService.getControlActivityIdBySessionId(id));
+        response.setSession(responseSessionConverter.map(responseSessionService.findById(id)));
         return response;
     }
 }

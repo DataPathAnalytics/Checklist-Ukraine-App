@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ResponseDataDTO {
+public class ControlActivityDTO {
     private Long id;
     private SessionDTO activity;
     private List<SessionDTO> sessions;

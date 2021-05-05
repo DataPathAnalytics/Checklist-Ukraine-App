@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.imported.response;
+package com.datapath.analyticapp.service.miner.handler;
 
 import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
 import com.datapath.analyticapp.dao.repository.*;
@@ -7,7 +7,7 @@ import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
-import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
+import com.datapath.analyticapp.service.miner.config.Place;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,20 +24,22 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @Slf4j
-public class ActivityUpdateService extends BaseUpdateService {
+public class ActivityUpdateHandler extends BaseUpdateHandler {
 
     private final ControlActivityRepository controlActivityRepository;
+    private final SessionUpdateHandler sessionUpdateHandler;
 
-    public ActivityUpdateService(ControlActivityRepository controlActivityRepository,
+    public ActivityUpdateHandler(ControlActivityRepository controlActivityRepository,
                                  UserRepository userRepository,
                                  QuestionRepository questionRepository,
                                  KnowledgeClassRepository knowledgeClassRepository,
                                  NodeTypeRepository nodeTypeRepository,
                                  MinerRuleProvider minerRuleProvider,
-                                 CypherQueryService dbUtils,
+                                 CypherQueryService cypherQueryService,
                                  RoleRepository roleRepository,
-                                 QueryRequestBuilder queryRequestBuilder) {
-        super(dbUtils,
+                                 QueryRequestBuilder queryRequestBuilder,
+                                 SessionUpdateHandler sessionUpdateHandler) {
+        super(cypherQueryService,
                 minerRuleProvider,
                 roleRepository,
                 nodeTypeRepository,
@@ -46,40 +48,47 @@ public class ActivityUpdateService extends BaseUpdateService {
                 knowledgeClassRepository,
                 queryRequestBuilder);
         this.controlActivityRepository = controlActivityRepository;
+        this.sessionUpdateHandler = sessionUpdateHandler;
     }
 
     @Transactional
-    public void update(ResponseDataDTO response) {
-        log.info("Updating control activity {}", response.getId());
+    public void update(ControlActivityDTO controlActivityDTO) {
+        log.info("Updating control activity {}", controlActivityDTO.getId());
+        delete(controlActivityDTO);
+        save(controlActivityDTO);
+    }
 
-        //TODO:handle remove logic
-        if (response.getActivity().isInvalid()) {
-//            deleteActivityCurrentState(response.getId());
-//            return;
+    private void save(ControlActivityDTO controlActivityDTO) {
+        if (controlActivityDTO.getActivity().isInvalid()) {
+            return;
         }
 
         roleNodeIdMap = new HashMap<>();
 
-        handleControlActivity(response);
-        handleTypeQuestions(response.getActivity(), CONTROL_ACTIVITY_ROLE);
-        handleAuthority(response.getActivity());
-        handleOwner(response.getActivity());
-        handleRuleMining(MinerRulePlace.control_activity);
+        handleControlActivity(controlActivityDTO);
+        handleTypeQuestions(controlActivityDTO.getActivity(), CONTROL_ACTIVITY_ROLE);
+        handleAuthority(controlActivityDTO.getActivity());
+        handleOwner(controlActivityDTO.getActivity());
+        handleRuleMining(Place.control_activity);
+
+        controlActivityDTO.getSessions()
+                .forEach(s -> sessionUpdateHandler.save(s, roleNodeIdMap.get(CONTROL_ACTIVITY_ROLE).get(0)));
     }
 
-    private void handleControlActivity(ResponseDataDTO response) {
-        ControlActivityEntity activity = controlActivityRepository.findByOuterId(response.getId());
+    private void delete(ControlActivityDTO controlActivityDTO) {
+        queryService.deleteInitiatorByOuterId(controlActivityDTO.getId());
+        controlActivityDTO.getSessions().forEach(sessionUpdateHandler::delete);
+    }
 
-        if (isNull(activity)) {
-            activity = new ControlActivityEntity();
-            activity.setOuterId(response.getId());
-            activity.setDateCreated(response.getActivity().getDateCreated());
-            setAuthor(activity, response.getActivity().getAuthorId());
-        }
+    private void handleControlActivity(ControlActivityDTO response) {
+        ControlActivityEntity activity = new ControlActivityEntity();
+        activity.setOuterId(response.getId());
+        activity.setDateCreated(response.getActivity().getDateCreated());
+        activity.setDateModified(response.getActivity().getDateModified());
+        setAuthor(activity, response.getActivity().getAuthorId());
         setMembers(activity, response.getActivity().getMembers());
-//        activity.setDateModified(response.getActivity().getDateModified());
-
         addRoleNodeId(CONTROL_ACTIVITY_ROLE, controlActivityRepository.save(activity).getId());
+        addRoleNodeId(INITIATOR_ROLE, controlActivityRepository.save(activity).getId());
     }
 
     private void handleAuthority(SessionDTO activity) {
@@ -148,5 +157,10 @@ public class ActivityUpdateService extends BaseUpdateService {
 
     private void setAuthor(ControlActivityEntity activity, Long authorId) {
         activity.setAuthor(userRepository.findByOuterId(authorId));
+    }
+
+    public boolean needToUpdate(ChecklistDateDTO dto) {
+        ControlActivityEntity activity = controlActivityRepository.findByOuterId(dto.getId());
+        return isNull(activity) || dto.getDateModified().isAfter(activity.getDateModified());
     }
 }

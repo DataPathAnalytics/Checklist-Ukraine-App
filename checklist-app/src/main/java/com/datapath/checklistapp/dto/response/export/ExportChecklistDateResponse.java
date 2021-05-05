@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class ExportSessionActivityResponse {
+public class ExportChecklistDateResponse {
 
-    private List<ExportSessionActivityDTO> data;
+    private List<ExportChecklistDateDTO> data;
     private LocalDateTime nextOffset;
 }

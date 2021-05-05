@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class SessionActivityResponse {
-    private List<ResponseDataDTO> data;
+public class ChecklistDateResponse {
+    private List<ChecklistDateDTO> data;
     private LocalDateTime nextOffset;
 }

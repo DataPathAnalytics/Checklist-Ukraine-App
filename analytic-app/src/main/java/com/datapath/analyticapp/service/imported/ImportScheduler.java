@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class ImportManageService {
+public class ImportScheduler {
 
     private final List<ImportService> importServices;
 

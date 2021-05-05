@@ -1,12 +1,12 @@
 package com.datapath.analyticapp.service.miner;
 
 import com.datapath.analyticapp.service.miner.config.Direction;
-import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
+import com.datapath.analyticapp.service.miner.config.Place;
 import lombok.Data;
 
 @Data
 public class MinerRule {
-    private MinerRulePlace place;
+    private Place place;
     private String role;
     private Direction direction;
     private String linkType;

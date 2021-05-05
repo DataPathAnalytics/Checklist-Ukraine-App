@@ -38,23 +38,27 @@ public class QueryRequestBuilder {
                                                      String nodeType,
                                                      String linkType,
                                                      Map<String, Object> props,
-                                                     Map<String, ValueType> fieldTypes) {
+                                                     Map<String, ValueType> fieldTypes,
+                                                     Long initiatorId) {
         return NonIdentifierRequest.builder()
                 .nodeType(nodeType)
                 .parentId(parentId)
                 .linkType(linkType)
                 .props(convertProps(props, fieldTypes))
                 .fieldTypes(fieldTypes)
+                .initiatorId(initiatorId)
                 .build();
     }
 
     public RelationshipRequest relationshipRequest(Long parentId,
                                                    Long childId,
-                                                   String linkType) {
+                                                   String linkType,
+                                                   Long initiatorId) {
         return RelationshipRequest.builder()
                 .parentId(parentId)
                 .childId(childId)
                 .linkType(linkType)
+                .initiatorId(initiatorId)
                 .build();
     }
 
@@ -62,13 +66,15 @@ public class QueryRequestBuilder {
                                                            Long nodeId,
                                                            List<Long> secondNodeIds,
                                                            List<Long> parentOfSecondNodeIds,
-                                                           String parentOfSecondNodeLink) {
+                                                           String parentOfSecondNodeLink,
+                                                           Long initiatorId) {
         return RuleRelationshipRequest.builder()
                 .rule(rule)
                 .nodeId(nodeId)
                 .secondNodeIds(secondNodeIds)
                 .parentOfSecondNodeIds(parentOfSecondNodeIds)
                 .parentOfSecondNodeLink(parentOfSecondNodeLink)
+                .initiatorId(initiatorId)
                 .build();
     }
 
@@ -76,7 +82,8 @@ public class QueryRequestBuilder {
                                    String fieldName,
                                    String questionValue,
                                    Map<String, Object> props,
-                                   Map<String, ValueType> fieldTypes) {
+                                   Map<String, ValueType> fieldTypes,
+                                   Long initiatorId) {
         return FactRequest.builder()
                 .parentId(parentId)
                 .fieldName(fieldName)
@@ -84,23 +91,15 @@ public class QueryRequestBuilder {
                 .props(convertProps(props, fieldTypes))
                 .nodeType(FACT_DEFAULT_NODE)
                 .linkType(FACT_DEFAULT_LINK)
+                .initiatorId(initiatorId)
                 .build();
     }
 
-    public DeleteRequest deleteRequest(Long parentNodeId,
-                                       String nodeType,
-                                       String linkType) {
-        return DeleteRequest.builder()
-                .parentId(parentNodeId)
-                .nodeType(nodeType)
-                .linkType(linkType)
-                .build();
-    }
-
-    public EventRequest eventRequest(Long parentNodeId, Long eventTypeId) {
+    public EventRequest eventRequest(Long parentNodeId, Long eventTypeId, Long initiatorId) {
         return EventRequest.builder()
                 .parentId(parentNodeId)
                 .eventTypeId(eventTypeId)
+                .initiatorId(initiatorId)
                 .nodeType(EVENT_DEFAULT_NODE)
                 .linkType(EVENT_DEFAULT_LINK)
                 .build();

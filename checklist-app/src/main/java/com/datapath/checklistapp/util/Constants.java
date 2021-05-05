@@ -6,7 +6,7 @@ public final class Constants {
 
     private static final String LOGIN_URL = "/login";
     private static final String REGISTER_URL = "/users/register";
-    private static final String EXPORT_MAPPING_URL = "/export/*";
+    private static final String EXPORT_MAPPING_URL = "/export/**";
 
     public static final String TOOL_NAME = "Ukraine checklist tool";
     public static final String USER_REGISTRATION_MESSAGE_SUBJECT = "User registration";

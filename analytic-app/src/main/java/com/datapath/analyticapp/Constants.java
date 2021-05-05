@@ -12,6 +12,7 @@ public class Constants {
     public static final String FACT_ROLE = "fact";
     public static final String FEATURE_ROLE = "feature";
     public static final String EVENT_ROLE = "event";
+    public static final String INITIATOR_ROLE = "initiator";
 
     public final static String DEFAULT_NODE = "Data";
     public final static String DEFAULT_LINK = "HAS_DATA";

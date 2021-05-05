@@ -14,4 +14,5 @@ public class RuleRelationshipRequest {
     private List<Long> secondNodeIds;
     private List<Long> parentOfSecondNodeIds;
     private String parentOfSecondNodeLink;
+    private Long initiatorId;
 }

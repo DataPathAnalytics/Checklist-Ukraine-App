@@ -1,18 +1,15 @@
-package com.datapath.analyticapp.service.imported.response;
+package com.datapath.analyticapp.service.imported.impl;
 
-import com.datapath.analyticapp.dao.entity.imported.ControlActivityEntity;
-import com.datapath.analyticapp.dao.repository.ControlActivityRepository;
-import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
+import com.datapath.analyticapp.dto.imported.response.ChecklistDateResponse;
+import com.datapath.analyticapp.dto.imported.response.ControlActivityDTO;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
+import com.datapath.analyticapp.service.miner.handler.ActivityUpdateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -27,35 +24,32 @@ public class ActivityImportService implements ImportService {
     private String apiUrlPart;
 
     @Autowired
-    private ControlActivityRepository repository;
-    @Autowired
     private RestManager restManager;
     @Autowired
-    private ActivityUpdateService updateService;
+    private ActivityUpdateHandler updateService;
 
     @Override
     public void upload() {
-        String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
+        String url = restManager.getUrlByOffset(apiUrlPart, null, LIMIT);
 
-        SessionActivityResponse response;
+        ChecklistDateResponse response;
 
         do {
-            response = restManager.getData(url, SessionActivityResponse.class);
+            response = restManager.getData(url, ChecklistDateResponse.class);
 
             if (isEmpty(response.getData())) break;
 
-            response.getData().forEach(updateService::update);
+            response.getData().forEach(dto -> {
+                if (updateService.needToUpdate(dto)) {
+                    String activityUrl = restManager.getUrlById(apiUrlPart, dto.getId());
+                    updateService.update(restManager.getData(activityUrl, dto.getId(), ControlActivityDTO.class));
+                }
+            });
 
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 
         } while (true);
 
         log.info("Updating control activities completed");
-    }
-
-    @Override
-    public LocalDateTime getLastModified() {
-        Optional<ControlActivityEntity> lastActivity = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
-        return lastActivity.map(ControlActivityEntity::getDateModified).orElse(null);
     }
 }

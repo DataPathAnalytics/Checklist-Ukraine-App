@@ -41,12 +41,14 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "collect(id(r2)) as sessionResponseIds, " +
             "collect(id(t)) as templateIds";
 
-    String UPDATED_ACTIVITIES_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar) " +
+    String CONTROL_ACTIVITY_DATE_LIST_REQUEST = "match (c:ControlActivity)-[:HAS_ACTIVITY_RESPONSE]->(ar) " +
             "where exists( (c)-[:HAS_SESSION_RESPONSE]->()-[:IN_STATUS]->({sessionStatusId:2}) ) " +
             "and ar.dateModified > $offset " +
-            "return c, id(ar) as activityResponseId, " +
+            "return c, " +
             "ar.dateModified as dateModified " +
             "order by ar.dateModified limit $limit";
+
+    String CONTROL_ACTIVITY_ID_BY_SESSION_ID = "match (rs)<-[:HES_SESSION_RESPONSE]-(c) where id(rs) = $sessionId return id(c)";
 
     @Query(value = SHORT_CONTROL_ACTIVITIES_QUERY)
     List<ControlActivityDomain> findControlActivities();
@@ -63,6 +65,9 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
     @Query(value = MAX_NUMBER_QUERY)
     Integer getSessionMaxNumber(Long id);
 
-    @Query(value = UPDATED_ACTIVITIES_REQUEST)
-    List<ExportControlActivityDomain> findForExport(LocalDateTime offset, int limit);
+    @Query(value = CONTROL_ACTIVITY_DATE_LIST_REQUEST)
+    List<ExportControlActivityDomain> getControlActivityDates(LocalDateTime offset, int limit);
+
+    @Query(value = CONTROL_ACTIVITY_ID_BY_SESSION_ID)
+    Long getControlActivityIdBySessionId(Long sessionId);
 }

@@ -14,4 +14,5 @@ public class NonIdentifierRequest {
     private String linkType;
     private Map<String, Object> props;
     private Map<String, ValueType> fieldTypes;
+    private Long initiatorId;
 }

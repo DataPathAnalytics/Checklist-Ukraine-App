@@ -1,7 +1,6 @@
 package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
-import com.datapath.checklistapp.dao.domain.ResponseSessionDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
@@ -17,10 +16,6 @@ import java.util.List;
 public class ResponseSessionDaoService {
 
     private final ResponseSessionRepository repository;
-
-    public List<ResponseSessionDomain> findResponseSessionByActivityId(Long activityId) {
-        return repository.findResponseSessionByActivityId(activityId);
-    }
 
     public ResponseSessionEntity save(ResponseSessionEntity entity) {
         return repository.save(entity);
@@ -43,7 +38,7 @@ public class ResponseSessionDaoService {
         return repository.getNumberBySessionId(id);
     }
 
-    public List<ExportSessionResponseDomain> findForExport(LocalDateTime dateModified, int limit) {
-        return repository.findForExport(dateModified, limit);
+    public List<ExportSessionResponseDomain> getResponseSessionDates(LocalDateTime dateModified, int limit) {
+        return repository.getResponseSessionDates(dateModified, limit);
     }
 }

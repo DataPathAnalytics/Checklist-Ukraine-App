@@ -10,4 +10,5 @@ public class EventRequest {
     private Long eventTypeId;
     private String nodeType;
     private String linkType;
+    private Long initiatorId;
 }

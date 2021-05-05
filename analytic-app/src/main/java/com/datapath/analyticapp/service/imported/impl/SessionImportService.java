@@ -1,18 +1,15 @@
-package com.datapath.analyticapp.service.imported.response;
+package com.datapath.analyticapp.service.imported.impl;
 
-import com.datapath.analyticapp.dao.entity.imported.ResponseSessionEntity;
-import com.datapath.analyticapp.dao.repository.ResponseSessionRepository;
-import com.datapath.analyticapp.dto.imported.response.SessionActivityResponse;
+import com.datapath.analyticapp.dto.imported.response.ChecklistDateResponse;
+import com.datapath.analyticapp.dto.imported.response.ControlActivitySessionDTO;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
+import com.datapath.analyticapp.service.miner.handler.SessionUpdateHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -27,35 +24,32 @@ public class SessionImportService implements ImportService {
     private String apiUrlPart;
 
     @Autowired
-    private ResponseSessionRepository repository;
-    @Autowired
     private RestManager restManager;
     @Autowired
-    private SessionUpdateService updateService;
+    private SessionUpdateHandler updateService;
 
     @Override
     public void upload() {
-        String url = restManager.getUrlByOffset(apiUrlPart, getLastModified(), LIMIT);
+        String url = restManager.getUrlByOffset(apiUrlPart, null, LIMIT);
 
-        SessionActivityResponse response;
+        ChecklistDateResponse response;
 
         do {
-            response = restManager.getData(url, SessionActivityResponse.class);
+            response = restManager.getData(url, ChecklistDateResponse.class);
 
             if (isEmpty(response.getData())) break;
 
-            response.getData().forEach(updateService::update);
+            response.getData().forEach(dto -> {
+                if (updateService.needToUpdate(dto)) {
+                    String sessionUrl = restManager.getUrlById(apiUrlPart, dto.getId());
+                    updateService.update(restManager.getData(sessionUrl, dto.getId(), ControlActivitySessionDTO.class));
+                }
+            });
 
             url = restManager.getUrlByOffset(apiUrlPart, response.getNextOffset(), LIMIT);
 
         } while (true);
 
         log.info("Updating response sessions completed");
-    }
-
-    @Override
-    public LocalDateTime getLastModified() {
-        Optional<ResponseSessionEntity> last = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
-        return last.map(ResponseSessionEntity::getDateModified).orElse(null);
     }
 }

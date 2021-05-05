@@ -1,6 +1,6 @@
 package com.datapath.analyticapp.service.miner;
 
-import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
+import com.datapath.analyticapp.service.miner.config.Place;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -28,7 +28,7 @@ public class MinerRuleProvider {
                 );
     }
 
-    public Set<MinerRule> getRulesByPlace(MinerRulePlace place) {
+    public Set<MinerRule> getRulesByPlace(Place place) {
         return rules.stream()
                 .filter(r -> place.equals(r.getPlace()))
                 .collect(toCollection(LinkedHashSet::new));

@@ -1,10 +1,11 @@
-package com.datapath.analyticapp.service.imported.user;
+package com.datapath.analyticapp.service.imported.impl;
 
 import com.datapath.analyticapp.dao.entity.imported.UserEntity;
 import com.datapath.analyticapp.dao.repository.UserRepository;
 import com.datapath.analyticapp.dto.imported.user.UserApiResponse;
 import com.datapath.analyticapp.service.imported.ImportService;
 import com.datapath.analyticapp.service.imported.RestManager;
+import com.datapath.analyticapp.service.miner.handler.UserUpdateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
@@ -29,7 +30,7 @@ public class UserImportService implements ImportService {
     @Autowired
     private UserRepository repository;
     @Autowired
-    private UserUpdateService updateService;
+    private UserUpdateHandler updateService;
 
     @Override
     public void upload() {
@@ -49,7 +50,6 @@ public class UserImportService implements ImportService {
         } while (true);
     }
 
-    @Override
     public LocalDateTime getLastModified() {
         Optional<UserEntity> lastUser = repository.findFirstByDateModifiedNotNullOrderByDateModifiedDesc();
         return lastUser.map(UserEntity::getDateModified).orElse(null);

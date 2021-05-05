@@ -6,8 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ExportSessionActivityDTO {
-
+public class ExportControlActivityDTO {
     private Long id;
     private ResponseSessionDTO activity;
     private List<ResponseSessionDTO> sessions;

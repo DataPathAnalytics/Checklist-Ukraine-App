@@ -14,4 +14,5 @@ public class FactRequest {
     private String nodeType;
     private String linkType;
     private Map<String, Object> props;
+    private Long initiatorId;
 }

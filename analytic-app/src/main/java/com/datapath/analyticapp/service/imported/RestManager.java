@@ -31,8 +31,19 @@ public class RestManager {
                 .build().toString();
     }
 
+    public String getUrlById(String apiUrlPart, Long id) {
+        return new DefaultUriBuilderFactory(exportApiUrl + apiUrlPart).builder()
+                .pathSegment("{id}")
+                .build(id).toString();
+    }
+
+    public <T> T getData(String url, Long id, Class<T> t) {
+        log.info("GET {} {}", t.getSimpleName(), url);
+        return restTemplate.getForObject(url, t, id);
+    }
+
     public <T> T getData(String url, Class<T> t) {
-        log.info("Export {} from {}", t.getSimpleName(), url);
+        log.info("GET {} {}", t.getSimpleName(), url);
         return restTemplate.getForObject(url, t);
     }
 }

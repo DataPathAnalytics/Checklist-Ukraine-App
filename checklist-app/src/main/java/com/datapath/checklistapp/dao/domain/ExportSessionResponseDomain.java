@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class ExportSessionResponseDomain {
-    private Long activityId;
-    private Long sessionResponseId;
+    private Long id;
     private LocalDateTime dateModified;
 }

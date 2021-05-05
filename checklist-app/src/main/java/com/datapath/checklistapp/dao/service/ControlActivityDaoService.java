@@ -42,7 +42,11 @@ public class ControlActivityDaoService {
         return repository.findRelatedUsers(id);
     }
 
-    public List<ExportControlActivityDomain> findForExport(LocalDateTime offset, int limit) {
-        return repository.findForExport(offset, limit);
+    public List<ExportControlActivityDomain> getControlActivityDates(LocalDateTime offset, int limit) {
+        return repository.getControlActivityDates(offset, limit);
+    }
+
+    public Long getControlActivityIdBySessionId(Long sessionId) {
+        return repository.getControlActivityIdBySessionId(sessionId);
     }
 }

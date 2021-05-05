@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.imported.response;
+package com.datapath.analyticapp.service.miner.handler;
 
 import com.datapath.analyticapp.dao.entity.LinkTypeEntity;
 import com.datapath.analyticapp.dao.entity.NodeTypeEntity;
@@ -10,7 +10,7 @@ import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.service.miner.MinerRule;
 import com.datapath.analyticapp.service.miner.MinerRuleProvider;
-import com.datapath.analyticapp.service.miner.config.MinerRulePlace;
+import com.datapath.analyticapp.service.miner.config.Place;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
-public class BaseUpdateService {
+public class BaseUpdateHandler {
 
     protected final CypherQueryService queryService;
     protected final MinerRuleProvider minerRuleProvider;
@@ -38,7 +38,7 @@ public class BaseUpdateService {
     protected final QueryRequestBuilder queryRequestBuilder;
     protected Map<String, List<Long>> roleNodeIdMap;
 
-    public BaseUpdateService(CypherQueryService queryService,
+    public BaseUpdateHandler(CypherQueryService queryService,
                              MinerRuleProvider minerRuleProvider,
                              RoleRepository roleRepository,
                              NodeTypeRepository nodeTypeRepository,
@@ -122,7 +122,8 @@ public class BaseUpdateService {
                             nodeType,
                             linkType,
                             answerValue,
-                            getFieldTypes(execution))
+                            getFieldTypes(execution),
+                            getInitiatorId())
             );
         } else {
             nodeId = queryService.mergeIdentifierNode(
@@ -133,7 +134,9 @@ public class BaseUpdateService {
                             answerValue,
                             getFieldTypes(execution))
             );
-            queryService.buildRelationship(queryRequestBuilder.relationshipRequest(parentId, nodeId, linkType));
+            queryService.buildRelationship(
+                    queryRequestBuilder.relationshipRequest(parentId, nodeId, linkType, getInitiatorId())
+            );
         }
 
         addRoleNodeId(FEATURE_ROLE, nodeId);
@@ -207,7 +210,7 @@ public class BaseUpdateService {
         return isNull(sub.getConditionFieldName()) || nonNull(answer.getValues().get(sub.getConditionFieldName()));
     }
 
-    protected void handleRuleMining(MinerRulePlace place) {
+    protected void handleRuleMining(Place place) {
         minerRuleProvider.getRulesByPlace(place).forEach(this::processRule);
     }
 
@@ -225,7 +228,8 @@ public class BaseUpdateService {
                         nodeId,
                         secondNodeId,
                         parentOfSecondNodeId,
-                        rule.getParentOfSecondNodeLinkType())
+                        rule.getParentOfSecondNodeLinkType(),
+                        getInitiatorId())
                 )
         );
     }
@@ -234,5 +238,9 @@ public class BaseUpdateService {
         return execution.getQuestion().getAnswerStructure().getFieldDescriptions()
                 .stream()
                 .collect(toMap(FieldDescriptionDTO::getName, FieldDescriptionDTO::getValueType));
+    }
+
+    protected Long getInitiatorId() {
+        return roleNodeIdMap.get(INITIATOR_ROLE).get(0);
     }
 }

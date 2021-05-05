@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.imported.user;
+package com.datapath.analyticapp.service.miner.handler;
 
 import com.datapath.analyticapp.dao.entity.imported.UserEntity;
 import com.datapath.analyticapp.dao.repository.UserRepository;
@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
-public class UserUpdateService {
+public class UserUpdateHandler {
 
     private final UserRepository repository;
 

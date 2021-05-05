@@ -9,4 +9,5 @@ public class RelationshipRequest {
     private Long parentId;
     private Long childId;
     private String linkType;
+    private Long initiatorId;
 }

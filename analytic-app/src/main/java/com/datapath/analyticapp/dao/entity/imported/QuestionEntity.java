@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.datapath.analyticapp.dao.Relationship.IN_KNOWLEDGE_CLASS;
+
 @Data
 @Node("Question")
 public class QuestionEntity {
@@ -25,6 +27,6 @@ public class QuestionEntity {
     @CreatedDate
     private LocalDateTime dateExport;
 
-    @Relationship(type = "IN_KNOWLEDGE_CLASS")
+    @Relationship(type = IN_KNOWLEDGE_CLASS)
     private List<KnowledgeClassEntity> knowledgeClasses = new ArrayList<>();
 }

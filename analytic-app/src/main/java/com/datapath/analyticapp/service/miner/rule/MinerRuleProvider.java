@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.service.miner;
+package com.datapath.analyticapp.service.miner.rule;
 
 import com.datapath.analyticapp.service.miner.config.Place;
 import com.fasterxml.jackson.core.type.TypeReference;

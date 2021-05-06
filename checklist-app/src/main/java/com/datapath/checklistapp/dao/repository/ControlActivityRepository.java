@@ -48,7 +48,7 @@ public interface ControlActivityRepository extends Neo4jRepository<ControlActivi
             "ar.dateModified as dateModified " +
             "order by ar.dateModified limit $limit";
 
-    String CONTROL_ACTIVITY_ID_BY_SESSION_ID = "match (rs)<-[:HES_SESSION_RESPONSE]-(c) where id(rs) = $sessionId return id(c)";
+    String CONTROL_ACTIVITY_ID_BY_SESSION_ID = "match (rs)<-[:HAS_SESSION_RESPONSE]-(c) where id(rs) = $sessionId return id(c)";
 
     @Query(value = SHORT_CONTROL_ACTIVITIES_QUERY)
     List<ControlActivityDomain> findControlActivities();

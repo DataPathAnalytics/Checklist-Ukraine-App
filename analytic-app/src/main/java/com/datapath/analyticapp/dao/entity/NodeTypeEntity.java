@@ -9,6 +9,8 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.datapath.analyticapp.dao.Relationship.HAS_LINK_TYPE;
+
 @Data
 @Node("NodeType")
 public class NodeTypeEntity {
@@ -17,6 +19,6 @@ public class NodeTypeEntity {
     private Long id;
     private String nodeTypeName;
 
-    @Relationship(type = "HAS_LINK_TYPE")
+    @Relationship(type = HAS_LINK_TYPE)
     private Set<LinkTypeEntity> linkTypes = new HashSet<>();
 }

@@ -8,9 +8,9 @@ import com.datapath.analyticapp.dao.repository.*;
 import com.datapath.analyticapp.dao.service.CypherQueryService;
 import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
-import com.datapath.analyticapp.service.miner.MinerRule;
-import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import com.datapath.analyticapp.service.miner.config.Place;
+import com.datapath.analyticapp.service.miner.rule.MinerRule;
+import com.datapath.analyticapp.service.miner.rule.MinerRuleProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,7 +19,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.datapath.analyticapp.Constants.*;
+import static com.datapath.analyticapp.dao.Node.DEFAULT_NODE;
+import static com.datapath.analyticapp.dao.Relationship.DEFAULT_LINK;
+import static com.datapath.analyticapp.service.miner.config.Role.FEATURE_ROLE;
+import static com.datapath.analyticapp.service.miner.config.Role.INITIATOR_ROLE;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;

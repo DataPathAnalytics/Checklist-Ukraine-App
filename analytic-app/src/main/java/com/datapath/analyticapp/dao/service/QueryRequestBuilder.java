@@ -2,8 +2,8 @@ package com.datapath.analyticapp.dao.service;
 
 import com.datapath.analyticapp.dao.service.request.*;
 import com.datapath.analyticapp.dto.imported.response.ValueType;
-import com.datapath.analyticapp.service.miner.MinerRule;
 import com.datapath.analyticapp.service.miner.converter.ConvertTypeService;
+import com.datapath.analyticapp.service.miner.rule.MinerRule;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.datapath.analyticapp.Constants.*;
+import static com.datapath.analyticapp.dao.Node.FACT_DEFAULT_NODE;
+import static com.datapath.analyticapp.dao.Relationship.EVENT_DEFAULT_LINK;
+import static com.datapath.analyticapp.dao.Relationship.FACT_DEFAULT_LINK;
 
 @Data
 @Service
@@ -95,12 +97,11 @@ public class QueryRequestBuilder {
                 .build();
     }
 
-    public EventRequest eventRequest(Long parentNodeId, Long eventTypeId, Long initiatorId) {
+    public EventRequest eventRequest(Long factId, Long eventTypeId, Long initiatorId) {
         return EventRequest.builder()
-                .parentId(parentNodeId)
+                .factId(factId)
                 .eventTypeId(eventTypeId)
                 .initiatorId(initiatorId)
-                .nodeType(EVENT_DEFAULT_NODE)
                 .linkType(EVENT_DEFAULT_LINK)
                 .build();
     }

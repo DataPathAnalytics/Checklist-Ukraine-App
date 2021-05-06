@@ -44,13 +44,6 @@
   },
   {
     "place": "response_session",
-    "role": "response_session",
-    "direction": "IN",
-    "linkType": "HAS_RESPONSE_SESSION",
-    "secondNodeType": "control_activity"
-  },
-  {
-    "place": "response_session",
     "role": "subject",
     "direction": "IN",
     "linkType": "HAS_SUBJECT",
@@ -91,20 +84,5 @@
     "direction": "IN",
     "linkType": "HAS_EVENT",
     "secondNodeType": "response_session"
-  },
-  {
-    "place": "response_session",
-    "role": "event",
-    "direction": "IN",
-    "linkType": "SOURCED",
-    "secondNodeType": "response_session"
-  },
-  {
-    "place": "response_session",
-    "role": "event",
-    "direction": "IN",
-    "linkType": "HAS_EVENT",
-    "parentOfSecondNode": "response_session",
-    "parentOfSecondNodeLinkType": "HAS_SUBJECT"
   }
 ]

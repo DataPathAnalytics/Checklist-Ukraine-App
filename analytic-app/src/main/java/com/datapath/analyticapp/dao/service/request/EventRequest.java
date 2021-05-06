@@ -6,9 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class EventRequest {
-    private Long parentId;
+    private Long factId;
     private Long eventTypeId;
-    private String nodeType;
     private String linkType;
     private Long initiatorId;
 }

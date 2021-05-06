@@ -1,6 +1,6 @@
 package com.datapath.analyticapp.dao.service.request;
 
-import com.datapath.analyticapp.service.miner.MinerRule;
+import com.datapath.analyticapp.service.miner.rule.MinerRule;
 import lombok.Builder;
 import lombok.Data;
 

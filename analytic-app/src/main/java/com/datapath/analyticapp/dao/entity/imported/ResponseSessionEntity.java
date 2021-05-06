@@ -9,6 +9,9 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 
 import java.time.LocalDateTime;
 
+import static com.datapath.analyticapp.dao.Relationship.HAS_AUTHOR;
+import static com.datapath.analyticapp.dao.Relationship.HAS_REVIEWER;
+
 @Data
 @Node("ResponseSession")
 public class ResponseSessionEntity {
@@ -20,8 +23,8 @@ public class ResponseSessionEntity {
     private LocalDateTime dateCreated;
     @CreatedDate
     private LocalDateTime dateExported;
-    @Relationship(type = "HAS_AUTHOR")
+    @Relationship(type = HAS_AUTHOR)
     private UserEntity author;
-    @Relationship(type = "HAS_REVIEWER")
+    @Relationship(type = HAS_REVIEWER)
     private UserEntity reviewer;
 }

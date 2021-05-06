@@ -10,6 +10,8 @@ import org.springframework.data.neo4j.core.schema.Relationship;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static com.datapath.analyticapp.dao.Relationship.*;
+
 @Data
 @Node("ControlActivity")
 public class ControlActivityEntity {
@@ -22,8 +24,10 @@ public class ControlActivityEntity {
     @CreatedDate
     private LocalDateTime dateExported;
 
-    @Relationship(type = "HAS_AUTHOR")
+    @Relationship(type = HAS_AUTHOR)
     private UserEntity author;
-    @Relationship(type = "HAS_MEMBER")
+    @Relationship(type = HAS_MEMBER)
     private List<UserEntity> members;
+    @Relationship(type = HAS_RESPONSE_SESSION)
+    private List<ResponseSessionEntity> sessions;
 }

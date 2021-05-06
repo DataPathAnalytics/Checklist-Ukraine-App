@@ -6,8 +6,8 @@ import com.datapath.analyticapp.dao.service.CypherQueryService;
 import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
-import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import com.datapath.analyticapp.service.miner.config.Place;
+import com.datapath.analyticapp.service.miner.rule.MinerRuleProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.datapath.analyticapp.Constants.*;
+import static com.datapath.analyticapp.dao.Node.AUTHORITY_DEFAULT_NODE;
+import static com.datapath.analyticapp.dao.Node.OWNER_DEFAULT_NODE;
+import static com.datapath.analyticapp.service.miner.config.Role.*;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -54,7 +57,11 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
     @Transactional
     public void update(ControlActivityDTO controlActivityDTO) {
         log.info("Updating control activity {}", controlActivityDTO.getId());
-        delete(controlActivityDTO);
+
+        ControlActivityEntity existed = controlActivityRepository.findByOuterId(controlActivityDTO.getId());
+
+        if (nonNull(existed)) delete(existed);
+
         save(controlActivityDTO);
     }
 
@@ -75,9 +82,9 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
                 .forEach(s -> sessionUpdateHandler.save(s, roleNodeIdMap.get(CONTROL_ACTIVITY_ROLE).get(0)));
     }
 
-    private void delete(ControlActivityDTO controlActivityDTO) {
-        queryService.deleteInitiatorByOuterId(controlActivityDTO.getId());
-        controlActivityDTO.getSessions().forEach(sessionUpdateHandler::delete);
+    private void delete(ControlActivityEntity entity) {
+        queryService.deleteInitiatorData(entity.getId());
+        entity.getSessions().forEach(sessionUpdateHandler::delete);
     }
 
     private void handleControlActivity(ControlActivityDTO response) {

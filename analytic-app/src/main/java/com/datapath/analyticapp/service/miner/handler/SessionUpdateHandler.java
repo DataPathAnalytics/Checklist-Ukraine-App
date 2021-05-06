@@ -8,8 +8,8 @@ import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dao.service.request.EventRequest;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.exception.ValidationException;
-import com.datapath.analyticapp.service.miner.MinerRuleProvider;
 import com.datapath.analyticapp.service.miner.config.Place;
+import com.datapath.analyticapp.service.miner.rule.MinerRuleProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +19,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.datapath.analyticapp.Constants.*;
+import static com.datapath.analyticapp.dao.Node.SUBJECT_DEFAULT_NODE;
+import static com.datapath.analyticapp.dao.Relationship.*;
+import static com.datapath.analyticapp.service.miner.config.Role.*;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -57,7 +60,10 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
     public void update(ControlActivitySessionDTO sessionDTO) {
         log.info("Updating response session {}", sessionDTO.getSession().getId());
 
-        delete(sessionDTO.getSession());
+        ResponseSessionEntity existed = responseSessionRepository.findByOuterId(sessionDTO.getSession().getId());
+
+        if (nonNull(existed)) delete(existed);
+
         ControlActivityEntity activity = controlActivityRepository.findByOuterId(sessionDTO.getControlActivityId());
         save(sessionDTO.getSession(), activity.getId());
     }
@@ -75,8 +81,8 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         handleRuleMining(Place.response_session);
     }
 
-    public void delete(SessionDTO sessionDTO) {
-        queryService.deleteInitiatorByOuterId(sessionDTO.getId());
+    public void delete(ResponseSessionEntity entity) {
+        queryService.deleteInitiatorData(entity.getId());
     }
 
     private void handleResponseSession(SessionDTO session) {
@@ -86,8 +92,16 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         sessionEntity.setDateModified(session.getDateModified());
         setAuthor(sessionEntity, session.getAuthorId());
         setReviewer(sessionEntity, session.getReviewerId());
-        addRoleNodeId(RESPONSE_SESSION_ROLE, responseSessionRepository.save(sessionEntity).getId());
-        addRoleNodeId(INITIATOR_ROLE, responseSessionRepository.save(sessionEntity).getId());
+        Long sessionId = responseSessionRepository.save(sessionEntity).getId();
+
+        addRoleNodeId(RESPONSE_SESSION_ROLE, sessionId);
+        addRoleNodeId(INITIATOR_ROLE, sessionId);
+
+        queryService.buildRelationship(
+                queryRequestBuilder.relationshipRequest(
+                        roleNodeIdMap.get(CONTROL_ACTIVITY_ROLE).get(0), sessionId, HAS_RESPONSE_SESSION, getInitiatorId()
+                )
+        );
     }
 
     private void handleSubject(SessionDTO session) {
@@ -173,7 +187,7 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         addRoleNodeId(FACT_ROLE, nodeId);
         addRoleNodeId(execution, nodeId);
         handleQuestionRelationship(nodeId, parentId, questionId);
-        handleEventProcessing(nodeId, answerValueId, execution.getConditionCharacteristics());
+        handleEventProcessing(nodeId, parentId, answerValueId, execution.getConditionCharacteristics());
         handleSubQuestions(execution, answerValueId, nodeId, questions, questionAnswers);
     }
 
@@ -184,6 +198,7 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
                 )
         );
 
+        //TODO:move to config
         queryService.buildRelationship(
                 queryRequestBuilder.relationshipRequest(
                         roleNodeIdMap.get(RESPONSE_SESSION_ROLE).get(0), questionId, SESSION_QUESTION_LINK, getInitiatorId()
@@ -197,16 +212,21 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         );
     }
 
-    private void handleEventProcessing(Long factNodeId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
+    private void handleEventProcessing(Long factId, Long parentId, Long answerValueId, List<ConditionCharacteristicDTO> conditionCharacteristics) {
         if (!isEmpty(conditionCharacteristics)) {
             conditionCharacteristics
                     .stream()
                     .filter(cc -> cc.getConditionAnswerId().equals(answerValueId))
                     .findFirst()
                     .ifPresent(cc -> {
-                        EventRequest eventRequest = queryRequestBuilder.eventRequest(factNodeId, cc.getOuterRiskEventId(), getInitiatorId());
-                        Long eventId = queryService.createEvent(eventRequest);
-                        addRoleNodeId(EVENT_ROLE, eventId);
+                        EventRequest eventRequest = queryRequestBuilder.eventRequest(factId, cc.getOuterRiskEventId(), getInitiatorId());
+                        queryService.createEvent(eventRequest);
+                        queryService.buildRelationship(
+                                queryRequestBuilder.relationshipRequest(
+                                        parentId, cc.getOuterRiskEventId(), EVENT_DEFAULT_LINK, getInitiatorId()
+                                )
+                        );
+                        addRoleNodeId(EVENT_ROLE, cc.getOuterRiskEventId());
                     });
         }
     }

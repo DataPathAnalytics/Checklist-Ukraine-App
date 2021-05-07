@@ -3,20 +3,17 @@ package com.datapath.checklistapp.dao.entity;
 import com.datapath.checklistapp.util.converter.ComponentType;
 import com.datapath.checklistapp.util.converter.ValueType;
 import lombok.Data;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("FieldDescription")
+@Entity(name = "field_description")
 public class FieldDescriptionEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String label;
@@ -26,6 +23,7 @@ public class FieldDescriptionEntity {
     private boolean required;
     private boolean identifier;
 
-    @Relationship(type = "HAS_VALUE")
+    @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "field_description_id")
     private Set<ValueEntity> values = new HashSet<>();
 }

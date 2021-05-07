@@ -4,23 +4,19 @@ import com.datapath.checklistapp.dao.entity.classifier.SessionStatus;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("ResponseSession")
+@Entity(name = "response_session")
 public class ResponseSessionEntity {
 
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
     private Integer number;
     private boolean autoCreated;
     private boolean invalid;
@@ -30,25 +26,38 @@ public class ResponseSessionEntity {
     @LastModifiedDate
     private LocalDateTime dateModified;
 
-    @Relationship(type = "TEMPLATED_BY")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "template_id")
     private TemplateEntity template;
 
-    @Relationship(type = "TEMPLATED_BY")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "template_config_id")
     private TemplateConfigEntity templateConfig;
 
-    @Relationship(type = "HAS_AUTHOR")
+    @ManyToOne
+    @JoinColumn(name = "author_id")
     private UserEntity author;
 
-    @Relationship(type = "HAS_REVIEWER")
+    @ManyToOne
+    @JoinColumn(name = "reviewer_id")
     private UserEntity reviewer;
 
-    @Relationship(type = "HAS_MEMBER")
+    @ManyToMany
+    @JoinTable(name = "response_session_member",
+            joinColumns = {@JoinColumn(name = "response_session_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")},
+            uniqueConstraints = @UniqueConstraint(columnNames = {"response_session_id", "user_id"}))
     private Set<UserEntity> members = new HashSet<>();
 
-    @Relationship(type = "IN_STATUS")
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private SessionStatus status;
 
-    @Relationship(type = "HAS_ANSWER")
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "response_session_id")
     private Set<AnswerEntity> answers = new HashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "activity_id")
+    private ControlActivityEntity activity;
 }

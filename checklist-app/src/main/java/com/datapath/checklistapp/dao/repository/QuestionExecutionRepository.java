@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface QuestionExecutionRepository extends Neo4jRepository<QuestionExecutionEntity, Long> {
+public interface QuestionExecutionRepository extends JpaRepository<QuestionExecutionEntity, Long> {
 }

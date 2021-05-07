@@ -4,13 +4,15 @@ import com.datapath.checklistapp.dao.entity.TemplateEntity;
 import com.datapath.checklistapp.dao.repository.TemplateRepository;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
 
@@ -25,11 +27,11 @@ public class TemplateDaoService {
     }
 
     public TemplateEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.Template.name(), id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.Template.name(), id));
     }
 
-    public List<TemplateEntity> findByIds(List<Long> ids) {
-        return repository.findAllById(ids);
+    public Set<TemplateEntity> findByIds(List<Long> ids) {
+        return new HashSet<>(repository.findAllById(ids));
     }
 
     public TemplateEntity save(TemplateEntity entity) {

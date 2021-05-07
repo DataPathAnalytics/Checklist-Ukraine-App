@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.util.database;
 
-public enum Node {
+public enum Entity {
     ResponseSession,
     TemplateConfig,
     ControlActivity,
@@ -12,11 +12,7 @@ public enum Node {
     TemplateConfigType,
     Permission,
     AnswerStructure,
-    Department,
     TemplateFolder,
     TemplateConfigFolder,
-    Question,
-    QuestionSource,
-    Value,
-    FieldDescription
+    Question
 }

@@ -5,6 +5,7 @@ import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
 import com.datapath.checklistapp.dao.entity.TemplateEntity;
 import com.datapath.checklistapp.dto.*;
+import com.datapath.checklistapp.util.database.TemplateRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -27,18 +28,24 @@ public class TemplateConverter {
         TemplateDTO dto = new TemplateDTO();
 
         BeanUtils.copyProperties(entity, dto);
-        dto.setTemplateConfigTypeId(entity.getType().getTypeId());
+        dto.setTemplateConfigTypeId(entity.getType().getId());
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(processQuestionWithChild(entity.getObjectQuestion(), entity.getObjectFutureQuestions(), null));
-        dto.setObjectFeatureQuestions(processQuestions(entity.getObjectFutureQuestions()));
+        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT).get(0);
+        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT_FUTURE);
+        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.TYPE);
+        QuestionExecutionEntity authorityQuestion = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY).get(0);
+        List<QuestionExecutionEntity> authorityFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY_FEATURE);
 
-        dto.setTypeQuestions(processQuestions(entity.getTypeQuestions()));
 
-        if (nonNull(entity.getAuthorityQuestion())) {
-            dto.setAuthorityQuestion(processQuestionWithChild(entity.getAuthorityQuestion(), entity.getAuthorityFeatureQuestions(), null));
-            dto.setAuthorityFeatureQuestions(processQuestions(entity.getAuthorityFeatureQuestions()));
+        dto.setObjectQuestion(processQuestionWithChild(objectQuestion, objectFeatureQuestions, null));
+        dto.setObjectFeatureQuestions(processQuestions(objectFeatureQuestions));
+        dto.setTypeQuestions(processQuestions(typeQuestions));
+
+        if (nonNull(authorityQuestion)) {
+            dto.setAuthorityQuestion(processQuestionWithChild(authorityQuestion, authorityFeatureQuestions, null));
+            dto.setAuthorityFeatureQuestions(processQuestions(authorityFeatureQuestions));
         }
 
         return dto;
@@ -52,17 +59,21 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        dto.setObjectQuestion(processQuestionWithChild(entity.getConfig().getObjectQuestion(), entity.getConfig().getObjectFutureQuestions(), entity.getGroups()));
-        dto.setObjectFeatureQuestions(processQuestions(entity.getConfig().getObjectFutureQuestions()));
+        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.OBJECT).get(0);
+        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.OBJECT_FUTURE);
+        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.TYPE);
 
-        dto.setTypeQuestions(processQuestions(entity.getConfig().getTypeQuestions()));
+
+        dto.setObjectQuestion(processQuestionWithChild(objectQuestion, objectFeatureQuestions, entity.getGroups()));
+        dto.setObjectFeatureQuestions(processQuestions(objectFeatureQuestions));
+        dto.setTypeQuestions(processQuestions(typeQuestions));
 
         Optional<QuestionGroupEntity> ungrouped = entity.getGroups().stream()
                 .filter(g -> UNGROUPED_NAME.equals(g.getName()))
                 .findFirst();
 
         ungrouped.ifPresent(questionGroupEntity -> dto.setUngroupedQuestions(
-                processQuestions(questionGroupEntity.getQuestions())
+                processQuestions(new ArrayList<>(questionGroupEntity.getQuestions()))
         ));
 
         List<GroupQuestionsDTO> groups = new ArrayList<>();
@@ -73,7 +84,7 @@ public class TemplateConverter {
                     GroupQuestionsDTO group = new GroupQuestionsDTO();
                     group.setGroupName(qg.getName());
                     group.setOrderNumber(qg.getOrderNumber());
-                    group.setQuestions(processQuestions(qg.getQuestions()));
+                    group.setQuestions(processQuestions(new ArrayList<>(qg.getQuestions())));
                     groups.add(group);
                 });
         dto.setQuestionGroups(groups);
@@ -81,8 +92,14 @@ public class TemplateConverter {
         return dto;
     }
 
+    private List<QuestionExecutionEntity> filterQuestionExecutionByRole(Set<QuestionExecutionEntity> questionExecutions, TemplateRole role) {
+        return questionExecutions.stream()
+                .filter(q -> q.getRole().equals(role))
+                .collect(toList());
+    }
+
     private QuestionExecutionDTO processQuestionWithChild(QuestionExecutionEntity questionEntity,
-                                                          Set<QuestionExecutionEntity> subQuestions, Set<QuestionGroupEntity> groups) {
+                                                          List<QuestionExecutionEntity> subQuestions, Set<QuestionGroupEntity> groups) {
         QuestionExecutionDTO question = questionConverter.map(questionEntity);
         question.addSubQuestions(
                 subQuestions.stream()
@@ -103,7 +120,7 @@ public class TemplateConverter {
         return question;
     }
 
-    private List<QuestionExecutionDTO> processQuestions(Set<QuestionExecutionEntity> questions) {
+    private List<QuestionExecutionDTO> processQuestions(List<QuestionExecutionEntity> questions) {
         Map<Long, QuestionExecutionDTO> questionMap = questions
                 .stream()
                 .map(questionConverter::map)
@@ -148,7 +165,7 @@ public class TemplateConverter {
         BeanUtils.copyProperties(entity, dto);
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
-        dto.setTemplateConfigTypeId(entity.getType().getTypeId());
+        dto.setTemplateConfigTypeId(entity.getType().getId());
         return dto;
     }
 }

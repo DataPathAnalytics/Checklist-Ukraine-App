@@ -1,20 +1,18 @@
 package com.datapath.checklistapp.dao.entity;
 
+import com.datapath.checklistapp.util.database.TemplateRole;
 import lombok.Data;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("QuestionExecution")
+@Entity(name = "question_execution")
 public class QuestionExecutionEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long parentQuestionId;
@@ -27,12 +25,17 @@ public class QuestionExecutionEntity {
     private boolean required;
     private boolean root;
 
-    @Relationship(type = "OF_QUESTION")
+    private TemplateRole role;
+
+    @ManyToOne
+    @JoinColumn(name = "question_id")
     private QuestionEntity question;
 
-    @Relationship(type = "HAS_CONDITION_CHARACTERISTIC")
+    @OneToMany
+    @JoinColumn(name = "question_execution_id")
     private Set<ConditionCharacteristicEntity> conditionCharacteristics = new HashSet<>();
 
-    @Relationship(type = "HAS_AUTOCOMPLETE_CONFIG")
+    @OneToMany
+    @JoinColumn(name = "question_execution_id")
     private Set<AutoCompleteConfigEntity> autoCompleteConfig = new HashSet<>();
 }

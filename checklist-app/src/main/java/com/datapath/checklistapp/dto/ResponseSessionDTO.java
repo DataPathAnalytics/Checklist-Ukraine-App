@@ -11,7 +11,6 @@ public class ResponseSessionDTO {
     private Long id;
     private Integer sessionStatusId;
     private Integer number;
-    private String name;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 

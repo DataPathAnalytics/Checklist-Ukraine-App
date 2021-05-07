@@ -3,31 +3,29 @@ package com.datapath.checklistapp.dao.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-@Node("Employment")
+@Entity(name = "employment")
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmploymentEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime start;
-    private LocalDateTime end;
+    private LocalDateTime finish;
 
-    @Relationship(type = "EMPLOYMENT_BY", direction = Relationship.Direction.OUTGOING)
+    @ManyToOne
+    @JoinColumn(name = "department_id")
     private DepartmentEntity department;
 
-    public EmploymentEntity(LocalDateTime start, LocalDateTime end, DepartmentEntity department) {
+    public EmploymentEntity(LocalDateTime start, LocalDateTime finish, DepartmentEntity department) {
         this.start = start;
-        this.end = end;
+        this.finish = finish;
         this.department = department;
     }
 }

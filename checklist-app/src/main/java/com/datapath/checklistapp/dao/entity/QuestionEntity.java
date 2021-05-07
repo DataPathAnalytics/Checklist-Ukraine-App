@@ -2,32 +2,35 @@ package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("Question")
+@Entity(name = "question")
 public class QuestionEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String value;
     @CreatedDate
     private LocalDateTime dateCreated;
 
-    @Relationship(type = "IN_KNOWLEDGE_CLASS")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "question_knowledge_class",
+            joinColumns = {@JoinColumn(name = "question_id")},
+            inverseJoinColumns = {@JoinColumn(name = "knowledge_class_id")},
+            uniqueConstraints = @UniqueConstraint(columnNames = {"question_id", "knowledge_class_id"}))
     private Set<KnowledgeClassEntity> knowledgeClasses = new HashSet<>();
 
-    @Relationship(type = "HAS_ANSWER_STRUCTURE")
+    @ManyToOne
+    @JoinColumn(name = "answer_structure_id")
     private AnswerStructureEntity answerStructure;
 
-    @Relationship(type = "FROM_SOURCE")
+    @ManyToOne
+    @JoinColumn(name = "question_source_id")
     private QuestionSourceEntity questionSource;
 }

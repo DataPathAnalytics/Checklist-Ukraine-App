@@ -9,7 +9,6 @@ import java.util.List;
 public class SessionDTO {
 
     private Long id;
-    private String name;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
     private Long authorId;

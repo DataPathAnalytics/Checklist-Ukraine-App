@@ -3,30 +3,20 @@ package com.datapath.checklistapp.dao.repository;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.query.Query;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
-import java.util.List;
+public interface QuestionRepository extends JpaRepository<QuestionEntity, Long> {
 
-public interface QuestionRepository extends Neo4jRepository<QuestionEntity, Long> {
-
-    String IDENTIFIER_QUESTION_IDS_QUERY = "match (q:Question)-->(as:AnswerStructure)-->(f:FieldDescription) " +
-            "where f.identifier=true and q.value =~ $value " +
-            "with id(q) as id order by q.value skip $skip limit $limit " +
-            "return id";
-
-    String IDENTIFIER_QUESTION_COUNT_QUERY = "match (q:Question)-->(as:AnswerStructure)-->(f:FieldDescription) " +
-            "where f.identifier=true and q.value =~ $value " +
-            "return count(q)";
+    String IDENTIFIER_QUESTION_IDS_QUERY = "select q.* from question q " +
+            "join answer_structure a on a.id = q.answer_structure_id " +
+            "join field_description f on a.id = f.answer_structure_id " +
+            "where f.identifier is true and " +
+            "q.value ilike (%:value) order by q.value";
 
     Page<QuestionEntity> findByValueMatchesRegexOrderByValue(String value, Pageable pageable);
 
-    List<QuestionEntity> findAllByDateCreatedAfterOrderByDateCreated(LocalDateTime date, Pageable pageable);
-
-    @Query(value = IDENTIFIER_QUESTION_IDS_QUERY)
-    List<Long> findWithIdentifier(String value, int skip, int limit);
-
-    @Query(value = IDENTIFIER_QUESTION_COUNT_QUERY)
-    Long countIdentifier(String value);
+    @Query(value = IDENTIFIER_QUESTION_IDS_QUERY, nativeQuery = true)
+    Page<QuestionEntity> findByValueWithIdentifier(@Param("value") String value, Pageable pageable);
 }

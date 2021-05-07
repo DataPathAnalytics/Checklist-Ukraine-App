@@ -38,7 +38,7 @@ public class ResponseSessionConverter {
             }
         } else {
             dto.setTemplate(templateConverter.map(entity.getTemplate()));
-            dto.setSessionStatusId(entity.getStatus().getSessionStatusId());
+            dto.setSessionStatusId(entity.getStatus().getId());
 
             if (nonNull(entity.getReviewer())) {
                 dto.setReviewerId(entity.getReviewer().getId());

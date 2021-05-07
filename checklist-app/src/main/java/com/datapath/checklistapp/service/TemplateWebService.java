@@ -54,7 +54,7 @@ public class TemplateWebService {
         entity.setFolder(folderService.findTemplateFolderById(request.getFolderId()));
 
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
-        if (!SESSION_TEMPLATE_TYPE.equals(config.getType().getTypeId()))
+        if (!SESSION_TEMPLATE_TYPE.equals(config.getType().getId()))
             throw new ValidationException("Invalid template config type. Should by response session template config type.");
         entity.setConfig(config);
 

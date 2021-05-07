@@ -25,22 +25,22 @@ public class MappingWebService {
         MappingPrivateResponse response = new MappingPrivateResponse();
         response.setPermissions(
                 permissionDaoService.findAll().stream()
-                        .map(p -> new PermissionDTO(p.getPermissionId(), p.getRole(), p.getValue()))
+                        .map(p -> new PermissionDTO(p.getId(), p.getRole(), p.getValue()))
                         .collect(toList())
         );
         response.setSessionStatuses(
                 sessionStatusService.findAll().stream()
-                        .map(e -> new IdValueDTO(e.getSessionStatusId(), e.getValue()))
+                        .map(e -> new IdValueDTO(e.getId(), e.getValue()))
                         .collect(toList())
         );
         response.setActivityStatuses(
                 activityStatusService.findAll().stream()
-                        .map(s -> new IdValueDTO(s.getActivityStatusId(), s.getValue()))
+                        .map(s -> new IdValueDTO(s.getId(), s.getValue()))
                         .collect(toList())
         );
         response.setTemplateConfigTypes(
                 templateTypeService.findAll().stream()
-                        .map(e -> new IdValueDTO(e.getTypeId(), e.getValue()))
+                        .map(e -> new IdValueDTO(e.getId(), e.getValue()))
                         .collect(toList())
         );
         return response;

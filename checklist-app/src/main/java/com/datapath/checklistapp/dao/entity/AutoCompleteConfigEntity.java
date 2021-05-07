@@ -1,15 +1,17 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
-@Node("AutoCompleteConfig")
+@Entity(name = "auto_complete_config")
 public class AutoCompleteConfigEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private boolean autoComplete;
     private boolean searchable;

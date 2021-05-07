@@ -17,9 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -94,17 +91,14 @@ public class QuestionWebService {
 
     @Transactional
     public PageableResponse<QuestionDTO> searchWithIdentifier(SearchRequest request) {
-        List<Long> ids = service.searchWithIdentifierByValue(request);
-        Long count = service.countWithIdentifierByValue(request);
+        Page<QuestionEntity> page = service.searchWithIdentifierByValue(request);
 
         return new PageableResponse<>(
-                request.getPage(),
-                count,
-                (int) Math.ceil((double) count / request.getSize()),
-                service.findById(ids)
-                        .stream()
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
                         .map(questionConverter::map)
-                        .sorted(Comparator.comparing(QuestionDTO::getValue))
                         .collect(toList())
         );
     }

@@ -31,10 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static com.datapath.checklistapp.util.Constants.*;
 import static java.util.Objects.isNull;
@@ -85,7 +82,7 @@ public class UserWebService {
         user.setLocked(true);
         user.setRemoved(false);
         user.setSuperAdmin(false);
-        user.setPermission(permissionService.findByRole(AUDITOR_ROLE));
+        user.getPermissions().add(permissionService.findByRole(AUDITOR_ROLE));
 
         updateDepartmentRelationship(user, request.getDepartment());
 
@@ -138,7 +135,7 @@ public class UserWebService {
         if (nonNull(request.getPermissionId())) {
             Permission permission = permissionService.findById(request.getPermissionId());
             if (!ADMIN_ROLE.equals(permission.getRole())) {
-                user.setPermission(permission);
+                user.setPermissions(Collections.singleton(permission));
             }
         }
 
@@ -157,14 +154,14 @@ public class UserWebService {
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
-        lastEmployment.ifPresent(employment -> employment.setEnd(LocalDateTime.now()));
+        lastEmployment.ifPresent(employment -> employment.setFinish(LocalDateTime.now()));
 
         userService.save(user);
         UsersStorageService.removeUser(user.getId());
     }
 
     private void updateDepartmentRelationship(UserEntity user, DepartmentDTO departmentDTO) {
-        List<EmploymentEntity> employments = user.getEmployments();
+        Set<EmploymentEntity> employments = user.getEmployments();
         DepartmentEntity department = departmentService.findByIdentifier(departmentDTO.getIdentifier());
 
         if (isNull(department)) {
@@ -181,7 +178,7 @@ public class UserWebService {
             } else {
                 if (!lastEmployment.get().getDepartment().getIdentifier().equals(departmentDTO.getIdentifier())) {
                     LocalDateTime now = LocalDateTime.now();
-                    lastEmployment.get().setEnd(now);
+                    lastEmployment.get().setFinish(now);
                     employments.add(new EmploymentEntity(now, null, department));
                 }
             }
@@ -192,7 +189,7 @@ public class UserWebService {
 
     private Optional<EmploymentEntity> getLastEmployment(Collection<EmploymentEntity> workPeriods) {
         return workPeriods.stream()
-                .filter(d -> isNull(d.getEnd()))
+                .filter(d -> isNull(d.getFinish()))
                 .findFirst();
     }
 

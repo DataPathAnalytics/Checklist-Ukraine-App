@@ -5,13 +5,12 @@ import com.datapath.checklistapp.dao.repository.QuestionRepository;
 import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
@@ -31,7 +30,7 @@ public class QuestionDaoService {
     }
 
     public QuestionEntity findById(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.Question.name(), id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.Question.name(), id));
     }
 
     public List<QuestionEntity> findById(List<Long> ids) {
@@ -45,17 +44,8 @@ public class QuestionDaoService {
         );
     }
 
-    public List<QuestionEntity> findByDateCreated(LocalDateTime date, int limit) {
-        return repository.findAllByDateCreatedAfterOrderByDateCreated(date, PageRequest.of(0, limit));
-    }
-
-    public List<Long> searchWithIdentifierByValue(SearchRequest request) {
-        return repository.findWithIdentifier(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
-                request.getPage() * request.getSize(), request.getSize());
-    }
-
-    public Long countWithIdentifierByValue(SearchRequest request) {
-        return repository.countIdentifier(String.format(SEARCH_PATTERN, request.getKeyword()));
+    public Page<QuestionEntity> searchWithIdentifierByValue(SearchRequest request) {
+        return repository.findByValueWithIdentifier(
+                request.getKeyword(), PageRequest.of(request.getPage(), request.getSize()));
     }
 }

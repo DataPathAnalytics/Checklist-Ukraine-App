@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="activity_status"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="activity_status">
+            <column name="id" type="SERIAL"/>
+            <column name="value" type="text"/>
+        </createTable>
+
+        <addPrimaryKey tableName="activity_status" columnNames="id" constraintName="pk_activity_status"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="permission"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="permission">
+            <column name="id" type="SERIAL"/>
+            <column name="role" type="text"/>
+            <column name="value" type="text"/>
+        </createTable>
+
+        <addPrimaryKey tableName="permission" columnNames="id" constraintName="pk_permission"/>
+    </changeSet>
+
+    <changeSet id="3" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="session_status"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="session_status">
+            <column name="id" type="serial"/>
+            <column name="value" type="text"/>
+        </createTable>
+
+        <addPrimaryKey tableName="session_status" columnNames="id" constraintName="pk_session_status"/>
+    </changeSet>
+
+    <changeSet id="4" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="template_config_type"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="lot">
+            <column name="id" type="serial"/>
+            <column name="value" type="text"/>
+        </createTable>
+
+        <addPrimaryKey tableName="template_config_type" columnNames="id" constraintName="pk_template_config_type"/>
+    </changeSet>
+</databaseChangeLog>

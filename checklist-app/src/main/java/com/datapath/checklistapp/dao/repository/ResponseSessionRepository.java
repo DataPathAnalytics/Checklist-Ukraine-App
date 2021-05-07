@@ -2,31 +2,21 @@ package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
-import org.springframework.data.neo4j.repository.Neo4jRepository;
-import org.springframework.data.neo4j.repository.query.Query;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ResponseSessionRepository extends Neo4jRepository<ResponseSessionEntity, Long> {
+public interface ResponseSessionRepository extends JpaRepository<ResponseSessionEntity, Long> {
 
-    String DATE_CREATE_REQUEST = "match (s:ResponseSession) where id(s)=$id return s.dateCreated";
+    String RESPONSE_SESSION_DATE_LIST_REQUEST = "select rs.id as id, rs.date_modified as dateModified from response_session rs " +
+            "join control_activity ca on ca.id = rs.activity_id " +
+            "where ca.invalid is false and " +
+            "rs.date_modified > :offset " +
+            "order by rs.date_modified limit :limit";
 
-    String NUMBER_REQUEST = "match (s:ResponseSession) where id(s)=$id return s.number";
-
-    String RESPONSE_SESSION_DATE_LIST_REQUEST = "match (c:ControlActivity)-[:HAS_SESSION_RESPONSE]->(sr)-->(s:SessionStatus {sessionStatusId:2}), " +
-            "(c)-[:HAS_ACTIVITY_RESPONSE]->(ar {invalid: false}) " +
-            "where sr.dateModified > $offset " +
-            "return sr, " +
-            "sr.dateModified as dateModified " +
-            "order by sr.dateModified limit $limit";
-
-    @Query(value = DATE_CREATE_REQUEST)
-    LocalDateTime getDateCreatedBySessionId(Long id);
-
-    @Query(value = NUMBER_REQUEST)
-    Integer getNumberBySessionId(Long id);
-
-    @Query(value = RESPONSE_SESSION_DATE_LIST_REQUEST)
-    List<ExportSessionResponseDomain> getResponseSessionDates(LocalDateTime offset, int limit);
+    @Query(value = RESPONSE_SESSION_DATE_LIST_REQUEST, nativeQuery = true)
+    List<ExportSessionResponseDomain> getResponseSessionDates(@Param("offset") LocalDateTime offset, @Param("limit") int limit);
 }

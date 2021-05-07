@@ -4,7 +4,7 @@ import com.datapath.checklistapp.dao.entity.classifier.Permission;
 import com.datapath.checklistapp.dao.repository.classifier.PermissionRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.PermissionException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +25,6 @@ public class PermissionDaoService {
     }
 
     public Permission findById(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.Permission.name(), id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.Permission.name(), id));
     }
 }

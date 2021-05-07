@@ -17,6 +17,7 @@ import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
 import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
 import com.datapath.checklistapp.util.UserUtils;
+import com.datapath.checklistapp.util.database.TemplateRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -58,40 +59,40 @@ public class TemplateConfigWebService {
         entity.setType(templateTypeService.findById(request.getTemplateConfigTypeId()));
         entity.setFolder(folderService.findTemplateConfigFolderById(request.getFolderId()));
 
-        QuestionExecutionEntity objectQuestionExecution = questionExecutionService.save(
-                questionConverter.map(
-                        request.getObjectQuestion().asTemplateQuestion(),
-                        questionService.findById(request.getObjectQuestion().getQuestionId()))
-        );
-        entity.setObjectQuestion(objectQuestionExecution);
+        QuestionExecutionEntity objectQuestionExecution = questionConverter.map(
+                request.getObjectQuestion().asTemplateQuestion(),
+                questionService.findById(request.getObjectQuestion().getQuestionId()),
+                TemplateRole.OBJECT);
+        entity.getQuestions().add(objectQuestionExecution);
 
         Set<QuestionExecutionEntity> objectFeatureQuestions = new HashSet<>();
         request.getObjectFeatureQuestions().forEach(
-                q -> processQuestion(q, questionService.findById(q.getQuestionId()), objectFeatureQuestions, null)
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), objectFeatureQuestions, null, TemplateRole.OBJECT_FUTURE)
         );
-        entity.setObjectFutureQuestions(objectFeatureQuestions);
+        entity.getQuestions().addAll(objectFeatureQuestions);
 
         if (nonNull(request.getAuthorityQuestion())) {
             QuestionExecutionEntity authorityQuestionExecution = questionExecutionService.save(
                     questionConverter.map(
                             request.getAuthorityQuestion().asTemplateQuestion(),
-                            questionService.findById(request.getAuthorityQuestion().getQuestionId())
+                            questionService.findById(request.getAuthorityQuestion().getQuestionId()),
+                            TemplateRole.AUTHORITY
                     )
             );
-            entity.setAuthorityQuestion(authorityQuestionExecution);
+            entity.getQuestions().add(authorityQuestionExecution);
 
             Set<QuestionExecutionEntity> authorityFeatureQuestions = new HashSet<>();
             request.getAuthorityFeatureQuestions().forEach(
-                    q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null)
+                    q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null, TemplateRole.AUTHORITY_FEATURE)
             );
-            entity.setAuthorityFeatureQuestions(authorityFeatureQuestions);
+            entity.getQuestions().addAll(authorityFeatureQuestions);
         }
 
         Set<QuestionExecutionEntity> typeQuestions = new HashSet<>();
         request.getTypeQuestions().forEach(
-                q -> processQuestion(q, questionService.findById(q.getQuestionId()), typeQuestions, null)
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), typeQuestions, null, TemplateRole.TYPE)
         );
-        entity.setTypeQuestions(typeQuestions);
+        entity.getQuestions().addAll(typeQuestions);
 
         templateConfigService.save(entity);
     }
@@ -140,34 +141,27 @@ public class TemplateConfigWebService {
     @Transactional
     public void delete(Long id) {
         if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
-
-        TemplateConfigEntity entity = templateConfigService.findById(id);
-        entity.getTypeQuestions().forEach(questionExecutionService::delete);
-        entity.getAuthorityFeatureQuestions().forEach(questionExecutionService::delete);
-        entity.getObjectFutureQuestions().forEach(questionExecutionService::delete);
-        questionExecutionService.delete(entity.getObjectQuestion());
-        questionExecutionService.delete(entity.getAuthorityQuestion());
-        templateConfigService.delete(entity);
+        templateConfigService.delete(templateConfigService.findById(id));
     }
 
     private void processQuestion(CreateTemplateConfigRequest.TemplateQuestion dtoQuestion,
                                  QuestionEntity daoQuestion,
                                  Set<QuestionExecutionEntity> questionExecutions,
-                                 Long parentQuestionId) {
-        QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion);
+                                 QuestionExecutionEntity parentQuestion,
+                                 TemplateRole role) {
+        QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion, role);
 
-        if (nonNull(parentQuestionId)) {
-            question.setParentQuestionId(parentQuestionId);
+        if (nonNull(parentQuestion)) {
+            question.setParentQuestionId(parentQuestion.getId());
         } else {
             question.setRoot(true);
         }
 
-        QuestionExecutionEntity saved = questionExecutionService.save(question);
-        questionExecutions.add(saved);
+        questionExecutions.add(question);
 
         if (!isEmpty(dtoQuestion.getSubQuestions())) {
             dtoQuestion.getSubQuestions()
-                    .forEach(q -> processQuestion(q, questionService.findById(q.getQuestionId()), questionExecutions, saved.getId()));
+                    .forEach(q -> processQuestion(q, questionService.findById(q.getQuestionId()), questionExecutions, question, role));
         }
     }
 

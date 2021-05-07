@@ -4,6 +4,7 @@ import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dto.*;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
+import com.datapath.checklistapp.util.database.TemplateRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -112,7 +113,7 @@ public class QuestionConverter {
         return execution;
     }
 
-    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question) {
+    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question, TemplateRole role) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setQuestion(question);
         execution.setOrderNumber(q.getOrderNumber());
@@ -120,6 +121,7 @@ public class QuestionConverter {
         execution.setLinkTypeId(q.getLinkTypeId());
         execution.setNodeTypeId(q.getNodeTypeId());
         execution.setRoleId(q.getRoleId());
+        execution.setRole(role);
 
         if (!isEmpty(q.getAutoCompleteConfigs())) {
             q.getAutoCompleteConfigs().forEach(config -> {

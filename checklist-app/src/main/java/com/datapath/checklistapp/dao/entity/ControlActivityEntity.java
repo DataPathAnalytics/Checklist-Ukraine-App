@@ -2,30 +2,33 @@ package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.ActivityStatus;
 import lombok.Data;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Node("ControlActivity")
+@Entity(name = "control_activity")
 public class ControlActivityEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Relationship(type = "IN_STATUS")
+    @ManyToOne
+    @JoinColumn(name = "status_id")
     private ActivityStatus status;
 
-    @Relationship(type = "HAS_TEMPLATE")
+    @ManyToMany
+    @JoinTable(name = "control_activity_template",
+            joinColumns = {@JoinColumn(name = "control_activity_id")},
+            inverseJoinColumns = {@JoinColumn(name = "template_id")},
+            uniqueConstraints = @UniqueConstraint(columnNames = {"control_activity_id", "template_id"}))
     private Set<TemplateEntity> templates = new HashSet<>();
 
-    @Relationship(type = "HAS_ACTIVITY_RESPONSE")
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "activity_response_id")
     private ResponseSessionEntity activityResponse;
 
-    @Relationship(type = "HAS_SESSION_RESPONSE")
+    @OneToMany(orphanRemoval = true, mappedBy = "activity")
     private Set<ResponseSessionEntity> sessionResponses = new HashSet<>();
 }

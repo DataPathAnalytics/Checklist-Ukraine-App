@@ -1,13 +1,14 @@
 package com.datapath.checklistapp.dao.entity.classifier;
 
 import lombok.Data;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Data
-@Node
+@Entity(name = "session_status")
 public class SessionStatus {
     @Id
-    private Integer sessionStatusId;
+    private Integer id;
     private String value;
 }

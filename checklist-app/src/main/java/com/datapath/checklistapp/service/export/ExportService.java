@@ -1,12 +1,15 @@
 package com.datapath.checklistapp.service.export;
 
-import com.datapath.checklistapp.dao.domain.ControlActivityDomain;
 import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
+import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
+import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
+import com.datapath.checklistapp.dao.entity.classifier.Permission;
 import com.datapath.checklistapp.dao.service.ControlActivityDaoService;
 import com.datapath.checklistapp.dao.service.ResponseSessionDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
+import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;
 import com.datapath.checklistapp.dto.response.export.*;
 import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistapp.service.converter.structure.UserConverter;
@@ -15,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.datapath.checklistapp.util.Constants.AUDITOR_ROLE;
@@ -26,17 +28,18 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @AllArgsConstructor
 public class ExportService {
 
-    private static final List<String> EXPORT_USER_ROLES = Arrays.asList(AUDITOR_ROLE);
-
     private final ResponseSessionConverter responseSessionConverter;
     private final ControlActivityDaoService controlActivityService;
     private final ResponseSessionDaoService responseSessionService;
     private final UserDaoService userService;
     private final UserConverter userConverter;
+    private final PermissionDaoService permissionService;
 
     public ExportUserResponse getUpdateUsers(LocalDateTime date, int limit) {
+        Permission auditorPermission = permissionService.findByRole(AUDITOR_ROLE);
+
         List<UserEntity> users = userService.findUpdatedUsers(date, limit).stream()
-                .filter(u -> EXPORT_USER_ROLES.contains(u.getPermission().getRole()))
+                .filter(u -> u.getPermissions().contains(auditorPermission))
                 .collect(toList());
 
         ExportUserResponse response = new ExportUserResponse();
@@ -110,11 +113,11 @@ public class ExportService {
     public ExportControlActivityDTO getControlActivity(Long id) {
         ExportControlActivityDTO response = new ExportControlActivityDTO();
 
-        ControlActivityDomain controlActivity = controlActivityService.findById(id);
+        ControlActivityEntity controlActivity = controlActivityService.findById(id);
 
         response.setId(controlActivity.getId());
-        response.setActivity(responseSessionConverter.map(responseSessionService.findById(controlActivity.getActivityResponseId())));
-        response.setSessions(responseSessionService.findByIds(controlActivity.getSessionResponseIds())
+        response.setActivity(responseSessionConverter.map(controlActivity.getActivityResponse()));
+        response.setSessions(controlActivity.getSessionResponses()
                 .stream()
                 .map(responseSessionConverter::map)
                 .collect(toList())
@@ -126,8 +129,9 @@ public class ExportService {
     @Transactional
     public ExportResponseSessionDTO getResponseSession(Long id) {
         ExportResponseSessionDTO response = new ExportResponseSessionDTO();
-        response.setControlActivityId(controlActivityService.getControlActivityIdBySessionId(id));
-        response.setSession(responseSessionConverter.map(responseSessionService.findById(id)));
+        ResponseSessionEntity session = responseSessionService.findById(id);
+        response.setControlActivityId(session.getActivity().getId());
+        response.setSession(responseSessionConverter.map(session));
         return response;
     }
 }

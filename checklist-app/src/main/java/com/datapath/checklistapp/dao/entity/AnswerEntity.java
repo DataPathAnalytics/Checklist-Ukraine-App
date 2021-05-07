@@ -3,19 +3,16 @@ package com.datapath.checklistapp.dao.entity;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-@Node("Answer")
+@Entity(name = "answer")
 public class AnswerEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String values;
@@ -26,6 +23,7 @@ public class AnswerEntity {
     @LastModifiedDate
     private LocalDateTime dateModified;
 
-    @Relationship(type = "EXECUTED_BY")
+    @OneToOne
+    @JoinColumn(name = "question_execution_id")
     private QuestionExecutionEntity questionExecution;
 }

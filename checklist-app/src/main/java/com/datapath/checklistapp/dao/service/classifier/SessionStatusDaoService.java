@@ -3,7 +3,7 @@ package com.datapath.checklistapp.dao.service.classifier;
 import com.datapath.checklistapp.dao.entity.classifier.SessionStatus;
 import com.datapath.checklistapp.dao.repository.classifier.SessionStatusRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,6 @@ public class SessionStatusDaoService {
     }
 
     public SessionStatus findById(Integer id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Node.SessionStatus.name(), id));
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.SessionStatus.name(), id));
     }
 }

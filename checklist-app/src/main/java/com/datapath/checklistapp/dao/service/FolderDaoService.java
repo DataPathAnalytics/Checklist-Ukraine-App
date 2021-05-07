@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dao.repository.TemplateConfigFolderRepository;
 import com.datapath.checklistapp.dao.repository.TemplateFolderRepository;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +33,7 @@ public class FolderDaoService {
 
     public TemplateFolderEntity findTemplateFolderById(Long id) {
         return templateRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Node.TemplateFolder.name(), id));
+                .orElseThrow(() -> new EntityNotFoundException(Entity.TemplateFolder.name(), id));
     }
 
     public void save(TemplateConfigFolderEntity entity) {
@@ -46,7 +46,7 @@ public class FolderDaoService {
 
     public TemplateConfigFolderEntity findTemplateConfigFolderById(Long id) {
         return templateConfigRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Node.TemplateConfigFolder.name(), id));
+                .orElseThrow(() -> new EntityNotFoundException(Entity.TemplateConfigFolder.name(), id));
     }
 
     public Page<TemplateConfigFolderEntity> searchTemplateConfigFolders(SearchRequest request) {

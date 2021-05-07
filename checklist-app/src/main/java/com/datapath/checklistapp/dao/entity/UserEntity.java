@@ -1,32 +1,29 @@
 package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.Permission;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Relationship;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@Node("User")
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity(name = "users")
 public class UserEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
+    private String email;
+
     private String firstName;
     private String lastName;
-    private String email;
+
+    @Column(nullable = false)
     private String password;
     private boolean disable;
     private boolean locked;
@@ -37,9 +34,14 @@ public class UserEntity {
     @LastModifiedDate
     private LocalDateTime dateModified;
 
-    @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
-    private Permission permission;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_permission",
+            joinColumns = {@JoinColumn(name = "user_id")},
+            inverseJoinColumns = {@JoinColumn(name = "permission_id")},
+            uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "permission_id"}))
+    private Set<Permission> permissions = new HashSet<>();
 
-    @Relationship(type = "HAS_EMPLOYMENT_PERIOD", direction = Relationship.Direction.OUTGOING)
-    private List<EmploymentEntity> employments = new ArrayList<>();
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private Set<EmploymentEntity> employments = new HashSet<>();
 }

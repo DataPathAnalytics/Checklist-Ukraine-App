@@ -6,9 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -22,7 +21,7 @@ public class CreateControlActivityRequest {
     @NotNull
     private List<AnswerDTO> answers;
 
-    private Set<Long> memberIds = new HashSet<>();
+    private List<Long> memberIds = new ArrayList<>();
 
-    private Set<Long> templateIds;
+    private List<Long> templateIds;
 }

@@ -25,7 +25,7 @@ public class ControlActivityConverter {
         ControlActivityDTO dto = new ControlActivityDTO();
 
         dto.setId(activity.getId());
-        dto.setStatusId(activity.getStatus().getActivityStatusId());
+        dto.setStatusId(activity.getStatus().getId());
 
         dto.setActivity(responseSessionConverter.map(activity.getActivityResponse()));
 

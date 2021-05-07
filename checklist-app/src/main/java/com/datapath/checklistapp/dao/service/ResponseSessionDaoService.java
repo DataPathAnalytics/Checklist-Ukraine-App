@@ -4,7 +4,7 @@ import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
-import com.datapath.checklistapp.util.database.Node;
+import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,19 +23,7 @@ public class ResponseSessionDaoService {
 
     public ResponseSessionEntity findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Node.ResponseSession.name(), id));
-    }
-
-    public List<ResponseSessionEntity> findByIds(List<Long> id) {
-        return repository.findAllById(id);
-    }
-
-    public LocalDateTime getDateCreatedBySessionId(Long id) {
-        return repository.getDateCreatedBySessionId(id);
-    }
-
-    public Integer getNumberBySessionId(Long id) {
-        return repository.getNumberBySessionId(id);
+                .orElseThrow(() -> new EntityNotFoundException(Entity.ResponseSession.name(), id));
     }
 
     public List<ExportSessionResponseDomain> getResponseSessionDates(LocalDateTime dateModified, int limit) {

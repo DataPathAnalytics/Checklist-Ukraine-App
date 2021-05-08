@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.service.converter.structure;
 
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
-import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
@@ -47,7 +47,7 @@ public class ControlActivityConverter {
         sessionPage.setSessions(
                 activity.getSessionResponses().stream()
                         .limit(DEFAULT_RESPONSE_SESSION_COUNT)
-                        .sorted(Comparator.comparingInt(ResponseSessionEntity::getNumber))
+                        .sorted(Comparator.comparingInt(SessionEntity::getNumber))
                         .map(responseSessionConverter::map)
                         .collect(toList())
         );

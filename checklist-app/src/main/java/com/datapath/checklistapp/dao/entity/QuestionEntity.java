@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,17 +14,15 @@ public class QuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String value;
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "question_knowledge_class",
-            joinColumns = {@JoinColumn(name = "question_id")},
-            inverseJoinColumns = {@JoinColumn(name = "knowledge_class_id")},
-            uniqueConstraints = @UniqueConstraint(columnNames = {"question_id", "knowledge_class_id"}))
-    private Set<KnowledgeClassEntity> knowledgeClasses = new HashSet<>();
+    @ElementCollection
+    @CollectionTable(name = "question_knowledge_class", joinColumns = @JoinColumn(name = "question_id"))
+    @Column(name = "knowledge_class_outer_id", nullable = false)
+    private Set<Long> knowledgeClasses = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "answer_structure_id")

@@ -9,5 +9,5 @@ public class AutoCompleteConfigDTO {
     private String datasource;
     private String fieldName;
     private String filterFieldName;
-    private Long fieldId;
+    private Integer fieldId;
 }

@@ -26,11 +26,11 @@ public class TemplateDaoService {
         return repository.findAll();
     }
 
-    public TemplateEntity findById(Long id) {
+    public TemplateEntity findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.Template.name(), id));
     }
 
-    public Set<TemplateEntity> findByIds(List<Long> ids) {
+    public Set<TemplateEntity> findByIds(List<Integer> ids) {
         return new HashSet<>(repository.findAllById(ids));
     }
 
@@ -49,7 +49,7 @@ public class TemplateDaoService {
         repository.delete(entity);
     }
 
-    public boolean isUsed(Long id) {
+    public boolean isUsed(Integer id) {
         return repository.isUsed(id);
     }
 }

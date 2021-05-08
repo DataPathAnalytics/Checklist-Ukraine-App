@@ -28,7 +28,7 @@ public class QuestionConverter {
         executionDTO.setLinkTypeId(entity.getLinkTypeId());
         executionDTO.setNodeTypeId(entity.getNodeTypeId());
         executionDTO.setOrderNumber(entity.getOrderNumber());
-        executionDTO.setRoleId(entity.getRoleId());
+        executionDTO.setMiningRoleId(entity.getMiningRoleId());
 
         executionDTO.setQuestion(map(entity.getQuestion()));
 
@@ -69,12 +69,7 @@ public class QuestionConverter {
 
         BeanUtils.copyProperties(entity, dto);
 
-        dto.setKnowledgeClasses(
-                entity.getKnowledgeClasses().stream()
-                        .mapToLong(KnowledgeClassEntity::getOuterId)
-                        .boxed()
-                        .collect(toList())
-        );
+        dto.setKnowledgeClasses(entity.getKnowledgeClasses());
 
         if (nonNull(entity.getAnswerStructure())) {
             dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));
@@ -120,7 +115,7 @@ public class QuestionConverter {
         execution.setRequired(q.isRequired());
         execution.setLinkTypeId(q.getLinkTypeId());
         execution.setNodeTypeId(q.getNodeTypeId());
-        execution.setRoleId(q.getRoleId());
+        execution.setMiningRoleId(q.getMiningRoleId());
         execution.setRole(role);
 
         if (!isEmpty(q.getAutoCompleteConfigs())) {

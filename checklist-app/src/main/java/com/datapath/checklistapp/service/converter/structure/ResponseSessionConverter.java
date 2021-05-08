@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.service.converter.structure;
 
-import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
 import lombok.AllArgsConstructor;
@@ -18,7 +18,7 @@ public class ResponseSessionConverter {
     private final TemplateConverter templateConverter;
     private final AnswerConverter answerConverter;
 
-    public ResponseSessionDTO map(ResponseSessionEntity entity) {
+    public ResponseSessionDTO map(SessionEntity entity) {
         ResponseSessionDTO dto = new ResponseSessionDTO();
 
         BeanUtils.copyProperties(entity, dto);

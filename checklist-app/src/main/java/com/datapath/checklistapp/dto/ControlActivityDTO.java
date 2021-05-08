@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ControlActivityDTO {
 
-    private Long id;
+    private Integer id;
     private Integer statusId;
     private ResponseSessionDTO activity;
     private List<TemplateDTO> templates;

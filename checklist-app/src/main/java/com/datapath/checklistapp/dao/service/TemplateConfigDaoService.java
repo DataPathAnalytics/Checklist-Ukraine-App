@@ -33,7 +33,7 @@ public class TemplateConfigDaoService {
         return repository.findAllByType(type);
     }
 
-    public TemplateConfigEntity findById(Long id) {
+    public TemplateConfigEntity findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.TemplateConfig.name(), id));
     }
 
@@ -48,7 +48,7 @@ public class TemplateConfigDaoService {
         repository.delete(entity);
     }
 
-    public boolean isUsed(Long id) {
+    public boolean isUsed(Integer id) {
         return repository.isUsed(id);
     }
 }

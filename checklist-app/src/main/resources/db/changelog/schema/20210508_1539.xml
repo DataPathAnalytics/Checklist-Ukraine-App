@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="template_config"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="template_config">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="type_id" type="integer"/>
+            <column name="author_id" type="integer"/>
+            <column name="folder_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="template_config" columnNames="id" constraintName="pk_template_config"/>
+        <addUniqueConstraint tableName="template_config" columnNames="name"
+                             constraintName="unique_template_config_name"/>
+
+        <addForeignKeyConstraint baseTableName="template_config" baseColumnNames="type_id"
+                                 constraintName="template_config_to_template_config_type"
+                                 referencedTableName="template_config_type"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="template_config" baseColumnNames="author_id"
+                                 constraintName="template_config_to_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="template_config" baseColumnNames="folder_id"
+                                 constraintName="template_config_to_template_config_folder"
+                                 referencedTableName="template_config_folder"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="template"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="template">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="config_id" type="integer"/>
+            <column name="author_id" type="integer"/>
+            <column name="folder_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="template" columnNames="id" constraintName="pk_template"/>
+        <addUniqueConstraint tableName="template" columnNames="name" constraintName="unique_template_name"/>
+
+        <addForeignKeyConstraint baseTableName="template" baseColumnNames="config_id"
+                                 constraintName="template_to_template_config"
+                                 referencedTableName="template_config"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="template" baseColumnNames="author_id"
+                                 constraintName="template_to_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="template" baseColumnNames="folder_id"
+                                 constraintName="template_to_template_folder"
+                                 referencedTableName="template_folder"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_group"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question_group">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="order_number" type="integer"/>
+            <column name="template_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="question_group" columnNames="id" constraintName="pk_question_group"/>
+
+        <addForeignKeyConstraint baseTableName="question_group" baseColumnNames="template_id"
+                                 constraintName="question_group_to_template"
+                                 referencedTableName="template"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="4" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_execution"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question_execution">
+            <column name="id" type="SERIAL"/>
+            <column name="parent_question_id" type="integer"/>
+            <column name="condition_answer_id" type="integer"/>
+            <column name="condition_field_name" type="text"/>
+            <column name="order_number" type="integer"/>
+            <column name="link_type_id" type="bigint"/>
+            <column name="node_type_id" type="bigint"/>
+            <column name="mining_role_id" type="bigint"/>
+            <column name="required" type="boolean" defaultValue="false"/>
+            <column name="root" type="boolean" defaultValue="false"/>
+            <column name="role" type="text"/>
+            <column name="group_id" type="integer"/>
+            <column name="question_id" type="integer"/>
+            <column name="template_config_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="question_execution" columnNames="id" constraintName="pk_question_execution"/>
+
+        <addForeignKeyConstraint baseTableName="question_execution" baseColumnNames="question_id"
+                                 constraintName="question_execution_to_question"
+                                 referencedTableName="question"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="question_execution" baseColumnNames="group_id"
+                                 constraintName="question_execution_to_question_group"
+                                 referencedTableName="question_group"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="question_execution" baseColumnNames="template_config_id"
+                                 constraintName="question_execution_to_template_config"
+                                 referencedTableName="template_config"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="5" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="condition_characteristic"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="condition_characteristic">
+            <column name="id" type="SERIAL"/>
+            <column name="outer_risk_event_type_id" type="bigint"/>
+            <column name="condition_answer_id" type="integer"/>
+            <column name="question_execution_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="condition_characteristic" columnNames="id" constraintName="pk_condition_characteristic"/>
+
+        <addForeignKeyConstraint baseTableName="condition_characteristic" baseColumnNames="question_execution_id"
+                                 constraintName="condition_characteristic_to_question_execution"
+                                 referencedTableName="question_execution"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="6" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="auto_complete_config"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="auto_complete_config">
+            <column name="id" type="SERIAL"/>
+            <column name="auto_complete" type="boolean"/>
+            <column name="searchable" type="boolean"/>
+            <column name="datasource" type="text"/>
+            <column name="field_name" type="text"/>
+            <column name="filter_field_name" type="text"/>
+            <column name="field_id" type="integer"/>
+            <column name="question_execution_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="auto_complete_config" columnNames="id" constraintName="pk_auto_complete_config"/>
+
+        <addForeignKeyConstraint baseTableName="auto_complete_config" baseColumnNames="question_execution_id"
+                                 constraintName="auto_complete_config_to_question_execution"
+                                 referencedTableName="question_execution"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

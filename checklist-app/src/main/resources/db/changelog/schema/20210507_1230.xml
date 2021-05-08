@@ -59,7 +59,7 @@
             </not>
         </preConditions>
 
-        <createTable tableName="lot">
+        <createTable tableName="template_config_type">
             <column name="id" type="serial"/>
             <column name="value" type="text"/>
         </createTable>

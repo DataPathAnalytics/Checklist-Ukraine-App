@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface TemplateConfigRepository extends JpaRepository<TemplateConfigEntity, Long> {
+public interface TemplateConfigRepository extends JpaRepository<TemplateConfigEntity, Integer> {
 
     String IS_USED_QUERY = "select exists(select id from response_session where template_config_id = :id) or " +
             "exists(select id from template where config_id = :id)";
@@ -19,5 +19,5 @@ public interface TemplateConfigRepository extends JpaRepository<TemplateConfigEn
     Page<TemplateConfigEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
     @Query(value = IS_USED_QUERY, nativeQuery = true)
-    boolean isUsed(Long id);
+    boolean isUsed(Integer id);
 }

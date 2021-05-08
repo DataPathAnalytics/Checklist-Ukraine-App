@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class TemplateOperationRequest {
 
     @NotNull
-    private Long id;
+    private Integer controlActivityId;
     @NotNull
-    private Long templateId;
+    private Integer templateId;
 }

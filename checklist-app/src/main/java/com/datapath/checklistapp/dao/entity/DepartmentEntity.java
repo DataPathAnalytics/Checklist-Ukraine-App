@@ -14,6 +14,6 @@ import javax.persistence.Id;
 public class DepartmentEntity {
 
     @Id
-    private Long identifier;
+    private Integer identifier;
     private String name;
 }

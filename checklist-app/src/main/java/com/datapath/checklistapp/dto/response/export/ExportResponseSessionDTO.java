@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class ExportResponseSessionDTO {
-    private Long controlActivityId;
+    private Integer controlActivityId;
     private ResponseSessionDTO session;
 }

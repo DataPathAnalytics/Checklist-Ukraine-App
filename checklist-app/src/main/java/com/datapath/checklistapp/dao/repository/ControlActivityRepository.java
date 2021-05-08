@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ControlActivityRepository extends JpaRepository<ControlActivityEntity, Long> {
+public interface ControlActivityRepository extends JpaRepository<ControlActivityEntity, Integer> {
 
     String CONTROL_ACTIVITY_BY_AUTHOR = "select ca.* from control_activity ca join response_session rs on " +
             "ca.activity_response_id = rs.id " +
@@ -23,7 +23,7 @@ public interface ControlActivityRepository extends JpaRepository<ControlActivity
             "order by ars.date_modified limit :limit";
 
     @Query(value = CONTROL_ACTIVITY_BY_AUTHOR, nativeQuery = true)
-    List<ControlActivityEntity> findUserControlActivities(@Param("authorId") Long authorId);
+    List<ControlActivityEntity> findUserControlActivities(@Param("authorId") Integer authorId);
 
     @Query(value = CONTROL_ACTIVITY_DATE_LIST_REQUEST, nativeQuery = true)
     List<ExportControlActivityDomain> getControlActivityDates(@Param("offset") LocalDateTime offset,

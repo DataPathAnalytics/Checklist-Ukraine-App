@@ -11,7 +11,7 @@ public class QuestionSourceDaoService {
 
     private final QuestionSourceRepository repository;
 
-    public QuestionSourceEntity findByIdentifier(Long identifier) {
+    public QuestionSourceEntity findByIdentifier(Integer identifier) {
         return repository.findByIdentifier(identifier);
     }
 }

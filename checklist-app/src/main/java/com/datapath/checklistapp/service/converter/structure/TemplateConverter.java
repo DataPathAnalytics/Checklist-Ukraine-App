@@ -121,7 +121,7 @@ public class TemplateConverter {
     }
 
     private List<QuestionExecutionDTO> processQuestions(List<QuestionExecutionEntity> questions) {
-        Map<Long, QuestionExecutionDTO> questionMap = questions
+        Map<Integer, QuestionExecutionDTO> questionMap = questions
                 .stream()
                 .map(questionConverter::map)
                 .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
@@ -136,8 +136,8 @@ public class TemplateConverter {
                 .collect(toList());
     }
 
-    public List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Long, List<TemplateDTO>> folderTemplatesMap,
-                                                               Map<Long, FolderDTO> folders) {
+    public List<TemplateFolderTreeDTO> joinFolderWithTemplates(Map<Integer, List<TemplateDTO>> folderTemplatesMap,
+                                                               Map<Integer, FolderDTO> folders) {
         List<TemplateFolderTreeDTO> response = new ArrayList<>();
 
         folders.forEach((k, v) -> {

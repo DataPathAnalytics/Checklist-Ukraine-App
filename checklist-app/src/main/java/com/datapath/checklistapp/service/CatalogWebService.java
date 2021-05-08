@@ -10,8 +10,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -20,12 +18,6 @@ public class CatalogWebService {
 
     private final AnswerStructureDaoService answerStructureService;
     private final AnswerConverter answerConverter;
-
-    public List<AnswerStructureDTO> getAnswerStructures() {
-        return answerStructureService.findAll().stream()
-                .map(answerConverter::map)
-                .collect(toList());
-    }
 
     public PageableResponse<AnswerStructureDTO> searchAnswerStructures(SearchRequest request) {
         Page<AnswerStructureEntity> page = answerStructureService.searchByName(request);

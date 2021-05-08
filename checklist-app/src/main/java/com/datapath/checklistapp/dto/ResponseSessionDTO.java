@@ -8,15 +8,15 @@ import java.util.List;
 @Data
 public class ResponseSessionDTO {
 
-    private Long id;
+    private Integer id;
     private Integer sessionStatusId;
     private Integer number;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
-    private Long authorId;
-    private Long reviewerId;
-    private List<Long> members;
+    private Integer authorId;
+    private Integer reviewerId;
+    private List<Integer> members;
 
     private TemplateDTO template;
 

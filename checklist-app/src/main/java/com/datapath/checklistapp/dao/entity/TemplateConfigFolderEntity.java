@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -15,8 +15,8 @@ public class TemplateConfigFolderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String name;
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
 }

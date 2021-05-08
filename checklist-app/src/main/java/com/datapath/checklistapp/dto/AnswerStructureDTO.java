@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class AnswerStructureDTO {
 
-    private Long id;
+    private Integer id;
     private String name;
     private String linkType;
     private List<FieldDescriptionDTO> fieldDescriptions;
@@ -20,7 +20,7 @@ public class AnswerStructureDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class FieldDescriptionDTO {
-        private Long id;
+        private Integer id;
         private String name;
         private List<ValueDTO> values;
         private String label;
@@ -35,7 +35,7 @@ public class AnswerStructureDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ValueDTO {
-        private Long id;
+        private Integer id;
         private String value;
     }
 }

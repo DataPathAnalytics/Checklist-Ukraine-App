@@ -45,7 +45,7 @@ public class TemplateController {
 
     @ApiOperation(value = "get template by id", response = TemplateDTO.class)
     @GetMapping("{id}")
-    public TemplateDTO get(@PathVariable Long id) {
+    public TemplateDTO get(@PathVariable Integer id) {
         return service.get(id);
     }
 
@@ -61,7 +61,7 @@ public class TemplateController {
     })
     @DeleteMapping("{id}")
     @PreAuthorize("hasAuthority('methodologist')")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Integer id) {
         service.delete(id);
     }
 }

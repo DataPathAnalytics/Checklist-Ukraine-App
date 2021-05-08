@@ -10,7 +10,7 @@ import javax.persistence.Id;
 public class QuestionSourceEntity {
 
     @Id
-    private Long identifier;
+    private Integer identifier;
     private String name;
     private String link;
 }

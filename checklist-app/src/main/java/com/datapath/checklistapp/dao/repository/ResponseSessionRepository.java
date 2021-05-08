@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.repository;
 
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
-import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.SessionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface ResponseSessionRepository extends JpaRepository<ResponseSessionEntity, Long> {
+public interface ResponseSessionRepository extends JpaRepository<SessionEntity, Integer> {
 
     String RESPONSE_SESSION_DATE_LIST_REQUEST = "select rs.id as id, rs.date_modified as dateModified from response_session rs " +
             "join control_activity ca on ca.id = rs.activity_id " +

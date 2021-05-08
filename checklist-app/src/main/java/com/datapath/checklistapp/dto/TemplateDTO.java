@@ -12,12 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 public class TemplateDTO {
 
-    private Long id;
+    private Integer id;
     private String name;
     private LocalDateTime dateCreated;
-    private Long authorId;
-    private Long folderId;
-    private Long templateConfigId;
+    private Integer authorId;
+    private Integer folderId;
+    private Integer templateConfigId;
     private Integer templateConfigTypeId;
 
     private QuestionExecutionDTO objectQuestion;

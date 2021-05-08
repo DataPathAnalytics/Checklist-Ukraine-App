@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ExportUserDTO {
-    private Long id;
+    private Integer id;
     private String email;
     private String firstName;
     private String lastName;

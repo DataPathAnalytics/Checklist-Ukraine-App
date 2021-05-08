@@ -46,13 +46,13 @@ public class ControlActivityController {
 
     @ApiOperation(value = "get control activity by id", response = ControlActivityDTO.class)
     @GetMapping("{id}")
-    public ControlActivityDTO get(@PathVariable Long id) {
+    public ControlActivityDTO get(@PathVariable Integer id) {
         return service.get(id);
     }
 
     @ApiOperation(value = "complete control activity", response = ControlActivityDTO.class)
     @PutMapping("complete/{id}")
-    public ControlActivityDTO complete(@PathVariable Long id) {
+    public ControlActivityDTO complete(@PathVariable Integer id) {
         return service.complete(id);
     }
 
@@ -70,7 +70,7 @@ public class ControlActivityController {
 
     @ApiOperation(value = "list of response session by control activity id", response = SessionPageDTO.class)
     @GetMapping("response-session")
-    public SessionPageDTO getSessions(@RequestParam Long activityId,
+    public SessionPageDTO getSessions(@RequestParam Integer activityId,
                                       @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
                                       @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
         return service.getSessions(activityId, page, size);
@@ -91,7 +91,7 @@ public class ControlActivityController {
 
     @ApiOperation(value = "get response session by id", response = ResponseSessionDTO.class)
     @GetMapping("response-session/{id}")
-    public ResponseSessionDTO getSession(@PathVariable Long id) {
+    public ResponseSessionDTO getSession(@PathVariable Integer id) {
         return service.getSession(id);
     }
 }

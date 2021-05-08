@@ -9,17 +9,17 @@ import static java.util.Objects.isNull;
 @Data
 public class QuestionExecutionDTO {
 
-    private Long id;
+    private Integer id;
     private QuestionDTO question;
     private boolean required;
     private boolean root;
     private Long linkTypeId;
     private Long nodeTypeId;
     private Integer orderNumber;
-    private Long roleId;
-    private Long parentQuestionId;
+    private Long miningRoleId;
+    private Integer parentQuestionId;
     private String parentConditionFieldName;
-    private Long parentConditionAnswerId;
+    private Integer parentConditionAnswerId;
 
     private List<ConditionCharacteristicDTO> conditionCharacteristics;
     private List<SubQuestions> subQuestions = new ArrayList<>();
@@ -28,8 +28,8 @@ public class QuestionExecutionDTO {
     @Data
     private static class SubQuestions {
         private String conditionFieldName;
-        private Map<Long, Set<Long>> conditionAnswerQuestionIds = new HashMap<>();
-        private Set<Long> questionIds = new HashSet<>();
+        private Map<Integer, Set<Integer>> conditionAnswerQuestionIds = new HashMap<>();
+        private Set<Integer> questionIds = new HashSet<>();
 
 
         private SubQuestions(String conditionFieldName) {
@@ -37,11 +37,11 @@ public class QuestionExecutionDTO {
         }
     }
 
-    public void addSubQuestions(Set<Long> subQuestionIds) {
+    public void addSubQuestions(Set<Integer> subQuestionIds) {
         subQuestionIds.forEach(s -> this.addSubQuestion(s, null, null));
     }
 
-    public void addSubQuestion(Long subQuestionId, String conditionFieldName, Long conditionAnswerId) {
+    public void addSubQuestion(Integer subQuestionId, String conditionFieldName, Integer conditionAnswerId) {
         SubQuestions sub;
 
         if (isNull(conditionFieldName)) {
@@ -71,7 +71,7 @@ public class QuestionExecutionDTO {
                 return v;
             });
             sub.conditionAnswerQuestionIds.computeIfAbsent(conditionAnswerId, k -> {
-                Set<Long> values = new HashSet<>();
+                Set<Integer> values = new HashSet<>();
                 values.add(subQuestionId);
                 return values;
             });

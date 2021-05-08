@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistapp.dao.service.classifier.TemplateConfigTypeDaoService;
 import com.datapath.checklistapp.dto.IdValueDTO;
 import com.datapath.checklistapp.dto.PermissionDTO;
-import com.datapath.checklistapp.dto.response.mapping.MappingPrivateResponse;
+import com.datapath.checklistapp.dto.response.mapping.MappingResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +21,8 @@ public class MappingWebService {
     private final SessionStatusDaoService sessionStatusService;
     private final TemplateConfigTypeDaoService templateTypeService;
 
-    public MappingPrivateResponse getPrivateMappings() {
-        MappingPrivateResponse response = new MappingPrivateResponse();
+    public MappingResponse getMappings() {
+        MappingResponse response = new MappingResponse();
         response.setPermissions(
                 permissionDaoService.findAll().stream()
                         .map(p -> new PermissionDTO(p.getId(), p.getRole(), p.getValue()))

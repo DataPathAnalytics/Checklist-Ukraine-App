@@ -1,2 +1,0 @@
-MERGE (c:TemplateConfigFolder {name: "Тестовые конфиги"}) ON CREATE SET c.dateCreated = localdatetime();
-MERGE (c:TemplateFolder {name: "Тестовые темплейты"}) ON CREATE SET c.dateCreated = localdatetime();

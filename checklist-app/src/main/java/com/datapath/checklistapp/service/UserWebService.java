@@ -88,7 +88,13 @@ public class UserWebService {
 
         userService.save(user);
 
+        notifyAdmin(user);
+    }
+
+    private void notifyAdmin(UserEntity user) {
         List<UserEntity> admins = userService.findAdmins();
+
+        if (isEmpty(admins)) return;
 
         if (CollectionUtils.isEmpty(admins)) throw new UserException("Admins not found");
 
@@ -146,7 +152,7 @@ public class UserWebService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         UserEntity user = userService.findById(id);
 
         if (user.isSuperAdmin()) throw new UserException("SuperAdmin updating not allowed");
@@ -154,7 +160,7 @@ public class UserWebService {
         user.setRemoved(true);
 
         Optional<EmploymentEntity> lastEmployment = getLastEmployment(user.getEmployments());
-        lastEmployment.ifPresent(employment -> employment.setFinish(LocalDateTime.now()));
+        lastEmployment.ifPresent(employment -> employment.setEndDate(LocalDateTime.now()));
 
         userService.save(user);
         UsersStorageService.removeUser(user.getId());
@@ -178,7 +184,7 @@ public class UserWebService {
             } else {
                 if (!lastEmployment.get().getDepartment().getIdentifier().equals(departmentDTO.getIdentifier())) {
                     LocalDateTime now = LocalDateTime.now();
-                    lastEmployment.get().setFinish(now);
+                    lastEmployment.get().setEndDate(now);
                     employments.add(new EmploymentEntity(now, null, department));
                 }
             }
@@ -189,7 +195,7 @@ public class UserWebService {
 
     private Optional<EmploymentEntity> getLastEmployment(Collection<EmploymentEntity> workPeriods) {
         return workPeriods.stream()
-                .filter(d -> isNull(d.getFinish()))
+                .filter(d -> isNull(d.getEndDate()))
                 .findFirst();
     }
 
@@ -242,7 +248,7 @@ public class UserWebService {
     }
 
     public UserDTO getCurrent() {
-        Long currentUserId = UserUtils.getCurrentUserId();
+        Integer currentUserId = UserUtils.getCurrentUserId();
         return mapEntityToDTO(userService.findById(currentUserId));
     }
 

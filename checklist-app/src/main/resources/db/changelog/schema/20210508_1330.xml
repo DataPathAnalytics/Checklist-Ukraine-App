@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="answer_structure"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="answer_structure">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="_default" type="boolean" defaultValue="false"/>
+        </createTable>
+
+        <addPrimaryKey tableName="answer_structure" columnNames="id" constraintName="pk_answer_structure"/>
+        <addUniqueConstraint tableName="answer_structure" columnNames="name" constraintName="unique_answer_structure_name"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="field_description"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="field_description">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="label" type="text"/>
+            <column name="value_type" type="text"/>
+            <column name="component_type" type="text"/>
+            <column name="title" type="boolean" defaultValue="false"/>
+            <column name="required" type="boolean" defaultValue="false"/>
+            <column name="identifier" type="boolean" defaultValue="false"/>
+            <column name="answer_structure_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="field_description" columnNames="id" constraintName="pk_field_description"/>
+
+        <addUniqueConstraint tableName="field_description" columnNames="answer_structure_id, name" constraintName="unique_field_description_key"/>
+
+        <addForeignKeyConstraint baseTableName="field_description" baseColumnNames="answer_structure_id"
+                                 constraintName="fk_field_description_to_answer_structure"
+                                 referencedTableName="answer_structure"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="value"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="value">
+            <column name="id" type="SERIAL"/>
+            <column name="value" type="text"/>
+            <column name="field_description_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="value" columnNames="id" constraintName="pk_value"/>
+
+        <addUniqueConstraint tableName="value" columnNames="value, field_description_id" constraintName="unique_value_key"/>
+
+        <addForeignKeyConstraint baseTableName="value" baseColumnNames="field_description_id"
+                                 constraintName="fk_value_to_field_description"
+                                 referencedTableName="field_description"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="4" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_source"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question_source">
+            <column name="identifier" type="serial"/>
+            <column name="name" type="text"/>
+            <column name="link" type="text"/>
+        </createTable>
+
+        <addPrimaryKey tableName="question_source" columnNames="identifier" constraintName="pk_question_source"/>
+    </changeSet>
+
+    <changeSet id="5" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question">
+            <column name="id" type="serial"/>
+            <column name="value" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="answer_structure_id" type="integer"/>
+            <column name="question_source_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="question" columnNames="id" constraintName="pk_question"/>
+
+        <addForeignKeyConstraint baseTableName="question" baseColumnNames="answer_structure_id"
+                                 constraintName="question_to_answer_structure"
+                                 referencedTableName="answer_structure"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="question" baseColumnNames="question_source_id"
+                                 constraintName="question_to_question_source"
+                                 referencedTableName="question_source"
+                                 referencedColumnNames="identifier"/>
+    </changeSet>
+
+    <changeSet id="6" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_knowledge_class"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="question_knowledge_class">
+            <column name="question_id" type="integer"/>
+            <column name="knowledge_class_outer_id" type="bigint"/>
+        </createTable>
+
+        <addPrimaryKey tableName="question_knowledge_class" columnNames="question_id, knowledge_class_outer_id" constraintName="pk_question_knowledge_class"/>
+
+        <addForeignKeyConstraint baseTableName="question_knowledge_class" baseColumnNames="question_id"
+                                 constraintName="question_knowledge_class_to_question"
+                                 referencedTableName="question"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

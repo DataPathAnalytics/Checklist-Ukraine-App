@@ -10,6 +10,6 @@ import javax.validation.constraints.NotNull;
 public class DepartmentDTO {
 
     @NotNull
-    private Long identifier;
+    private Integer identifier;
     private String name;
 }

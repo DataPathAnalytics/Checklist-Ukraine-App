@@ -15,12 +15,12 @@ public class ConditionCharacteristicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private Long outerRiskEventTypeId;
-    private Long conditionAnswerId;
+    private Integer conditionAnswerId;
 
-    public ConditionCharacteristicEntity(Long outerRiskEventTypeId, Long conditionAnswerId) {
+    public ConditionCharacteristicEntity(Long outerRiskEventTypeId, Integer conditionAnswerId) {
         this.conditionAnswerId = conditionAnswerId;
         this.outerRiskEventTypeId = outerRiskEventTypeId;
     }

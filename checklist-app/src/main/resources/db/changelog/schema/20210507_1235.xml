@@ -9,70 +9,98 @@
     <changeSet id="1" author="andrey">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="answer"/>
+                <tableExists tableName="department"/>
             </not>
         </preConditions>
 
-        <createTable tableName="answer">
-            <column name="id" type="SERIAL"/>
-            <column name="values" type="text"/>
-            <column name="comment" type="text"/>
-            <column name="date_created" type="timestamp"/>
-            <column name="date_modified" type="timestamp"/>
-            <column name="question_execution_id" type="integer"/>
+        <createTable tableName="department">
+            <column name="identifier" type="SERIAL"/>
+            <column name="name" type="text"/>
         </createTable>
 
-        <addPrimaryKey tableName="answer" columnNames="id" constraintName="pk_answer"/>
-
-        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="question_execution_id"
-                                 constraintName="fk_answer_to_question_execution"
-                                 referencedTableName="question_execution"
-                                 referencedColumnNames="id"/>
+        <addPrimaryKey tableName="department" columnNames="identifier" constraintName="pk_department"/>
     </changeSet>
 
     <changeSet id="2" author="andrey">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="permission"/>
+                <tableExists tableName="users"/>
             </not>
         </preConditions>
 
-        <createTable tableName="permission">
+        <createTable tableName="users">
             <column name="id" type="SERIAL"/>
-            <column name="role" type="text"/>
-            <column name="value" type="text"/>
+            <column name="email" type="text"/>
+            <column name="first_name" type="text"/>
+            <column name="last_name" type="text"/>
+            <column name="password" type="text"/>
+            <column name="disable" type="boolean" defaultValue="true"/>
+            <column name="locked" type="boolean" defaultValue="true"/>
+            <column name="removed" type="boolean" defaultValue="false"/>
+            <column name="super_admin" type="boolean" defaultValue="false"/>
+            <column name="registered_date" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="date_modified" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
         </createTable>
 
-        <addPrimaryKey tableName="permission" columnNames="id" constraintName="pk_permission"/>
+        <addPrimaryKey tableName="users" columnNames="id" constraintName="pk_users"/>
+
+        <addUniqueConstraint tableName="users" columnNames="email" constraintName="unique_users_email"/>
+        <addNotNullConstraint tableName="users" columnName="email"/>
+        <addNotNullConstraint tableName="users" columnName="password"/>
     </changeSet>
 
     <changeSet id="3" author="andrey">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="session_status"/>
+                <tableExists tableName="employment"/>
             </not>
         </preConditions>
 
-        <createTable tableName="session_status">
-            <column name="id" type="serial"/>
-            <column name="value" type="text"/>
+        <createTable tableName="employment">
+            <column name="id" type="SERIAL"/>
+            <column name="start_date" type="timestamp with timezone"/>
+            <column name="end_date" type="timestamp with timezone"/>
+            <column name="department_id" type="integer"/>
+            <column name="user_id" type="integer"/>
         </createTable>
 
-        <addPrimaryKey tableName="session_status" columnNames="id" constraintName="pk_session_status"/>
+        <addPrimaryKey tableName="employment" columnNames="id" constraintName="pk_employment"/>
+
+        <addForeignKeyConstraint baseTableName="employment" baseColumnNames="department_id"
+                                 constraintName="fk_employment_to_department"
+                                 referencedTableName="department"
+                                 referencedColumnNames="identifier"/>
+
+        <addForeignKeyConstraint baseTableName="employment" baseColumnNames="user_id"
+                                 constraintName="fk_employment_to_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
     </changeSet>
 
     <changeSet id="4" author="andrey">
         <preConditions onFail="MARK_RAN">
             <not>
-                <tableExists tableName="template_config_type"/>
+                <tableExists tableName="user_permission"/>
             </not>
         </preConditions>
 
-        <createTable tableName="lot">
-            <column name="id" type="serial"/>
-            <column name="value" type="text"/>
+        <createTable tableName="user_permission">
+            <column name="user_id" type="integer"/>
+            <column name="permission_id" type="integer"/>
         </createTable>
 
-        <addPrimaryKey tableName="template_config_type" columnNames="id" constraintName="pk_template_config_type"/>
+        <addPrimaryKey tableName="user_permission" columnNames="user_id, permission_id" constraintName="pk_user_permission"/>
+
+        <addForeignKeyConstraint baseTableName="user_permission" baseColumnNames="user_id"
+                                 constraintName="fk_user_permission_to_users"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="user_permission" baseColumnNames="permission_id"
+                                 constraintName="fk_user_permission_to_permission"
+                                 referencedTableName="permission"
+                                 referencedColumnNames="id"/>
     </changeSet>
+
+
 </databaseChangeLog>

@@ -14,10 +14,12 @@ public class FieldDescriptionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String name;
     private String label;
+    @Enumerated(EnumType.STRING)
     private ValueType valueType;
+    @Enumerated(EnumType.STRING)
     private ComponentType componentType;
     private boolean title;
     private boolean required;

@@ -24,7 +24,7 @@ public class CreateTemplateConfigRequest {
     @NotNull
     private Integer templateConfigTypeId;
     @NotNull
-    private Long folderId;
+    private Integer folderId;
 
     @NotNull
     private BaseQuestion objectQuestion;
@@ -42,7 +42,7 @@ public class CreateTemplateConfigRequest {
     @NoArgsConstructor
     public static class BaseQuestion {
         @NotNull
-        private Long questionId;
+        private Integer questionId;
         @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class CreateTemplateConfigRequest {
     @NoArgsConstructor
     public static class TemplateQuestion {
         @NotNull
-        private Long questionId;
+        private Integer questionId;
         @NotNull
         private Integer orderNumber;
         @NotNull
@@ -67,7 +67,7 @@ public class CreateTemplateConfigRequest {
         @NotNull
         private Long linkTypeId;
 
-        private Long roleId;
+        private Long miningRoleId;
 
         private boolean required;
 
@@ -82,7 +82,7 @@ public class CreateTemplateConfigRequest {
     @NoArgsConstructor
     public static class AutoCompleteConfig {
         @NotNull
-        private Long fieldId;
+        private Integer fieldId;
         private boolean autoComplete;
         private boolean searchable;
         private String datasource;

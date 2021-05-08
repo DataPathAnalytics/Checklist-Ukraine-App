@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,13 +14,13 @@ public class TemplateEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private String name;
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "author_id")
     private UserEntity author;
 
     @ManyToOne

@@ -102,12 +102,12 @@ public class TemplateWebService {
     }
 
     public List<TemplateFolderTreeDTO> list() {
-        Map<Long, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
+        Map<Integer, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
                 .stream()
                 .map(templateConverter::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
-        Map<Long, FolderDTO> folders = folderService.findAllTemplateFolders()
+        Map<Integer, FolderDTO> folders = folderService.findAllTemplateFolders()
                 .stream()
                 .map(f -> {
                     FolderDTO dto = new FolderDTO();
@@ -118,7 +118,7 @@ public class TemplateWebService {
         return templateConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
-    public TemplateDTO get(Long id) {
+    public TemplateDTO get(Integer id) {
         return templateConverter.map(templateService.findById(id));
     }
 
@@ -137,7 +137,7 @@ public class TemplateWebService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         if (templateService.isUsed(id)) throw new UnmodifiedException("Template already is used");
 
         TemplateEntity entity = templateService.findById(id);
@@ -151,8 +151,8 @@ public class TemplateWebService {
     private void processQuestion(CreateTemplateRequest.TemplateQuestion dtoQuestion,
                                  QuestionEntity daoQuestion,
                                  Set<QuestionExecutionEntity> questionExecutions,
-                                 Long parentQuestionId,
-                                 Long conditionAnswerId,
+                                 Integer parentQuestionId,
+                                 Integer conditionAnswerId,
                                  String conditionFieldName) {
         QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion);
 

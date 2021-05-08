@@ -12,9 +12,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class AnswerDTO {
 
-    private Long id;
+    private Integer id;
     @NotNull
-    private Long questionId;
+    private Integer questionId;
 
     private String comment;
 

@@ -1,10 +1,8 @@
 package com.datapath.checklistapp.service;
 
-import com.datapath.checklistapp.dao.entity.KnowledgeClassEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
 import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
-import com.datapath.checklistapp.dao.service.KnowledgeClassDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
@@ -17,10 +15,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
+
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -31,7 +30,6 @@ public class QuestionWebService {
     private final AnswerStructureDaoService answerStructureService;
     private final QuestionConverter questionConverter;
     private final QuestionSourceDaoService questionSourceService;
-    private final KnowledgeClassDaoService knowledgeClassService;
 
     @Transactional
     public void create(CreateQuestionRequest request) {
@@ -40,12 +38,7 @@ public class QuestionWebService {
         entity.setValue(request.getValue());
 
         if (!isEmpty(request.getKnowledgeClassIds())) {
-            entity.getKnowledgeClasses().addAll(
-                    request.getKnowledgeClassIds().stream()
-                            .map(id -> knowledgeClassService.findByOuterId(id)
-                                    .orElseGet(() -> new KnowledgeClassEntity(id))
-                            ).collect(toSet())
-            );
+            entity.setKnowledgeClasses(new HashSet<>(request.getKnowledgeClassIds()));
         }
 
         if (nonNull(request.getSource())) {
@@ -71,7 +64,7 @@ public class QuestionWebService {
         service.save(entity);
     }
 
-    public QuestionDTO get(Long id) {
+    public QuestionDTO get(Integer id) {
         return questionConverter.map(service.findById(id));
     }
 

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class MappingPrivateResponse {
+public class MappingResponse {
 
     private List<PermissionDTO> permissions;
     private List<IdValueDTO> activityStatuses;

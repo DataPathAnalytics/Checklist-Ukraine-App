@@ -12,9 +12,9 @@ import javax.validation.constraints.NotNull;
 public class ResponseSessionStatusRequest {
 
     @NotNull
-    private Long controlActivityId;
+    private Integer controlActivityId;
     @NotNull
-    private Long responseSessionId;
+    private Integer responseSessionId;
     @NotNull
     private Integer sessionStatusId;
 }

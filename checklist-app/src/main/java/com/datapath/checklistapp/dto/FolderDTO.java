@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class FolderDTO {
 
-    private Long id;
+    private Integer id;
     private String name;
     private LocalDateTime dateCreated;
 }

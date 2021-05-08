@@ -1,8 +1,8 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,14 +13,14 @@ public class AnswerEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String values;
     private String comment;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
-    @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime dateModified;
 
     @OneToOne

@@ -81,12 +81,12 @@ public class ControlActivityWebService {
     public ControlActivityDTO create(CreateControlActivityRequest request) {
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
 
-        ResponseSessionEntity activityResponse = new ResponseSessionEntity();
+        SessionEntity activityResponse = new SessionEntity();
         activityResponse.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
         activityResponse.setMembers(userService.findByIds(request.getMemberIds()));
         activityResponse.setTemplateConfig(config);
 
-        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(config);
+        Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(config);
 
         request.getAnswers().forEach(a -> {
             QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
@@ -110,9 +110,9 @@ public class ControlActivityWebService {
     @Transactional
     public ControlActivityDTO update(UpdateControlActivityRequest request) {
         ControlActivityEntity entity = controlActivityService.findById(request.getId());
-        ResponseSessionEntity activityResponse = entity.getActivityResponse();
+        SessionEntity activityResponse = entity.getActivityResponse();
 
-        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
+        Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
 
         request.getAnswers().forEach(a -> {
 
@@ -140,12 +140,12 @@ public class ControlActivityWebService {
     }
 
     @Transactional
-    public ControlActivityDTO get(Long id) {
+    public ControlActivityDTO get(Integer id) {
         return controlActivityConverter.map(controlActivityService.findById(id));
     }
 
     @Transactional
-    public ControlActivityDTO complete(Long id) {
+    public ControlActivityDTO complete(Integer id) {
         ControlActivityEntity entity = controlActivityService.findById(id);
 
         checkPermission(entity);
@@ -157,7 +157,7 @@ public class ControlActivityWebService {
 
     @Transactional
     public ControlActivityDTO addTemplate(TemplateOperationRequest request) {
-        ControlActivityEntity entity = controlActivityService.findById(request.getId());
+        ControlActivityEntity entity = controlActivityService.findById(request.getControlActivityId());
 
         checkPermission(entity);
 
@@ -168,7 +168,7 @@ public class ControlActivityWebService {
 
     @Transactional
     public ControlActivityDTO deleteTemplate(TemplateOperationRequest request) {
-        ControlActivityEntity entity = controlActivityService.findById(request.getId());
+        ControlActivityEntity entity = controlActivityService.findById(request.getControlActivityId());
 
         checkPermission(entity);
 
@@ -189,11 +189,11 @@ public class ControlActivityWebService {
     }
 
     @Transactional
-    public SessionPageDTO getSessions(Long activityId, int page, int size) {
+    public SessionPageDTO getSessions(Integer activityId, int page, int size) {
         SessionPageDTO dto = new SessionPageDTO();
 
         ControlActivityEntity activity = controlActivityService.findById(activityId);
-        Set<ResponseSessionEntity> sessions = activity.getSessionResponses();
+        Set<SessionEntity> sessions = activity.getSessionResponses();
 
         dto.setTotalCount(sessions.size());
         dto.setTotalPageCount((int) Math.ceil((double) sessions.size() / size));
@@ -213,13 +213,13 @@ public class ControlActivityWebService {
     @Transactional
     public ResponseSessionDTO saveSession(SaveResponseSessionRequest request) {
         ControlActivityEntity activity;
-        ResponseSessionEntity session;
+        SessionEntity session;
 
         if (nonNull(request.getId())) {
             session = responseSessionService.findById(request.getId());
             activity = session.getActivity();
         } else {
-            session = new ResponseSessionEntity();
+            session = new SessionEntity();
 
             session.setAutoCreated(request.isAutoCreated());
             if (request.isAutoCreated()) {
@@ -240,7 +240,7 @@ public class ControlActivityWebService {
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Not found template in control activity"));
 
-        Map<Long, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
+        Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
                 .stream()
                 .flatMap(qg -> qg.getQuestions().stream())
                 .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
@@ -266,13 +266,13 @@ public class ControlActivityWebService {
         return responseSessionConverter.map(responseSessionService.save(session));
     }
 
-    public ResponseSessionDTO getSession(Long id) {
+    public ResponseSessionDTO getSession(Integer id) {
         return responseSessionConverter.map(responseSessionService.findById(id));
     }
 
     @Transactional
     public ResponseSessionDTO changeStatus(ResponseSessionStatusRequest request) {
-        ResponseSessionEntity entity = responseSessionService.findById(request.getResponseSessionId());
+        SessionEntity entity = responseSessionService.findById(request.getResponseSessionId());
         checkPermission(entity.getActivity());
 
         if (IN_PROCESS_STATUS.equals(request.getSessionStatusId())) {
@@ -286,11 +286,11 @@ public class ControlActivityWebService {
     }
 
     private void checkPermission(ControlActivityEntity entity) {
-        Long currentUserId = UserUtils.getCurrentUserId();
+        Integer currentUserId = UserUtils.getCurrentUserId();
 
-        ResponseSessionEntity activityResponse = entity.getActivityResponse();
+        SessionEntity activityResponse = entity.getActivityResponse();
 
-        Set<Long> members = activityResponse.getMembers().stream()
+        Set<Integer> members = activityResponse.getMembers().stream()
                 .map(UserEntity::getId)
                 .collect(toSet());
         members.add(activityResponse.getAuthor().getId());
@@ -299,14 +299,14 @@ public class ControlActivityWebService {
             throw new PermissionException("You can't modify this control event");
     }
 
-    private Map<Long, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {
+    private Map<Integer, QuestionExecutionEntity> getQuestionExecutionMap(TemplateConfigEntity templateConfig) {
         return templateConfig.getQuestions().stream()
                 .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
     }
 
-    private Integer getNextSessionNumber(Set<ResponseSessionEntity> sessions) {
+    private Integer getNextSessionNumber(Set<SessionEntity> sessions) {
         return sessions.stream()
-                .map(ResponseSessionEntity::getNumber)
+                .map(SessionEntity::getNumber)
                 .max(Integer::compareTo).orElse(1) + 1;
     }
 }

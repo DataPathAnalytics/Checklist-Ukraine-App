@@ -10,13 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-    String ADMINS_QUERY = "select * from app_user u " +
+    String ADMINS_QUERY = "select * from users u " +
             "join user_permission up on u.id = up.user_id " +
             "where up.permission_id = 1 and u.super_admin is false";
 
-    String NOT_CHECKED_USER_QUERY = "select exists (select id from app_user where locked = true)";
+    String NOT_CHECKED_USER_QUERY = "select exists (select id from users where locked = true)";
 
     UserEntity findByEmail(String email);
 

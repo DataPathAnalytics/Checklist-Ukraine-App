@@ -19,7 +19,7 @@ public class CreateQuestionRequest {
 
     private List<Long> knowledgeClassIds;
 
-    private Long answerStructureId;
+    private Integer answerStructureId;
 
     @Valid
     private QuestionSourceDTO source;

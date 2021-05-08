@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.service;
 
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
-import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.util.database.Entity;
@@ -17,11 +17,11 @@ public class ResponseSessionDaoService {
 
     private final ResponseSessionRepository repository;
 
-    public ResponseSessionEntity save(ResponseSessionEntity entity) {
+    public SessionEntity save(SessionEntity entity) {
         return repository.save(entity);
     }
 
-    public ResponseSessionEntity findById(Long id) {
+    public SessionEntity findById(Integer id) {
         return repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Entity.ResponseSession.name(), id));
     }

@@ -1,9 +1,10 @@
 package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.SessionStatus;
+import com.datapath.checklistapp.util.database.SessionPlace;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,19 +12,21 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Entity(name = "response_session")
-public class ResponseSessionEntity {
+@Entity(name = "session")
+public class SessionEntity {
 
     @Id
     @GeneratedValue
-    private Long id;
+    private Integer id;
     private Integer number;
     private boolean autoCreated;
     private boolean invalid;
+    @Enumerated(EnumType.STRING)
+    private SessionPlace place;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
-    @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime dateModified;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,10 +46,10 @@ public class ResponseSessionEntity {
     private UserEntity reviewer;
 
     @ManyToMany
-    @JoinTable(name = "response_session_member",
-            joinColumns = {@JoinColumn(name = "response_session_id")},
+    @JoinTable(name = "session_member",
+            joinColumns = {@JoinColumn(name = "session_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")},
-            uniqueConstraints = @UniqueConstraint(columnNames = {"response_session_id", "user_id"}))
+            uniqueConstraints = @UniqueConstraint(columnNames = {"session_id", "user_id"}))
     private Set<UserEntity> members = new HashSet<>();
 
     @ManyToOne
@@ -54,7 +57,7 @@ public class ResponseSessionEntity {
     private SessionStatus status;
 
     @OneToMany(orphanRemoval = true)
-    @JoinColumn(name = "response_session_id")
+    @JoinColumn(name = "session_id")
     private Set<AnswerEntity> answers = new HashSet<>();
 
     @ManyToOne

@@ -13,9 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -36,30 +33,6 @@ public class FolderWebService {
         TemplateConfigFolderEntity entity = new TemplateConfigFolderEntity();
         entity.setName(request.getName());
         templateFolderService.save(entity);
-    }
-
-    public List<FolderDTO> getTemplateFolders() {
-        return templateFolderService.findAllTemplateFolders().stream()
-                .map(f -> {
-                    FolderDTO dto = new FolderDTO();
-                    BeanUtils.copyProperties(f, dto);
-                    return dto;
-                })
-                .sorted(Comparator.comparing(FolderDTO::getDateCreated)
-                        .thenComparing(FolderDTO::getName))
-                .collect(toList());
-    }
-
-    public List<FolderDTO> getTemplateConfigFolders() {
-        return templateFolderService.findAllTemplateConfigFolders().stream()
-                .map(f -> {
-                    FolderDTO dto = new FolderDTO();
-                    BeanUtils.copyProperties(f, dto);
-                    return dto;
-                })
-                .sorted(Comparator.comparing(FolderDTO::getDateCreated)
-                        .thenComparing(FolderDTO::getName))
-                .collect(toList());
     }
 
     public PageableResponse<FolderDTO> searchTemplateConfigFolders(SearchRequest request) {

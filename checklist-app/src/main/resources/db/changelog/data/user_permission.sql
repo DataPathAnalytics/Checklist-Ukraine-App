@@ -1,3 +1,7 @@
+--liquibase formatted sql
+
+--changeset andrey_pylypchuk:1 splitStatements:false runOnChange:true
+
 INSERT INTO permission(id, role, value)
 VALUES (1, 'admin', 'Адміністратор')
 ON CONFLICT DO NOTHING;
@@ -18,4 +22,8 @@ ON CONFLICT DO NOTHING;
 
 INSERT INTO user_permission
 VALUES (2, 2)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO user_permission
+VALUES (3, 3)
 ON CONFLICT DO NOTHING;

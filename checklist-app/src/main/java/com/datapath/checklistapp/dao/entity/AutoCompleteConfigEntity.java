@@ -12,11 +12,11 @@ import javax.persistence.Id;
 public class AutoCompleteConfigEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     private boolean autoComplete;
     private boolean searchable;
     private String datasource;
     private String fieldName;
     private String filterFieldName;
-    private Long fieldId;
+    private Integer fieldId;
 }

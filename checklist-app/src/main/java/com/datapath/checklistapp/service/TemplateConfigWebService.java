@@ -106,11 +106,11 @@ public class TemplateConfigWebService {
             entities = templateConfigService.findAll();
         }
 
-        Map<Long, List<TemplateDTO>> folderTemplatesMap = entities.stream()
+        Map<Integer, List<TemplateDTO>> folderTemplatesMap = entities.stream()
                 .map(templateConverter::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
-        Map<Long, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
+        Map<Integer, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
                 .stream()
                 .map(f -> {
                     FolderDTO dto = new FolderDTO();
@@ -121,7 +121,7 @@ public class TemplateConfigWebService {
         return templateConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
-    public TemplateDTO get(Long id) {
+    public TemplateDTO get(Integer id) {
         return templateConverter.map(templateConfigService.findById(id));
     }
 
@@ -139,7 +139,7 @@ public class TemplateConfigWebService {
     }
 
     @Transactional
-    public void delete(Long id) {
+    public void delete(Integer id) {
         if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
         templateConfigService.delete(templateConfigService.findById(id));
     }

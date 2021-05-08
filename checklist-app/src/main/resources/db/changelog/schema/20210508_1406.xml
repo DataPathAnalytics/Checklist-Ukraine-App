@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="template_folder"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="template_folder">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <addPrimaryKey tableName="template_folder" columnNames="id" constraintName="pk_template_folder"/>
+        <addUniqueConstraint tableName="template_folder" columnNames="name" constraintName="unique_template_folder_name"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="template_config_folder"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="template_config_folder">
+            <column name="id" type="SERIAL"/>
+            <column name="name" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+        </createTable>
+
+        <addPrimaryKey tableName="template_config_folder" columnNames="id" constraintName="pk_template_config_folder"/>
+        <addUniqueConstraint tableName="template_config_folder" columnNames="name" constraintName="unique_template_config_folder_name"/>
+    </changeSet>
+</databaseChangeLog>

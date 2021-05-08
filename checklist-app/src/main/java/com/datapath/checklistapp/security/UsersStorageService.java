@@ -8,23 +8,23 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Slf4j
 public class UsersStorageService {
 
-    private static Set<Long> USERS_STORAGE = new CopyOnWriteArraySet<>();
+    private static Set<Integer> USERS_STORAGE = new CopyOnWriteArraySet<>();
 
     private UsersStorageService() {
 
     }
 
-    static void addUser(Long userId) {
+    static void addUser(Integer userId) {
         log.info("Added user {}", userId);
         USERS_STORAGE.add(userId);
     }
 
-    public static void removeUser(Long userId) {
+    public static void removeUser(Integer userId) {
         log.info("Removed user {}", userId);
         USERS_STORAGE.remove(userId);
     }
 
-    static boolean isUserPresent(Long userId) {
+    static boolean isUserPresent(Integer userId) {
         return USERS_STORAGE.contains(userId);
     }
 }

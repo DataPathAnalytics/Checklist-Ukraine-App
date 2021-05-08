@@ -7,12 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface TemplateRepository extends JpaRepository<TemplateEntity, Long> {
+public interface TemplateRepository extends JpaRepository<TemplateEntity, Integer> {
 
     String IS_USED_QUERY = "select exists(select id from response_session where template_id = :id)";
 
     Page<TemplateEntity> findByNameMatchesRegexOrderByName(String name, Pageable pageable);
 
     @Query(value = IS_USED_QUERY, nativeQuery = true)
-    boolean isUsed(@Param("id") Long id);
+    boolean isUsed(@Param("id") Integer id);
 }

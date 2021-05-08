@@ -13,29 +13,29 @@ public class QuestionExecutionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private Long parentQuestionId;
-    private Long conditionAnswerId;
+    private Integer parentQuestionId;
+    private Integer conditionAnswerId;
     private String conditionFieldName;
     private Integer orderNumber;
     private Long linkTypeId;
     private Long nodeTypeId;
-    private Long roleId;
+    private Long miningRoleId;
     private boolean required;
     private boolean root;
-
+    @Enumerated(EnumType.STRING)
     private TemplateRole role;
 
     @ManyToOne
     @JoinColumn(name = "question_id")
     private QuestionEntity question;
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     @JoinColumn(name = "question_execution_id")
     private Set<ConditionCharacteristicEntity> conditionCharacteristics = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     @JoinColumn(name = "question_execution_id")
     private Set<AutoCompleteConfigEntity> autoCompleteConfig = new HashSet<>();
 }

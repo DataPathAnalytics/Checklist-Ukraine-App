@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class QuestionSourceDTO {
 
     @NotNull
-    private Long identifier;
+    private Integer identifier;
     private String name;
     private String link;
 }

@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
-
 @Service
 @AllArgsConstructor
 public class FolderDaoService {
@@ -31,7 +29,7 @@ public class FolderDaoService {
         return templateRepository.findAll();
     }
 
-    public TemplateFolderEntity findTemplateFolderById(Long id) {
+    public TemplateFolderEntity findTemplateFolderById(Integer id) {
         return templateRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Entity.TemplateFolder.name(), id));
     }
@@ -44,22 +42,20 @@ public class FolderDaoService {
         return templateConfigRepository.findAll();
     }
 
-    public TemplateConfigFolderEntity findTemplateConfigFolderById(Long id) {
+    public TemplateConfigFolderEntity findTemplateConfigFolderById(Integer id) {
         return templateConfigRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Entity.TemplateConfigFolder.name(), id));
     }
 
     public Page<TemplateConfigFolderEntity> searchTemplateConfigFolders(SearchRequest request) {
-        return templateConfigRepository.findByNameMatchesRegexOrderByName(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
-                PageRequest.of(request.getPage(), request.getSize())
+        return templateConfigRepository.searchByName(
+                request.getKeyword(), PageRequest.of(request.getPage(), request.getSize())
         );
     }
 
     public Page<TemplateFolderEntity> searchTemplateFolders(SearchRequest request) {
-        return templateRepository.findByNameMatchesRegexOrderByName(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
-                PageRequest.of(request.getPage(), request.getSize())
+        return templateRepository.searchByName(
+                request.getKeyword(), PageRequest.of(request.getPage(), request.getSize())
         );
     }
 }

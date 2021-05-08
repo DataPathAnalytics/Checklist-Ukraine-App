@@ -18,9 +18,9 @@ public class CreateTemplateRequest {
     @NotBlank
     private String name;
     @NotNull
-    private Long folderId;
+    private Integer folderId;
     @NotNull
-    private Long templateConfigId;
+    private Integer templateConfigId;
 
     @Valid
     private List<TemplateQuestion> ungroupedQuestions = new ArrayList<>();
@@ -44,7 +44,7 @@ public class CreateTemplateRequest {
     @NoArgsConstructor
     public static class TemplateQuestion {
         @NotNull
-        private Long questionId;
+        private Integer questionId;
         @NotNull
         private Integer orderNumber;
 
@@ -63,12 +63,12 @@ public class CreateTemplateRequest {
         @NotNull
         private Long riskEventTypeId;
         @NotNull
-        private Long conditionAnswerId;
+        private Integer conditionAnswerId;
     }
 
     @Data
     public static class SubQuestion {
-        private Long conditionAnswerId;
+        private Integer conditionAnswerId;
 
         @NotBlank
         private String conditionFieldName;

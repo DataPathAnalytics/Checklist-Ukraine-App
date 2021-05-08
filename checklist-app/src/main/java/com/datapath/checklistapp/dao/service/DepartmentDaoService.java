@@ -11,7 +11,7 @@ public class DepartmentDaoService {
 
     private final DepartmentRepository repository;
 
-    public DepartmentEntity findByIdentifier(Long identifier) {
+    public DepartmentEntity findByIdentifier(Integer identifier) {
         return repository.findByIdentifier(identifier);
     }
 }

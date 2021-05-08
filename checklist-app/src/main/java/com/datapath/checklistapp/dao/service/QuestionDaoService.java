@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
-
 @Service
 @AllArgsConstructor
 public class QuestionDaoService {
@@ -29,23 +27,25 @@ public class QuestionDaoService {
         return repository.findAll(PageRequest.of(request.getPage(), request.getSize()));
     }
 
-    public QuestionEntity findById(Long id) {
+    public QuestionEntity findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.Question.name(), id));
     }
 
-    public List<QuestionEntity> findById(List<Long> ids) {
+    public List<QuestionEntity> findById(List<Integer> ids) {
         return repository.findAllById(ids);
     }
 
     public Page<QuestionEntity> searchByValue(SearchRequest request) {
-        return repository.findByValueMatchesRegexOrderByValue(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
+        return repository.searchByValue(
+                request.getKeyword(),
                 PageRequest.of(request.getPage(), request.getSize())
         );
     }
 
     public Page<QuestionEntity> searchWithIdentifierByValue(SearchRequest request) {
         return repository.findByValueWithIdentifier(
-                request.getKeyword(), PageRequest.of(request.getPage(), request.getSize()));
+                request.getKeyword(),
+                PageRequest.of(request.getPage(), request.getSize())
+        );
     }
 }

@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class UserUpdateRequest {
 
     @NotNull
-    private Long id;
+    private Integer id;
 
     @Valid
     private DepartmentDTO department;

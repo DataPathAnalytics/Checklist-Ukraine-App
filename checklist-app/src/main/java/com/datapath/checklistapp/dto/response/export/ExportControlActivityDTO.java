@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class ExportControlActivityDTO {
-    private Long id;
+    private Integer id;
     private ResponseSessionDTO activity;
     private List<ResponseSessionDTO> sessions;
 }

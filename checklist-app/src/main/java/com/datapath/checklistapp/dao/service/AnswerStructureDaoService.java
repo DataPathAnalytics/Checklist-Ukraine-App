@@ -10,28 +10,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
-
 @Service
 @AllArgsConstructor
 public class AnswerStructureDaoService {
 
     private final AnswerStructureRepository repository;
 
-    public AnswerStructureEntity findById(Long id) {
+    public AnswerStructureEntity findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.AnswerStructure.name(), id));
     }
 
-    public List<AnswerStructureEntity> findAll() {
-        return repository.findAll();
-    }
-
     public Page<AnswerStructureEntity> searchByName(SearchRequest request) {
-        return repository.findByNameMatchesRegexOrderByName(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
-                PageRequest.of(request.getPage(), request.getSize())
+        return repository.searchByName(
+                request.getKeyword(), PageRequest.of(request.getPage(), request.getSize())
         );
     }
 

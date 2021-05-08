@@ -27,7 +27,7 @@ public class ExportController {
     }
 
     @GetMapping("control-activities/{id}")
-    public ExportControlActivityDTO getControlActivity(@PathVariable Long id) {
+    public ExportControlActivityDTO getControlActivity(@PathVariable Integer id) {
         return service.getControlActivity(id);
     }
 
@@ -40,7 +40,7 @@ public class ExportController {
     }
 
     @GetMapping("response-sessions/{id}")
-    public ExportResponseSessionDTO getResponseSessionDates(@PathVariable Long id) {
+    public ExportResponseSessionDTO getResponseSessionDates(@PathVariable Integer id) {
         return service.getResponseSession(id);
     }
 

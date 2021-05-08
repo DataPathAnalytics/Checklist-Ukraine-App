@@ -20,7 +20,7 @@ public class UserDaoService {
     private final UserRepository repository;
 
     public void save(UserEntity user) {
-        repository.save(user);
+        repository.saveAndFlush(user);
     }
 
     public UserEntity findByEmail(String email) {
@@ -37,7 +37,7 @@ public class UserDaoService {
         );
     }
 
-    public UserEntity findById(Long id) throws UserException {
+    public UserEntity findById(Integer id) throws UserException {
         return repository.findById(id)
                 .orElseThrow(() -> new UserException("User not found"));
     }
@@ -50,7 +50,7 @@ public class UserDaoService {
         return repository.existsNotChecked();
     }
 
-    public Set<UserEntity> findByIds(List<Long> ids) {
+    public Set<UserEntity> findByIds(List<Integer> ids) {
         return new HashSet<>(repository.findAllById(ids));
     }
 

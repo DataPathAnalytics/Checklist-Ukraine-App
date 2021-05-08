@@ -15,17 +15,17 @@ public class EmploymentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private LocalDateTime start;
-    private LocalDateTime finish;
+    private Integer id;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id")
     private DepartmentEntity department;
 
-    public EmploymentEntity(LocalDateTime start, LocalDateTime finish, DepartmentEntity department) {
-        this.start = start;
-        this.finish = finish;
+    public EmploymentEntity(LocalDateTime startDate, LocalDateTime endDate, DepartmentEntity department) {
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.department = department;
     }
 }

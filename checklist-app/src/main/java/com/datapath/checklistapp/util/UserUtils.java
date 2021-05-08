@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserUtils {
 
-    public static Long getCurrentUserId() {
-        return Long.parseLong(((UserAuthInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
+    public static Integer getCurrentUserId() {
+        return Integer.parseInt(((UserAuthInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
     }
 
     public static boolean hasRole(String role) {

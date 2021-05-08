@@ -3,7 +3,7 @@ package com.datapath.checklistapp.service.export;
 import com.datapath.checklistapp.dao.domain.ExportControlActivityDomain;
 import com.datapath.checklistapp.dao.domain.ExportSessionResponseDomain;
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
-import com.datapath.checklistapp.dao.entity.ResponseSessionEntity;
+import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
 import com.datapath.checklistapp.dao.entity.classifier.Permission;
 import com.datapath.checklistapp.dao.service.ControlActivityDaoService;
@@ -110,7 +110,7 @@ public class ExportService {
     }
 
     @Transactional
-    public ExportControlActivityDTO getControlActivity(Long id) {
+    public ExportControlActivityDTO getControlActivity(Integer id) {
         ExportControlActivityDTO response = new ExportControlActivityDTO();
 
         ControlActivityEntity controlActivity = controlActivityService.findById(id);
@@ -127,9 +127,9 @@ public class ExportService {
     }
 
     @Transactional
-    public ExportResponseSessionDTO getResponseSession(Long id) {
+    public ExportResponseSessionDTO getResponseSession(Integer id) {
         ExportResponseSessionDTO response = new ExportResponseSessionDTO();
-        ResponseSessionEntity session = responseSessionService.findById(id);
+        SessionEntity session = responseSessionService.findById(id);
         response.setControlActivityId(session.getActivity().getId());
         response.setSession(responseSessionConverter.map(session));
         return response;

@@ -2,7 +2,7 @@ package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.TemplateConfigType;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,11 +15,11 @@ public class TemplateConfigEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     private String name;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime dateCreated;
 
     @ManyToOne

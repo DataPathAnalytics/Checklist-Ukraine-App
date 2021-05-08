@@ -19,7 +19,7 @@ public class ControlActivityDaoService {
 
     private final ControlActivityRepository repository;
 
-    public List<ControlActivityEntity> findAll(Long userId) {
+    public List<ControlActivityEntity> findAll(Integer userId) {
         if (nonNull(userId)) return repository.findUserControlActivities(userId);
         return repository.findAll();
     }
@@ -28,7 +28,7 @@ public class ControlActivityDaoService {
         return repository.save(entity);
     }
 
-    public ControlActivityEntity findById(Long id) {
+    public ControlActivityEntity findById(Integer id) {
         return repository.findById(id).orElseThrow(() -> new EntityNotFoundException(Entity.ControlActivity.name(), id));
     }
 

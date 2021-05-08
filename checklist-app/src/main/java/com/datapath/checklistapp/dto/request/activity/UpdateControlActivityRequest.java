@@ -16,10 +16,10 @@ import java.util.List;
 public class UpdateControlActivityRequest {
 
     @NotNull
-    private Long id;
+    private Integer id;
     @NotNull
     @Valid
     private List<AnswerDTO> answers;
 
-    private List<Long> memberIds = new ArrayList<>();
+    private List<Integer> memberIds = new ArrayList<>();
 }

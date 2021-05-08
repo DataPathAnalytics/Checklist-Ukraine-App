@@ -56,7 +56,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             String user = tokenBody.getSubject();
             String id = tokenBody.getId();
 
-            if (!UsersStorageService.isUserPresent(Long.parseLong(id))) {
+            if (!UsersStorageService.isUserPresent(Integer.parseInt(id))) {
                 return null;
             }
 

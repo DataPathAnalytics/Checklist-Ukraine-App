@@ -15,13 +15,13 @@ import java.util.List;
 public class CreateControlActivityRequest {
 
     @NotNull
-    private Long templateConfigId;
+    private Integer templateConfigId;
 
     private String name;
     @NotNull
     private List<AnswerDTO> answers;
 
-    private List<Long> memberIds = new ArrayList<>();
+    private List<Integer> memberIds = new ArrayList<>();
 
-    private List<Long> templateIds;
+    private List<Integer> templateIds;
 }

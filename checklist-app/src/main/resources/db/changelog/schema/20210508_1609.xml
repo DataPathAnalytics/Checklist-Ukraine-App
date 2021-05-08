@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="control_activity"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="control_activity">
+            <column name="id" type="SERIAL"/>
+            <column name="status_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="control_activity" columnNames="id" constraintName="pk_control_activity"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="control_activity_template"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="control_activity_template">
+            <column name="control_activity_id" type="integer"/>
+            <column name="template_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="control_activity_template" columnNames="control_activity_id, template_id" constraintName="pk_control_activity_template"/>
+
+        <addForeignKeyConstraint baseTableName="control_activity_template" baseColumnNames="template_id"
+                                 constraintName="control_activity_template_to_template"
+                                 referencedTableName="template"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="control_activity_template" baseColumnNames="control_activity_id"
+                                 constraintName="control_activity_template_to_control_activity"
+                                 referencedTableName="control_activity"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="3" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="session"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="session">
+            <column name="id" type="SERIAL"/>
+            <column name="number" type="integer"/>
+            <column name="auto_created" type="boolean" defaultValue="false"/>
+            <column name="invalid" type="boolean" defaultValue="false"/>
+            <column name="place" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="date_modified" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="template_id" type="integer"/>
+            <column name="template_config_id" type="integer"/>
+            <column name="author_id" type="integer"/>
+            <column name="reviewer_id" type="integer"/>
+            <column name="status_id" type="integer"/>
+            <column name="activity_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="session" columnNames="id" constraintName="pk_session"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="template_id"
+                                 constraintName="session_to_template"
+                                 referencedTableName="template"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="template_config_id"
+                                 constraintName="session_to_template_config"
+                                 referencedTableName="template_config"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="author_id"
+                                 constraintName="session_to_author_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="reviewer_id"
+                                 constraintName="session_to_reviewer_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="status_id"
+                                 constraintName="session_to_status"
+                                 referencedTableName="session_status"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session" baseColumnNames="activity_id"
+                                 constraintName="session_to_control_activity"
+                                 referencedTableName="control_activity"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+
+    <changeSet id="4" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="answer"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="answer">
+            <column name="id" type="SERIAL"/>
+            <column name="values" type="text"/>
+            <column name="comment" type="text"/>
+            <column name="date_created" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="date_modified" type="timestamp with timezone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="question_execution_id" type="integer"/>
+            <column name="session_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="answer" columnNames="id" constraintName="pk_answer"/>
+
+        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="question_execution_id"
+                                 constraintName="answer_to_question_execution"
+                                 referencedTableName="question_execution"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="answer" baseColumnNames="session_id"
+                                 constraintName="answer_to_session"
+                                 referencedTableName="session"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="5" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="session_member"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="session_member">
+            <column name="session_id" type="integer"/>
+            <column name="user_id" type="integer"/>
+        </createTable>
+
+        <addPrimaryKey tableName="session_member" columnNames="session_id, user_id" constraintName="pk_session_member"/>
+
+        <addForeignKeyConstraint baseTableName="session_member" baseColumnNames="session_id"
+                                 constraintName="session_member_to_member_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="session_member" baseColumnNames="session_id"
+                                 constraintName="session_member_to_session"
+                                 referencedTableName="session"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

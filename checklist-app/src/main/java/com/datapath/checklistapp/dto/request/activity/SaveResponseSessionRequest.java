@@ -11,14 +11,14 @@ import java.util.List;
 @Data
 public class SaveResponseSessionRequest {
 
-    private Long id;
+    private Integer id;
     @NotBlank
     private String name;
 
     @NotNull
-    private Long controlActivityId;
+    private Integer controlActivityId;
     @NotNull
-    private Long templateId;
+    private Integer templateId;
 
     @Valid
     private List<AnswerDTO> answers;

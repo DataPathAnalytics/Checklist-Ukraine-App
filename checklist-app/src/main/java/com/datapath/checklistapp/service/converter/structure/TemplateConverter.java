@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.*;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -35,15 +34,17 @@ public class TemplateConverter {
         QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT).get(0);
         List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT_FUTURE);
         List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.TYPE);
-        QuestionExecutionEntity authorityQuestion = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY).get(0);
-        List<QuestionExecutionEntity> authorityFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY_FEATURE);
-
 
         dto.setObjectQuestion(processQuestionWithChild(objectQuestion, objectFeatureQuestions, null));
         dto.setObjectFeatureQuestions(processQuestions(objectFeatureQuestions));
         dto.setTypeQuestions(processQuestions(typeQuestions));
 
-        if (nonNull(authorityQuestion)) {
+        List<QuestionExecutionEntity> authorityQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY);
+
+        if (!isEmpty(authorityQuestions)) {
+            QuestionExecutionEntity authorityQuestion = authorityQuestions.get(0);
+            List<QuestionExecutionEntity> authorityFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY_FEATURE);
+
             dto.setAuthorityQuestion(processQuestionWithChild(authorityQuestion, authorityFeatureQuestions, null));
             dto.setAuthorityFeatureQuestions(processQuestions(authorityFeatureQuestions));
         }

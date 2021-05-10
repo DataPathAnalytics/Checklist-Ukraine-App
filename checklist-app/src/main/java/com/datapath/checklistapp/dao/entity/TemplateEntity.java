@@ -31,7 +31,7 @@ public class TemplateEntity {
     @JoinColumn(name = "config_id")
     private TemplateConfigEntity config;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "template_id")
     private Set<QuestionGroupEntity> groups = new HashSet<>();
 }

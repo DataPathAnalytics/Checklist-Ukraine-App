@@ -43,12 +43,18 @@ public class CreateTemplateConfigRequest {
     public static class BaseQuestion {
         @NotNull
         private Integer questionId;
+
+        private Long nodeTypeId;
+        private Long miningRoleId;
+
         @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
 
         public TemplateQuestion asTemplateQuestion() {
             TemplateQuestion question = new TemplateQuestion();
             question.setQuestionId(this.questionId);
+            question.setNodeTypeId(this.nodeTypeId);
+            question.setMiningRoleId(this.miningRoleId);
             question.setAutoCompleteConfigs(this.autoCompleteConfigs);
             return question;
         }

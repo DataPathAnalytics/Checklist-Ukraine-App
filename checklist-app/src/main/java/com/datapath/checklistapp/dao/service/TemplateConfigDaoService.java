@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
-
 @Service
 @AllArgsConstructor
 public class TemplateConfigDaoService {
@@ -38,8 +36,8 @@ public class TemplateConfigDaoService {
     }
 
     public Page<TemplateConfigEntity> searchByName(SearchRequest request) {
-        return repository.findByNameMatchesRegexOrderByName(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
+        return repository.searchByName(
+                request.getKeyword(),
                 PageRequest.of(request.getPage(), request.getSize())
         );
     }

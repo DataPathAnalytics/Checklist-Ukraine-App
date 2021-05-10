@@ -108,6 +108,8 @@
 
         <addPrimaryKey tableName="question" columnNames="id" constraintName="pk_question"/>
 
+        <addUniqueConstraint tableName="question" columnNames="value, answer_structure_id" constraintName="unique_value_answer_structure_id_key"/>
+
         <addForeignKeyConstraint baseTableName="question" baseColumnNames="answer_structure_id"
                                  constraintName="question_to_answer_structure"
                                  referencedTableName="answer_structure"

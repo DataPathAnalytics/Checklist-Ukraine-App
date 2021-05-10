@@ -37,15 +37,15 @@ public class SessionEntity {
     @JoinColumn(name = "template_config_id")
     private TemplateConfigEntity templateConfig;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private UserEntity author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id")
     private UserEntity reviewer;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "session_member",
             joinColumns = {@JoinColumn(name = "session_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")},
@@ -60,7 +60,7 @@ public class SessionEntity {
     @JoinColumn(name = "session_id")
     private Set<AnswerEntity> answers = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
     private ControlActivityEntity activity;
 }

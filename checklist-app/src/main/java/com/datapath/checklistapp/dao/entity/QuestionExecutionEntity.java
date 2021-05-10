@@ -31,11 +31,11 @@ public class QuestionExecutionEntity {
     @JoinColumn(name = "question_id")
     private QuestionEntity question;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "question_execution_id")
     private Set<ConditionCharacteristicEntity> conditionCharacteristics = new HashSet<>();
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "question_execution_id")
     private Set<AutoCompleteConfigEntity> autoCompleteConfig = new HashSet<>();
 }

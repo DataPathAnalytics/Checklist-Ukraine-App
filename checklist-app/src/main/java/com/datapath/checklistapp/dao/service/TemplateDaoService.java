@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.datapath.checklistapp.util.Constants.SEARCH_PATTERN;
-
 @Service
 @AllArgsConstructor
 public class TemplateDaoService {
@@ -39,8 +37,8 @@ public class TemplateDaoService {
     }
 
     public Page<TemplateEntity> searchByName(SearchRequest request) {
-        return repository.findByNameMatchesRegexOrderByName(
-                String.format(SEARCH_PATTERN, request.getKeyword()),
+        return repository.searchByName(
+                request.getKeyword(),
                 PageRequest.of(request.getPage(), request.getSize())
         );
     }

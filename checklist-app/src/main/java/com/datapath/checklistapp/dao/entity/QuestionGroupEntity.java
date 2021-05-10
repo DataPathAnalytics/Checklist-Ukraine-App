@@ -16,7 +16,7 @@ public class QuestionGroupEntity {
     private String name;
     private Integer orderNumber;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "group_id")
     private Set<QuestionExecutionEntity> questions = new HashSet<>();
 }

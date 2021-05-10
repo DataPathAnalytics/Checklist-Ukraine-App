@@ -8,7 +8,7 @@ import java.util.Set;
 @Data
 public class QuestionDTO {
 
-    private Long id;
+    private Integer id;
     private String value;
     private LocalDateTime dateCreated;
 

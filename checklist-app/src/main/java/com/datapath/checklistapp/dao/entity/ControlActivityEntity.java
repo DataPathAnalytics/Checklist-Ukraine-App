@@ -32,14 +32,14 @@ public class ControlActivityEntity {
     private Set<SessionEntity> sessions = new HashSet<>();
 
     public SessionEntity getActivityResponse() {
-        return this.sessions.stream()
+        return this.getSessions().stream()
                 .filter(s -> SessionPlace.ACTIVITY_RESPONSE.equals(s.getPlace()))
                 .findFirst()
                 .orElse(null);
     }
 
     public Set<SessionEntity> getSessionResponses() {
-        return this.sessions.stream()
+        return this.getSessions().stream()
                 .filter(s -> SessionPlace.SESSION_RESPONSE.equals(s.getPlace()))
                 .collect(toSet());
     }

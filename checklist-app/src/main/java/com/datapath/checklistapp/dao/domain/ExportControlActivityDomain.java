@@ -6,6 +6,6 @@ import java.time.LocalDateTime;
 
 @Data
 public class ExportControlActivityDomain {
-    private Long id;
+    private Integer id;
     private LocalDateTime dateModified;
 }

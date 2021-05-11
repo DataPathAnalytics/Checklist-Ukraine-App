@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.datapath.checklistapp.util.Constants.AUDITOR_ROLE;
+import static com.datapath.checklistapp.util.Constants.IN_COMPLETED_STATUS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -119,6 +120,7 @@ public class ExportService {
         response.setActivity(responseSessionConverter.map(controlActivity.getActivityResponse()));
         response.setSessions(controlActivity.getSessionResponses()
                 .stream()
+                .filter(s -> IN_COMPLETED_STATUS.equals(s.getStatus().getId()))
                 .map(responseSessionConverter::map)
                 .collect(toList())
         );

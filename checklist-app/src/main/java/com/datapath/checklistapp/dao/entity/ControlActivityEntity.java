@@ -28,7 +28,7 @@ public class ControlActivityEntity {
             uniqueConstraints = @UniqueConstraint(columnNames = {"control_activity_id", "template_id"}))
     private Set<TemplateEntity> templates = new HashSet<>();
 
-    @OneToMany(orphanRemoval = true, mappedBy = "activity")
+    @OneToMany(orphanRemoval = true, mappedBy = "activity", cascade = CascadeType.ALL)
     private Set<SessionEntity> sessions = new HashSet<>();
 
     public SessionEntity getActivityResponse() {
@@ -46,9 +46,5 @@ public class ControlActivityEntity {
 
     public void setActivityResponse(SessionEntity entity) {
         this.sessions.add(entity);
-    }
-
-    public void setSessionResponses(Set<SessionEntity> entities) {
-        this.sessions.addAll(entities);
     }
 }

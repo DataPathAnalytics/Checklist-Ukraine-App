@@ -7,8 +7,10 @@ import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistapp.dto.AnswerDTO;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.request.activity.*;
+import com.datapath.checklistapp.dto.request.page.PageableRequest;
+import com.datapath.checklistapp.dto.request.page.SessionPageableRequest;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.exception.PermissionException;
 import com.datapath.checklistapp.exception.ValidationException;
@@ -17,11 +19,12 @@ import com.datapath.checklistapp.service.converter.structure.ControlActivityConv
 import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
 import com.datapath.checklistapp.util.UserUtils;
 import com.datapath.checklistapp.util.database.Entity;
+import com.datapath.checklistapp.util.database.SessionPlace;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,30 +54,29 @@ public class ControlActivityWebService {
     private final ResponseSessionConverter responseSessionConverter;
 
     @Transactional
-    public List<ControlActivityDTO> list() {
-        List<ControlActivityEntity> activities;
+    public PageableResponse<ControlActivityDTO> list(PageableRequest request) {
+        Page<ControlActivityEntity> page;
 
         if (UserUtils.hasRole(METHODOLOGIST_ROLE)) {
-            activities = controlActivityService.findAll(null);
+            page = controlActivityService.findAll(null, request);
         } else {
-            activities = controlActivityService.findAll(UserUtils.getCurrentUserId());
+            page = controlActivityService.findAll(UserUtils.getCurrentUserId(), request);
         }
 
-        return activities
-                .stream()
-                .map(c -> {
-                    ControlActivityDTO dto = new ControlActivityDTO();
-                    dto.setId(c.getId());
-                    dto.setStatusId(c.getStatus().getId());
-                    dto.setActivity(responseSessionConverter.map(c.getActivityResponse()));
-                    return dto;
-                })
-                .sorted((dto1, dto2) -> {
-                    LocalDateTime t1 = dto1.getActivity().getDateModified();
-                    LocalDateTime t2 = dto2.getActivity().getDateModified();
-                    return t1.compareTo(t2);
-                })
-                .collect(toList());
+        return new PageableResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
+                        .map(c -> {
+                            ControlActivityDTO dto = new ControlActivityDTO();
+                            dto.setId(c.getId());
+                            dto.setStatusId(c.getStatus().getId());
+                            dto.setActivity(responseSessionConverter.map(c.getActivityResponse()));
+                            return dto;
+                        })
+                        .collect(toList())
+        );
     }
 
     @Transactional
@@ -82,6 +84,7 @@ public class ControlActivityWebService {
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
 
         SessionEntity activityResponse = new SessionEntity();
+        activityResponse.setPlace(SessionPlace.ACTIVITY_RESPONSE);
         activityResponse.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
         activityResponse.setMembers(userService.findByIds(request.getMemberIds()));
         activityResponse.setTemplateConfig(config);
@@ -104,36 +107,24 @@ public class ControlActivityWebService {
         activityEntity.setTemplates(templateService.findByIds(request.getTemplateIds()));
         activityEntity.setActivityResponse(activityResponse);
 
+        activityResponse.setActivity(activityEntity);
+
         return controlActivityConverter.map(controlActivityService.save(activityEntity));
     }
 
     @Transactional
     public ControlActivityDTO update(UpdateControlActivityRequest request) {
         ControlActivityEntity entity = controlActivityService.findById(request.getId());
-        SessionEntity activityResponse = entity.getActivityResponse();
+        SessionEntity session = entity.getActivityResponse();
 
-        Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(activityResponse.getTemplateConfig());
+        Map<Integer, QuestionExecutionEntity> questions = getQuestionExecutionMap(session.getTemplateConfig());
 
-        request.getAnswers().forEach(a -> {
-
-            AnswerEntity answer = activityResponse.getAnswers()
-                    .stream()
-                    .filter(ea -> a.getQuestionId().equals(ea.getQuestionExecution().getId()))
-                    .findFirst()
-                    .orElseGet(AnswerEntity::new);
-
-            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
-            answer.setQuestionExecution(questionExecution);
-            answer.setComment(a.getComment());
-            answer.setValues(answerConverter.toJson(a));
-
-            if (isNull(answer.getId())) {
-                activityResponse.getAnswers().add(answer);
-            }
-        });
+        Set<AnswerEntity> answers = updateAnswers(request.getAnswers(), session, questions);
+        session.getAnswers().clear();
+        session.getAnswers().addAll(answers);
 
         if (!isEmpty(request.getMemberIds())) {
-            activityResponse.setMembers(userService.findByIds(request.getMemberIds()));
+            session.setMembers(userService.findByIds(request.getMemberIds()));
         }
 
         return controlActivityConverter.map(controlActivityService.save(entity));
@@ -150,7 +141,7 @@ public class ControlActivityWebService {
 
         checkPermission(entity);
 
-        entity.setStatus(activityStatusService.findById(IN_PROCESS_STATUS));
+        entity.setStatus(activityStatusService.findById(IN_COMPLETED_STATUS));
 
         return controlActivityConverter.map(controlActivityService.save(entity));
     }
@@ -189,49 +180,26 @@ public class ControlActivityWebService {
     }
 
     @Transactional
-    public SessionPageDTO getSessions(Integer activityId, int page, int size) {
-        SessionPageDTO dto = new SessionPageDTO();
+    public PageableResponse<ResponseSessionDTO> getSessions(SessionPageableRequest request) {
+        ControlActivityEntity activity = controlActivityService.findById(request.getControlActivityId());
 
-        ControlActivityEntity activity = controlActivityService.findById(activityId);
-        Set<SessionEntity> sessions = activity.getSessionResponses();
+        checkPermission(activity);
 
-        dto.setTotalCount(sessions.size());
-        dto.setTotalPageCount((int) Math.ceil((double) sessions.size() / size));
-        dto.setCurrentPage(page);
-        dto.setPageSize(size);
-        dto.setSessions(
-                sessions.stream()
-                        .skip(page * size)
-                        .limit(size)
+        Page<SessionEntity> page = responseSessionService.findResponseSessionByActivity(activity, request.getPage(), request.getSize());
+
+        return new PageableResponse<>(
+                page.getNumber(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.get()
                         .map(responseSessionConverter::map)
                         .collect(toList())
         );
-
-        return dto;
     }
 
     @Transactional
     public ResponseSessionDTO saveSession(SaveResponseSessionRequest request) {
-        ControlActivityEntity activity;
-        SessionEntity session;
-
-        if (nonNull(request.getId())) {
-            session = responseSessionService.findById(request.getId());
-            activity = session.getActivity();
-        } else {
-            session = new SessionEntity();
-
-            session.setAutoCreated(request.isAutoCreated());
-            if (request.isAutoCreated()) {
-                session.setStatus(sessionStatusService.findById(IN_COMPLETED_STATUS));
-            } else {
-                session.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
-            }
-
-            activity = controlActivityService.findById(request.getControlActivityId());
-            session.setNumber(getNextSessionNumber(activity.getSessionResponses()));
-            session.setActivity(activity);
-        }
+        ControlActivityEntity activity = controlActivityService.findById(request.getControlActivityId());
 
         checkPermission(activity);
 
@@ -240,32 +208,64 @@ public class ControlActivityWebService {
                 .findFirst()
                 .orElseThrow(() -> new ValidationException("Not found template in control activity"));
 
-        Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = template.getGroups()
-                .stream()
-                .flatMap(qg -> qg.getQuestions().stream())
-                .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
+        SessionEntity session;
 
-        questionExecutionIdMap.putAll(getQuestionExecutionMap(template.getConfig()));
+        if (nonNull(request.getId())) {
+            session = responseSessionService.findByIdAndActivity(request.getId(), activity);
+        } else {
+            session = new SessionEntity();
+            session.setPlace(SessionPlace.SESSION_RESPONSE);
+            session.setAutoCreated(request.isAutoCreated());
+            session.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
 
-        Set<AnswerEntity> answers = new HashSet<>();
-        for (AnswerDTO answer : request.getAnswers()) {
-            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(answer.getQuestionId());
-            if (isNull(questionExecution))
-                throw new EntityNotFoundException(Entity.QuestionExecution.name(), answer.getQuestionId());
+            if (request.isAutoCreated()) {
+                session.setStatus(sessionStatusService.findById(IN_COMPLETED_STATUS));
+            } else {
+                session.setStatus(sessionStatusService.findById(IN_PROCESS_STATUS));
+            }
 
-            AnswerEntity answerEntity = new AnswerEntity();
-            answerEntity.setComment(answer.getComment());
-            answerEntity.setValues(answerConverter.toJson(answer));
-            answerEntity.setQuestionExecution(questionExecution);
-            answers.add(answerEntity);
+            session.setNumber(getNextSessionNumber(activity.getSessionResponses()));
+            session.setActivity(activity);
+
+            session.setTemplate(template);
         }
-        session.setAnswers(answers);
-        session.setTemplate(template);
-        session.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
+
+        Map<Integer, QuestionExecutionEntity> questions = getQuestionExecutionMap(template.getConfig());
+        questions.putAll(getQuestionExecutionMap(template));
+
+        Set<AnswerEntity> answers = updateAnswers(request.getAnswers(), session, questions);
+        session.getAnswers().clear();
+        session.getAnswers().addAll(answers);
 
         return responseSessionConverter.map(responseSessionService.save(session));
     }
 
+    private Set<AnswerEntity> updateAnswers(List<AnswerDTO> answerDtos, SessionEntity session, Map<Integer, QuestionExecutionEntity> questions) {
+        Set<AnswerEntity> answers = new HashSet<>();
+        answerDtos.forEach(dto -> {
+
+            QuestionExecutionEntity questionExecution = questions.get(dto.getQuestionId());
+            if (isNull(questionExecution))
+                throw new EntityNotFoundException(Entity.QuestionExecution.name(), dto.getQuestionId());
+
+            //TODO: needs review after adding multiple answers to question
+            AnswerEntity answer = session.getAnswers()
+                    .stream()
+                    .filter(ea -> dto.getQuestionId().equals(ea.getQuestionExecution().getId()))
+                    .findFirst()
+                    .orElseGet(AnswerEntity::new);
+
+            answer.setQuestionExecution(questionExecution);
+            answer.setComment(dto.getComment());
+            answer.setValues(answerConverter.toJson(dto));
+
+            answers.add(answer);
+        });
+
+        return answers;
+    }
+
+    @Transactional
     public ResponseSessionDTO getSession(Integer id) {
         return responseSessionConverter.map(responseSessionService.findById(id));
     }
@@ -304,9 +304,16 @@ public class ControlActivityWebService {
                 .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
     }
 
+    private Map<Integer, QuestionExecutionEntity> getQuestionExecutionMap(TemplateEntity template) {
+        return template.getGroups()
+                .stream()
+                .flatMap(qg -> qg.getQuestions().stream())
+                .collect(toMap(QuestionExecutionEntity::getId, Function.identity()));
+    }
+
     private Integer getNextSessionNumber(Set<SessionEntity> sessions) {
         return sessions.stream()
                 .map(SessionEntity::getNumber)
-                .max(Integer::compareTo).orElse(1) + 1;
+                .max(Integer::compareTo).orElse(0) + 1;
     }
 }

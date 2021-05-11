@@ -2,18 +2,16 @@ package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.ControlActivityDTO;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.dto.SessionPageDTO;
 import com.datapath.checklistapp.dto.request.activity.*;
+import com.datapath.checklistapp.dto.request.page.PageableRequest;
+import com.datapath.checklistapp.dto.request.page.SessionPageableRequest;
+import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.ControlActivityWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
-
-import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_COUNT_STR;
-import static com.datapath.checklistapp.util.Constants.DEFAULT_EVENT_CHECKLIST_PAGE_STR;
 
 @RestController
 @AllArgsConstructor
@@ -22,9 +20,9 @@ public class ControlActivityController {
 
     private final ControlActivityWebService service;
 
-    @GetMapping
-    public List<ControlActivityDTO> list() {
-        return service.list();
+    @PostMapping("list")
+    public PageableResponse<ControlActivityDTO> list(@RequestBody PageableRequest request) {
+        return service.list(request);
     }
 
     @PostMapping
@@ -58,11 +56,9 @@ public class ControlActivityController {
         return service.deleteTemplate(request);
     }
 
-    @GetMapping("response-session")
-    public SessionPageDTO getSessions(@RequestParam Integer activityId,
-                                      @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_PAGE_STR) int page,
-                                      @RequestParam(defaultValue = DEFAULT_EVENT_CHECKLIST_COUNT_STR) int size) {
-        return service.getSessions(activityId, page, size);
+    @PostMapping("response-session/list")
+    public PageableResponse<ResponseSessionDTO> getSessions(@RequestBody @Valid SessionPageableRequest request) {
+        return service.getSessions(request);
     }
 
     @PostMapping("response-session")

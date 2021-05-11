@@ -1,6 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity(name = "answer")
+@EqualsAndHashCode(of = "id")
 public class AnswerEntity {
 
     @Id

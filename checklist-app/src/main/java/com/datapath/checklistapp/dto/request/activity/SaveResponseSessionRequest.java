@@ -4,7 +4,6 @@ import com.datapath.checklistapp.dto.AnswerDTO;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -12,8 +11,6 @@ import java.util.List;
 public class SaveResponseSessionRequest {
 
     private Integer id;
-    @NotBlank
-    private String name;
 
     @NotNull
     private Integer controlActivityId;

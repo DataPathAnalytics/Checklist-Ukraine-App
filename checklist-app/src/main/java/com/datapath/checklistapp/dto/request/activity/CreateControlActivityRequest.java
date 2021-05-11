@@ -17,7 +17,6 @@ public class CreateControlActivityRequest {
     @NotNull
     private Integer templateConfigId;
 
-    private String name;
     @NotNull
     private List<AnswerDTO> answers;
 

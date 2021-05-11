@@ -15,5 +15,4 @@ public class ControlActivityDTO {
     private Integer statusId;
     private ResponseSessionDTO activity;
     private List<TemplateDTO> templates;
-    private SessionPageDTO sessions;
 }

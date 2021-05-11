@@ -3,6 +3,7 @@ package com.datapath.checklistapp.dao.entity;
 import com.datapath.checklistapp.dao.entity.classifier.SessionStatus;
 import com.datapath.checklistapp.util.database.SessionPlace;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 
 @Data
 @Entity(name = "session")
+@EqualsAndHashCode(of = "id")
 public class SessionEntity {
 
     @Id
@@ -56,7 +58,7 @@ public class SessionEntity {
     @JoinColumn(name = "status_id")
     private SessionStatus status;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "session_id")
     private Set<AnswerEntity> answers = new HashSet<>();
 

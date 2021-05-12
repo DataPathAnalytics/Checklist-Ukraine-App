@@ -9,7 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateFolderRequest {
+public class CreateRequest {
 
     @NotBlank
     private String name;

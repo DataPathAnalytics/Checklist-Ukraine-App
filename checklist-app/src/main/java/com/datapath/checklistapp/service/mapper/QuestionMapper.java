@@ -1,10 +1,10 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dto.*;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
-import com.datapath.checklistapp.util.database.TemplateRole;
+import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -16,9 +16,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
-public class QuestionConverter {
+public class QuestionMapper {
 
-    private final AnswerConverter answerConverter;
+    private final AnswerMapper answerMapper;
 
     public QuestionExecutionDTO map(QuestionExecutionEntity entity) {
         QuestionExecutionDTO executionDTO = new QuestionExecutionDTO();
@@ -72,7 +72,7 @@ public class QuestionConverter {
         dto.setKnowledgeClasses(entity.getKnowledgeClasses());
 
         if (nonNull(entity.getAnswerStructure())) {
-            dto.setAnswerStructure(answerConverter.map(entity.getAnswerStructure()));
+            dto.setAnswerStructure(answerMapper.map(entity.getAnswerStructure()));
         }
 
         if (nonNull(entity.getQuestionSource())) {
@@ -108,7 +108,7 @@ public class QuestionConverter {
         return execution;
     }
 
-    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question, TemplateRole role) {
+    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question, QuestionExecutionRole role) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setQuestion(question);
         execution.setOrderNumber(q.getOrderNumber());

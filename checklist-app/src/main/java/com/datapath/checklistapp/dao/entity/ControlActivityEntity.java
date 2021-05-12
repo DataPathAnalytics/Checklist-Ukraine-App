@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.ActivityStatus;
-import com.datapath.checklistapp.util.database.SessionPlace;
+import com.datapath.checklistapp.util.database.ResponseRole;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -33,14 +33,14 @@ public class ControlActivityEntity {
 
     public SessionEntity getActivityResponse() {
         return this.getSessions().stream()
-                .filter(s -> SessionPlace.ACTIVITY_RESPONSE.equals(s.getPlace()))
+                .filter(s -> ResponseRole.ACTIVITY_RESPONSE.equals(s.getRole()))
                 .findFirst()
                 .orElse(null);
     }
 
     public Set<SessionEntity> getSessionResponses() {
         return this.getSessions().stream()
-                .filter(s -> SessionPlace.SESSION_RESPONSE.equals(s.getPlace()))
+                .filter(s -> ResponseRole.SESSION_RESPONSE.equals(s.getRole()))
                 .collect(toSet());
     }
 

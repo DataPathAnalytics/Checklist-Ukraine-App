@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.dto.request.activity;
+package com.datapath.checklistapp.dto.request.response_session;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseSessionStatusRequest {
-
+public class PageableRequest {
     @NotNull
-    private Integer responseSessionId;
-    @NotNull
-    private Integer sessionStatusId;
+    private Integer controlActivityId;
+    private int page = 0;
+    private int size = 10;
 }

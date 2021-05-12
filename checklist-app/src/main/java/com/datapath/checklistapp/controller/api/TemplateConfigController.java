@@ -5,7 +5,7 @@ import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.service.TemplateConfigWebService;
+import com.datapath.checklistapp.service.web.TemplateConfigWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

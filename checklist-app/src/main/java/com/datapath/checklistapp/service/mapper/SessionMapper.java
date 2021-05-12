@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dao.entity.UserEntity;
@@ -13,10 +13,10 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
-public class ResponseSessionConverter {
+public class SessionMapper {
 
-    private final TemplateConverter templateConverter;
-    private final AnswerConverter answerConverter;
+    private final MapperConverter mapperConverter;
+    private final AnswerMapper answerMapper;
 
     public ResponseSessionDTO map(SessionEntity entity) {
         ResponseSessionDTO dto = new ResponseSessionDTO();
@@ -26,7 +26,7 @@ public class ResponseSessionConverter {
         dto.setInvalid(entity.isInvalid());
 
         if (nonNull(entity.getTemplateConfig())) {
-            dto.setTemplate(templateConverter.map(entity.getTemplateConfig()));
+            dto.setTemplate(mapperConverter.map(entity.getTemplateConfig()));
 
             if (!isEmpty(entity.getMembers())) {
                 dto.setMembers(
@@ -37,7 +37,7 @@ public class ResponseSessionConverter {
                 );
             }
         } else {
-            dto.setTemplate(templateConverter.map(entity.getTemplate()));
+            dto.setTemplate(mapperConverter.map(entity.getTemplate()));
             dto.setSessionStatusId(entity.getStatus().getId());
 
             if (nonNull(entity.getReviewer())) {
@@ -45,7 +45,7 @@ public class ResponseSessionConverter {
             }
         }
 
-        dto.setAnswers(entity.getAnswers().stream().map(answerConverter::map).collect(toList()));
+        dto.setAnswers(entity.getAnswers().stream().map(answerMapper::map).collect(toList()));
 
         return dto;
     }

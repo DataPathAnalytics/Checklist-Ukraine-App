@@ -1,12 +1,12 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.ControlActivityDTO;
-import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.dto.request.activity.*;
+import com.datapath.checklistapp.dto.request.activity.CreateRequest;
+import com.datapath.checklistapp.dto.request.activity.TemplateOperationRequest;
+import com.datapath.checklistapp.dto.request.activity.UpdateRequest;
 import com.datapath.checklistapp.dto.request.page.PageableRequest;
-import com.datapath.checklistapp.dto.request.page.SessionPageableRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.service.ControlActivityWebService;
+import com.datapath.checklistapp.service.web.ControlActivityWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +27,12 @@ public class ControlActivityController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ControlActivityDTO create(@RequestBody @Valid CreateControlActivityRequest request) {
+    public ControlActivityDTO create(@RequestBody @Valid CreateRequest request) {
         return service.create(request);
     }
 
     @PutMapping
-    public ControlActivityDTO update(@RequestBody @Valid UpdateControlActivityRequest request) {
+    public ControlActivityDTO update(@RequestBody @Valid UpdateRequest request) {
         return service.update(request);
     }
 
@@ -54,26 +54,5 @@ public class ControlActivityController {
     @DeleteMapping("template")
     public ControlActivityDTO deleteTemplate(@RequestBody @Valid TemplateOperationRequest request) {
         return service.deleteTemplate(request);
-    }
-
-    @PostMapping("response-session/list")
-    public PageableResponse<ResponseSessionDTO> getSessions(@RequestBody @Valid SessionPageableRequest request) {
-        return service.getSessions(request);
-    }
-
-    @PostMapping("response-session")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseSessionDTO saveSession(@RequestBody @Valid SaveResponseSessionRequest request) {
-        return service.saveSession(request);
-    }
-
-    @PutMapping("response-session")
-    public ResponseSessionDTO changeStatus(@RequestBody @Valid ResponseSessionStatusRequest request) {
-        return service.changeStatus(request);
-    }
-
-    @GetMapping("response-session/{id}")
-    public ResponseSessionDTO getSession(@PathVariable Integer id) {
-        return service.getSession(id);
     }
 }

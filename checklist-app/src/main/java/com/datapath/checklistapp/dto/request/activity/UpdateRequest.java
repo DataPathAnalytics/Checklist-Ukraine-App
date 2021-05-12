@@ -5,22 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CreateControlActivityRequest {
+@AllArgsConstructor
+public class UpdateRequest {
 
     @NotNull
-    private Integer templateConfigId;
+    private Integer id;
 
-    @NotNull
-    private List<AnswerDTO> answers;
+    @Valid
+    private List<AnswerDTO> answers = new ArrayList<>();
 
     private List<Integer> memberIds = new ArrayList<>();
-
-    private List<Integer> templateIds;
 }

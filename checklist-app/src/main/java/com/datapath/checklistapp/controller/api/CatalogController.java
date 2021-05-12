@@ -3,7 +3,7 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.AnswerStructureDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.service.CatalogWebService;
+import com.datapath.checklistapp.service.web.CatalogWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

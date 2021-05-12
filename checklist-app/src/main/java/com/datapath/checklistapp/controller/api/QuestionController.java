@@ -1,10 +1,10 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
+import com.datapath.checklistapp.dto.request.question.CreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.service.QuestionWebService;
+import com.datapath.checklistapp.service.web.QuestionWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,7 +22,7 @@ public class QuestionController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
-    public void create(@RequestBody @Valid CreateQuestionRequest request) {
+    public void create(@RequestBody @Valid CreateRequest request) {
         service.create(request);
     }
 

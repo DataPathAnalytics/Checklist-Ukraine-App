@@ -3,11 +3,11 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.UserDTO;
 import com.datapath.checklistapp.dto.UserPageDTO;
 import com.datapath.checklistapp.dto.UserStateDTO;
+import com.datapath.checklistapp.dto.request.users.RegisterRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordSendRequest;
-import com.datapath.checklistapp.dto.request.users.UserRegisterRequest;
-import com.datapath.checklistapp.dto.request.users.UserUpdateRequest;
-import com.datapath.checklistapp.service.UserWebService;
+import com.datapath.checklistapp.dto.request.users.UpdateRequest;
+import com.datapath.checklistapp.service.web.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,14 +30,14 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public void register(@Valid @RequestBody UserRegisterRequest request) {
+    public void register(@Valid @RequestBody RegisterRequest request) {
         service.register(request);
     }
 
     @PutMapping
     @PreAuthorize("hasAuthority('admin')")
-    public UserPageDTO update(@RequestBody @Valid List<UserUpdateRequest> requests) {
-        for (UserUpdateRequest request : requests) {
+    public UserPageDTO update(@RequestBody @Valid List<UpdateRequest> requests) {
+        for (UpdateRequest request : requests) {
             service.update(request);
         }
         return service.list(0, Integer.parseInt(DEFAULT_PAGE_SIZE));

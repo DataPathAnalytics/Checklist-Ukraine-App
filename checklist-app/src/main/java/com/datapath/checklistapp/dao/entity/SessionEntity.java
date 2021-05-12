@@ -1,11 +1,12 @@
 package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.SessionStatus;
-import com.datapath.checklistapp.util.database.SessionPlace;
+import com.datapath.checklistapp.util.database.ResponseRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,7 +15,8 @@ import java.util.Set;
 
 @Data
 @Entity(name = "session")
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = {"id"})
+@EntityListeners(AuditingEntityListener.class)
 public class SessionEntity {
 
     @Id
@@ -24,11 +26,11 @@ public class SessionEntity {
     private boolean autoCreated;
     private boolean invalid;
     @Enumerated(EnumType.STRING)
-    private SessionPlace place;
+    private ResponseRole role;
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime dateCreated;
-    @UpdateTimestamp
+    @LastModifiedDate
     private LocalDateTime dateModified;
 
     @ManyToOne(fetch = FetchType.LAZY)

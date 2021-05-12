@@ -16,6 +16,6 @@ public class QuestionExecutionDaoService {
     }
 
     public QuestionExecutionEntity save(QuestionExecutionEntity entity) {
-        return repository.save(entity);
+        return repository.saveAndFlush(entity);
     }
 }

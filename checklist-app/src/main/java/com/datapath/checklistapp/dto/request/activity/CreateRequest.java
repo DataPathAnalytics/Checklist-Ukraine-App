@@ -11,15 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class UpdateControlActivityRequest {
+@NoArgsConstructor
+public class CreateRequest {
 
     @NotNull
-    private Integer id;
+    private Integer templateConfigId;
+
     @NotNull
     @Valid
     private List<AnswerDTO> answers;
 
     private List<Integer> memberIds = new ArrayList<>();
+
+    private List<Integer> templateIds;
 }

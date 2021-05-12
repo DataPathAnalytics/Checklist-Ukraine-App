@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.response.mapping.MappingResponse;
-import com.datapath.checklistapp.service.MappingWebService;
+import com.datapath.checklistapp.service.web.MappingWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistapp.dao.entity.EmploymentEntity;
@@ -17,7 +17,7 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 @Service
-public class UserConverter {
+public class UserMapper {
 
     public UserDTO map(UserEntity entity, Optional<EmploymentEntity> lastEmployment) {
         UserDTO dto = new UserDTO();

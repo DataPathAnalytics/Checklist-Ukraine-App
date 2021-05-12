@@ -2,7 +2,8 @@ package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.TemplateConfigType;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 @Data
 @Entity(name = "template_config")
+@EntityListeners(AuditingEntityListener.class)
 public class TemplateConfigEntity {
 
     @Id
@@ -19,7 +21,7 @@ public class TemplateConfigEntity {
 
     private String name;
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime dateCreated;
 
     @ManyToOne

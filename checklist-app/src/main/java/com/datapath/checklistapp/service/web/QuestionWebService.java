@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service;
+package com.datapath.checklistapp.service.web;
 
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionSourceEntity;
@@ -6,10 +6,10 @@ import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.request.question.CreateQuestionRequest;
+import com.datapath.checklistapp.dto.request.question.CreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
-import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
+import com.datapath.checklistapp.service.mapper.QuestionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,11 +28,11 @@ public class QuestionWebService {
 
     private final QuestionDaoService service;
     private final AnswerStructureDaoService answerStructureService;
-    private final QuestionConverter questionConverter;
+    private final QuestionMapper questionMapper;
     private final QuestionSourceDaoService questionSourceService;
 
     @Transactional
-    public void create(CreateQuestionRequest request) {
+    public void create(CreateRequest request) {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setValue(request.getValue());
@@ -65,7 +65,7 @@ public class QuestionWebService {
     }
 
     public QuestionDTO get(Integer id) {
-        return questionConverter.map(service.findById(id));
+        return questionMapper.map(service.findById(id));
     }
 
     @Transactional
@@ -77,7 +77,7 @@ public class QuestionWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(questionConverter::map)
+                        .map(questionMapper::map)
                         .collect(toList())
         );
     }
@@ -91,7 +91,7 @@ public class QuestionWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(questionConverter::map)
+                        .map(questionMapper::map)
                         .collect(toList())
         );
     }

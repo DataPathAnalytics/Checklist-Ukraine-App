@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service;
+package com.datapath.checklistapp.service.web;
 
 import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
 import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;

@@ -2,15 +2,17 @@ package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
 @Entity(name = "answer")
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = {"id"})
+@EntityListeners(AuditingEntityListener.class)
 public class AnswerEntity {
 
     @Id
@@ -20,9 +22,9 @@ public class AnswerEntity {
     private String values;
     private String comment;
 
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime dateCreated;
-    @UpdateTimestamp
+    @LastModifiedDate
     private LocalDateTime dateModified;
 
     @OneToOne

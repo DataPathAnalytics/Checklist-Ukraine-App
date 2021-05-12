@@ -2,8 +2,9 @@ package com.datapath.checklistapp.dao.entity;
 
 import com.datapath.checklistapp.dao.entity.classifier.Permission;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.Set;
 @Data
 @Table
 @Entity(name = "users")
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity {
 
     @Id
@@ -26,9 +28,9 @@ public class UserEntity {
     private boolean locked;
     private boolean removed;
     private boolean superAdmin;
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime registeredDate;
-    @UpdateTimestamp
+    @LastModifiedDate
     private LocalDateTime dateModified;
 
     @ManyToMany(fetch = FetchType.EAGER)

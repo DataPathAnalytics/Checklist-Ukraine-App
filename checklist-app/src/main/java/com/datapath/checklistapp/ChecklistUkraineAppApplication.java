@@ -18,8 +18,8 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableSwagger2
-@EnableJpaAuditing
 @EnableTransactionManagement
+@EnableJpaAuditing
 public class ChecklistUkraineAppApplication {
 
     public static void main(String[] args) {

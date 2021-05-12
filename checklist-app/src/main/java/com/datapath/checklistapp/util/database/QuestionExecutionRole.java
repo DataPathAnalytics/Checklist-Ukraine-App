@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.util.database;
 
-public enum TemplateRole {
+public enum QuestionExecutionRole {
     OBJECT,
     OBJECT_FUTURE,
     AUTHORITY,

@@ -1,7 +1,8 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,13 +11,14 @@ import java.util.Set;
 
 @Data
 @Entity(name = "question")
+@EntityListeners(AuditingEntityListener.class)
 public class QuestionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String value;
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime dateCreated;
 
     @ElementCollection

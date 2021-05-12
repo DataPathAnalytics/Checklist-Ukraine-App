@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.ControlActivityEntity;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
@@ -11,9 +11,9 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @AllArgsConstructor
-public class ControlActivityConverter {
+public class ControlActivityMapper {
 
-    private final ResponseSessionConverter responseSessionConverter;
+    private final SessionMapper sessionMapper;
 
     public ControlActivityDTO map(ControlActivityEntity activity) {
         ControlActivityDTO dto = new ControlActivityDTO();
@@ -21,7 +21,7 @@ public class ControlActivityConverter {
         dto.setId(activity.getId());
         dto.setStatusId(activity.getStatus().getId());
 
-        dto.setActivity(responseSessionConverter.map(activity.getActivityResponse()));
+        dto.setActivity(sessionMapper.map(activity.getActivityResponse()));
 
         dto.setTemplates(
                 activity.getTemplates().stream()

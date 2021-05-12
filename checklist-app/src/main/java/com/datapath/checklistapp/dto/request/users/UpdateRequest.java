@@ -4,22 +4,16 @@ import com.datapath.checklistapp.dto.DepartmentDTO;
 import lombok.Data;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UserRegisterRequest {
-
-    @NotBlank
-    private String firstName;
-    @NotBlank
-    private String lastName;
-    @NotBlank
-    private String email;
-    @NotBlank
-    private String password;
+public class UpdateRequest {
 
     @NotNull
+    private Integer id;
+
     @Valid
     private DepartmentDTO department;
+    private Boolean disable;
+    private Integer permissionId;
 }

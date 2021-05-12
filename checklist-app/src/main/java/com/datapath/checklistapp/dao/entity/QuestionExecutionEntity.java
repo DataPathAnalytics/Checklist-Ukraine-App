@@ -1,6 +1,6 @@
 package com.datapath.checklistapp.dao.entity;
 
-import com.datapath.checklistapp.util.database.TemplateRole;
+import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -25,7 +25,7 @@ public class QuestionExecutionEntity {
     private boolean required;
     private boolean root;
     @Enumerated(EnumType.STRING)
-    private TemplateRole role;
+    private QuestionExecutionRole role;
 
     @ManyToOne
     @JoinColumn(name = "question_id")

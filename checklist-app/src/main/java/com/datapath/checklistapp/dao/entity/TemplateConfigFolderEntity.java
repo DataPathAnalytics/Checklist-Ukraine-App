@@ -1,22 +1,21 @@
 package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
 @Entity(name = "template_config_folder")
+@EntityListeners(AuditingEntityListener.class)
 public class TemplateConfigFolderEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    @CreationTimestamp
+    @CreatedDate
     private LocalDateTime dateCreated;
 }

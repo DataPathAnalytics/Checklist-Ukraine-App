@@ -12,7 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateQuestionRequest {
+public class CreateRequest {
 
     @NotBlank
     private String value;

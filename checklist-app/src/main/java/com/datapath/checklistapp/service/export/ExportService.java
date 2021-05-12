@@ -11,8 +11,8 @@ import com.datapath.checklistapp.dao.service.ResponseSessionDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
 import com.datapath.checklistapp.dao.service.classifier.PermissionDaoService;
 import com.datapath.checklistapp.dto.response.export.*;
-import com.datapath.checklistapp.service.converter.structure.ResponseSessionConverter;
-import com.datapath.checklistapp.service.converter.structure.UserConverter;
+import com.datapath.checklistapp.service.mapper.SessionMapper;
+import com.datapath.checklistapp.service.mapper.UserMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +29,11 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @AllArgsConstructor
 public class ExportService {
 
-    private final ResponseSessionConverter responseSessionConverter;
+    private final SessionMapper sessionMapper;
     private final ControlActivityDaoService controlActivityService;
     private final ResponseSessionDaoService responseSessionService;
     private final UserDaoService userService;
-    private final UserConverter userConverter;
+    private final UserMapper userMapper;
     private final PermissionDaoService permissionService;
 
     public ExportUserResponse getUpdateUsers(LocalDateTime date, int limit) {
@@ -46,7 +46,7 @@ public class ExportService {
         ExportUserResponse response = new ExportUserResponse();
         if (isEmpty(users)) return response;
 
-        response.setUsers(users.stream().map(userConverter::mapExport).collect(toList()));
+        response.setUsers(users.stream().map(userMapper::mapExport).collect(toList()));
         response.setNextOffset(users.stream().map(UserEntity::getDateModified).max(LocalDateTime::compareTo).get());
 
         return response;
@@ -117,11 +117,11 @@ public class ExportService {
         ControlActivityEntity controlActivity = controlActivityService.findById(id);
 
         response.setId(controlActivity.getId());
-        response.setActivity(responseSessionConverter.map(controlActivity.getActivityResponse()));
+        response.setActivity(sessionMapper.map(controlActivity.getActivityResponse()));
         response.setSessions(controlActivity.getSessionResponses()
                 .stream()
                 .filter(s -> IN_COMPLETED_STATUS.equals(s.getStatus().getId()))
-                .map(responseSessionConverter::map)
+                .map(sessionMapper::map)
                 .collect(toList())
         );
 
@@ -133,7 +133,7 @@ public class ExportService {
         ExportResponseSessionDTO response = new ExportResponseSessionDTO();
         SessionEntity session = responseSessionService.findById(id);
         response.setControlActivityId(session.getActivity().getId());
-        response.setSession(responseSessionConverter.map(session));
+        response.setSession(sessionMapper.map(session));
         return response;
     }
 }

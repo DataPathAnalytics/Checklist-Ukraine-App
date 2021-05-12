@@ -1,11 +1,11 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.QuestionExecutionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionGroupEntity;
 import com.datapath.checklistapp.dao.entity.TemplateConfigEntity;
 import com.datapath.checklistapp.dao.entity.TemplateEntity;
 import com.datapath.checklistapp.dto.*;
-import com.datapath.checklistapp.util.database.TemplateRole;
+import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,9 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
-public class TemplateConverter {
+public class MapperConverter {
 
-    private final QuestionConverter questionConverter;
+    private final QuestionMapper questionMapper;
 
     public TemplateDTO map(TemplateConfigEntity entity) {
         TemplateDTO dto = new TemplateDTO();
@@ -31,19 +31,19 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT).get(0);
-        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.OBJECT_FUTURE);
-        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.TYPE);
+        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getQuestions(), QuestionExecutionRole.OBJECT).get(0);
+        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), QuestionExecutionRole.OBJECT_FUTURE);
+        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getQuestions(), QuestionExecutionRole.TYPE);
 
         dto.setObjectQuestion(processQuestionWithChild(objectQuestion, objectFeatureQuestions, null));
         dto.setObjectFeatureQuestions(processQuestions(objectFeatureQuestions));
         dto.setTypeQuestions(processQuestions(typeQuestions));
 
-        List<QuestionExecutionEntity> authorityQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY);
+        List<QuestionExecutionEntity> authorityQuestions = filterQuestionExecutionByRole(entity.getQuestions(), QuestionExecutionRole.AUTHORITY);
 
         if (!isEmpty(authorityQuestions)) {
             QuestionExecutionEntity authorityQuestion = authorityQuestions.get(0);
-            List<QuestionExecutionEntity> authorityFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), TemplateRole.AUTHORITY_FEATURE);
+            List<QuestionExecutionEntity> authorityFeatureQuestions = filterQuestionExecutionByRole(entity.getQuestions(), QuestionExecutionRole.AUTHORITY_FEATURE);
 
             dto.setAuthorityQuestion(processQuestionWithChild(authorityQuestion, authorityFeatureQuestions, null));
             dto.setAuthorityFeatureQuestions(processQuestions(authorityFeatureQuestions));
@@ -60,9 +60,9 @@ public class TemplateConverter {
         dto.setFolderId(entity.getFolder().getId());
         dto.setAuthorId(entity.getAuthor().getId());
 
-        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.OBJECT).get(0);
-        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.OBJECT_FUTURE);
-        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), TemplateRole.TYPE);
+        QuestionExecutionEntity objectQuestion = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), QuestionExecutionRole.OBJECT).get(0);
+        List<QuestionExecutionEntity> objectFeatureQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), QuestionExecutionRole.OBJECT_FUTURE);
+        List<QuestionExecutionEntity> typeQuestions = filterQuestionExecutionByRole(entity.getConfig().getQuestions(), QuestionExecutionRole.TYPE);
 
 
         dto.setObjectQuestion(processQuestionWithChild(objectQuestion, objectFeatureQuestions, entity.getGroups()));
@@ -93,7 +93,7 @@ public class TemplateConverter {
         return dto;
     }
 
-    private List<QuestionExecutionEntity> filterQuestionExecutionByRole(Set<QuestionExecutionEntity> questionExecutions, TemplateRole role) {
+    private List<QuestionExecutionEntity> filterQuestionExecutionByRole(Set<QuestionExecutionEntity> questionExecutions, QuestionExecutionRole role) {
         return questionExecutions.stream()
                 .filter(q -> q.getRole().equals(role))
                 .collect(toList());
@@ -101,7 +101,7 @@ public class TemplateConverter {
 
     private QuestionExecutionDTO processQuestionWithChild(QuestionExecutionEntity questionEntity,
                                                           List<QuestionExecutionEntity> subQuestions, Set<QuestionGroupEntity> groups) {
-        QuestionExecutionDTO question = questionConverter.map(questionEntity);
+        QuestionExecutionDTO question = questionMapper.map(questionEntity);
         question.addSubQuestions(
                 subQuestions.stream()
                         .filter(QuestionExecutionEntity::isRoot)
@@ -124,7 +124,7 @@ public class TemplateConverter {
     private List<QuestionExecutionDTO> processQuestions(List<QuestionExecutionEntity> questions) {
         Map<Integer, QuestionExecutionDTO> questionMap = questions
                 .stream()
-                .map(questionConverter::map)
+                .map(questionMapper::map)
                 .collect(toMap(QuestionExecutionDTO::getId, Function.identity()));
 
         questions.stream()

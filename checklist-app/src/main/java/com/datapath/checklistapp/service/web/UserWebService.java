@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service;
+package com.datapath.checklistapp.service.web;
 
 import com.datapath.checklistapp.dao.entity.DepartmentEntity;
 import com.datapath.checklistapp.dao.entity.EmploymentEntity;
@@ -11,15 +11,15 @@ import com.datapath.checklistapp.dto.DepartmentDTO;
 import com.datapath.checklistapp.dto.UserDTO;
 import com.datapath.checklistapp.dto.UserPageDTO;
 import com.datapath.checklistapp.dto.UserStateDTO;
+import com.datapath.checklistapp.dto.request.users.RegisterRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordSendRequest;
-import com.datapath.checklistapp.dto.request.users.UserRegisterRequest;
-import com.datapath.checklistapp.dto.request.users.UserUpdateRequest;
+import com.datapath.checklistapp.dto.request.users.UpdateRequest;
 import com.datapath.checklistapp.exception.ResetPasswordException;
 import com.datapath.checklistapp.exception.UserException;
 import com.datapath.checklistapp.security.ConfirmationTokenStorageService;
 import com.datapath.checklistapp.security.UsersStorageService;
-import com.datapath.checklistapp.service.converter.structure.UserConverter;
+import com.datapath.checklistapp.service.mapper.UserMapper;
 import com.datapath.checklistapp.service.notification.EmailNotificationService;
 import com.datapath.checklistapp.util.MessageTemplate;
 import com.datapath.checklistapp.util.UserUtils;
@@ -49,7 +49,7 @@ public class UserWebService {
     private final ConfirmationTokenStorageService tokenStorageService;
     private final EmailNotificationService emailSender;
     private final PermissionDaoService permissionService;
-    private final UserConverter userConverter;
+    private final UserMapper userMapper;
 
     public UserPageDTO list(int page, int size) {
         Page<UserEntity> entities = userService.findAll(page, size);
@@ -66,7 +66,7 @@ public class UserWebService {
     }
 
     @Transactional
-    public void register(UserRegisterRequest request) {
+    public void register(RegisterRequest request) {
         UserEntity user = userService.findByEmail(request.getEmail());
         if (nonNull(user)) {
             if (!user.isRemoved()) throw new UserException("This email already registered");
@@ -110,7 +110,7 @@ public class UserWebService {
     }
 
     @Transactional
-    public void update(UserUpdateRequest request) {
+    public void update(UpdateRequest request) {
         UserEntity user = userService.findById(request.getId());
 
         if (user.isSuperAdmin()) throw new UserException("SuperAdmin updating not allowed");
@@ -144,6 +144,8 @@ public class UserWebService {
                 user.setPermissions(Collections.singleton(permission));
             }
         }
+
+        user.setDateModified(LocalDateTime.now());
 
         userService.save(user);
 
@@ -253,6 +255,6 @@ public class UserWebService {
     }
 
     private UserDTO mapEntityToDTO(UserEntity entity) {
-        return userConverter.map(entity, getLastEmployment(entity.getEmployments()));
+        return userMapper.map(entity, getLastEmployment(entity.getEmployments()));
     }
 }

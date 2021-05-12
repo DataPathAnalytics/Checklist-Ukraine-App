@@ -1,10 +1,10 @@
-package com.datapath.checklistapp.service;
+package com.datapath.checklistapp.service.web;
 
 import com.datapath.checklistapp.dao.entity.TemplateConfigFolderEntity;
 import com.datapath.checklistapp.dao.entity.TemplateFolderEntity;
 import com.datapath.checklistapp.dao.service.FolderDaoService;
 import com.datapath.checklistapp.dto.FolderDTO;
-import com.datapath.checklistapp.dto.request.folder.CreateFolderRequest;
+import com.datapath.checklistapp.dto.request.folder.CreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import lombok.AllArgsConstructor;
@@ -22,14 +22,14 @@ public class FolderWebService {
     private final FolderDaoService templateFolderService;
 
     @Transactional
-    public void createTemplateFolder(CreateFolderRequest request) {
+    public void createTemplateFolder(CreateRequest request) {
         TemplateFolderEntity entity = new TemplateFolderEntity();
         entity.setName(request.getName());
         templateFolderService.save(entity);
     }
 
     @Transactional
-    public void createTemplateConfigFolder(CreateFolderRequest request) {
+    public void createTemplateConfigFolder(CreateRequest request) {
         TemplateConfigFolderEntity entity = new TemplateConfigFolderEntity();
         entity.setName(request.getName());
         templateFolderService.save(entity);

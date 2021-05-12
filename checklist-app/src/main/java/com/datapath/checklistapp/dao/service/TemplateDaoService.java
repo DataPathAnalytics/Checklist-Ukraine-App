@@ -32,8 +32,8 @@ public class TemplateDaoService {
         return new HashSet<>(repository.findAllById(ids));
     }
 
-    public TemplateEntity save(TemplateEntity entity) {
-        return repository.save(entity);
+    public void save(TemplateEntity entity) {
+        repository.save(entity);
     }
 
     public Page<TemplateEntity> searchByName(SearchRequest request) {

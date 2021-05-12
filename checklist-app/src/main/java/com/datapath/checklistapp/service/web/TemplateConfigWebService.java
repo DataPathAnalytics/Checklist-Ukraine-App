@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service;
+package com.datapath.checklistapp.service.web;
 
 import com.datapath.checklistapp.dao.entity.FieldDescriptionEntity;
 import com.datapath.checklistapp.dao.entity.QuestionEntity;
@@ -14,10 +14,10 @@ import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigReques
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
-import com.datapath.checklistapp.service.converter.structure.QuestionConverter;
-import com.datapath.checklistapp.service.converter.structure.TemplateConverter;
+import com.datapath.checklistapp.service.mapper.MapperConverter;
+import com.datapath.checklistapp.service.mapper.QuestionMapper;
 import com.datapath.checklistapp.util.UserUtils;
-import com.datapath.checklistapp.util.database.TemplateRole;
+import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -44,8 +44,8 @@ public class TemplateConfigWebService {
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
     private final TemplateConfigTypeDaoService templateTypeService;
-    private final TemplateConverter templateConverter;
-    private final QuestionConverter questionConverter;
+    private final MapperConverter mapperConverter;
+    private final QuestionMapper questionMapper;
     private final QuestionExecutionDaoService questionExecutionService;
 
     @Transactional
@@ -59,38 +59,40 @@ public class TemplateConfigWebService {
         entity.setType(templateTypeService.findById(request.getTemplateConfigTypeId()));
         entity.setFolder(folderService.findTemplateConfigFolderById(request.getFolderId()));
 
-        QuestionExecutionEntity objectQuestionExecution = questionConverter.map(
-                request.getObjectQuestion().asTemplateQuestion(),
-                questionService.findById(request.getObjectQuestion().getQuestionId()),
-                TemplateRole.OBJECT);
+        QuestionExecutionEntity objectQuestionExecution = questionExecutionService.save(
+                questionMapper.map(
+                        request.getObjectQuestion().asTemplateQuestion(),
+                        questionService.findById(request.getObjectQuestion().getQuestionId()),
+                        QuestionExecutionRole.OBJECT)
+        );
         entity.getQuestions().add(objectQuestionExecution);
 
         Set<QuestionExecutionEntity> objectFeatureQuestions = new HashSet<>();
         request.getObjectFeatureQuestions().forEach(
-                q -> processQuestion(q, questionService.findById(q.getQuestionId()), objectFeatureQuestions, null, TemplateRole.OBJECT_FUTURE)
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), objectFeatureQuestions, null, QuestionExecutionRole.OBJECT_FUTURE)
         );
         entity.getQuestions().addAll(objectFeatureQuestions);
 
         if (nonNull(request.getAuthorityQuestion())) {
             QuestionExecutionEntity authorityQuestionExecution = questionExecutionService.save(
-                    questionConverter.map(
+                    questionMapper.map(
                             request.getAuthorityQuestion().asTemplateQuestion(),
                             questionService.findById(request.getAuthorityQuestion().getQuestionId()),
-                            TemplateRole.AUTHORITY
+                            QuestionExecutionRole.AUTHORITY
                     )
             );
             entity.getQuestions().add(authorityQuestionExecution);
 
             Set<QuestionExecutionEntity> authorityFeatureQuestions = new HashSet<>();
             request.getAuthorityFeatureQuestions().forEach(
-                    q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null, TemplateRole.AUTHORITY_FEATURE)
+                    q -> processQuestion(q, questionService.findById(q.getQuestionId()), authorityFeatureQuestions, null, QuestionExecutionRole.AUTHORITY_FEATURE)
             );
             entity.getQuestions().addAll(authorityFeatureQuestions);
         }
 
         Set<QuestionExecutionEntity> typeQuestions = new HashSet<>();
         request.getTypeQuestions().forEach(
-                q -> processQuestion(q, questionService.findById(q.getQuestionId()), typeQuestions, null, TemplateRole.TYPE)
+                q -> processQuestion(q, questionService.findById(q.getQuestionId()), typeQuestions, null, QuestionExecutionRole.TYPE)
         );
         entity.getQuestions().addAll(typeQuestions);
 
@@ -107,7 +109,7 @@ public class TemplateConfigWebService {
         }
 
         Map<Integer, List<TemplateDTO>> folderTemplatesMap = entities.stream()
-                .map(templateConverter::shortMap)
+                .map(mapperConverter::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
         Map<Integer, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
@@ -118,11 +120,11 @@ public class TemplateConfigWebService {
                     return dto;
                 }).collect(toMap(FolderDTO::getId, Function.identity()));
 
-        return templateConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
+        return mapperConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
     public TemplateDTO get(Integer id) {
-        return templateConverter.map(templateConfigService.findById(id));
+        return mapperConverter.map(templateConfigService.findById(id));
     }
 
     public PageableResponse<TemplateDTO> search(SearchRequest request) {
@@ -133,7 +135,7 @@ public class TemplateConfigWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(templateConverter::shortMap)
+                        .map(mapperConverter::shortMap)
                         .collect(toList())
         );
     }
@@ -148,8 +150,8 @@ public class TemplateConfigWebService {
                                  QuestionEntity daoQuestion,
                                  Set<QuestionExecutionEntity> questionExecutions,
                                  QuestionExecutionEntity parentQuestion,
-                                 TemplateRole role) {
-        QuestionExecutionEntity question = questionConverter.map(dtoQuestion, daoQuestion, role);
+                                 QuestionExecutionRole role) {
+        QuestionExecutionEntity question = questionMapper.map(dtoQuestion, daoQuestion, role);
 
         if (nonNull(parentQuestion)) {
             question.setParentQuestionId(parentQuestion.getId());
@@ -157,11 +159,12 @@ public class TemplateConfigWebService {
             question.setRoot(true);
         }
 
-        questionExecutions.add(question);
+        QuestionExecutionEntity saved = questionExecutionService.save(question);
+        questionExecutions.add(saved);
 
         if (!isEmpty(dtoQuestion.getSubQuestions())) {
             dtoQuestion.getSubQuestions()
-                    .forEach(q -> processQuestion(q, questionService.findById(q.getQuestionId()), questionExecutions, question, role));
+                    .forEach(q -> processQuestion(q, questionService.findById(q.getQuestionId()), questionExecutions, saved, role));
         }
     }
 

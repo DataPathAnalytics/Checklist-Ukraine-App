@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dao.entity.SessionEntity;
 import com.datapath.checklistapp.dao.repository.ResponseSessionRepository;
 import com.datapath.checklistapp.exception.EntityNotFoundException;
 import com.datapath.checklistapp.util.database.Entity;
-import com.datapath.checklistapp.util.database.SessionPlace;
+import com.datapath.checklistapp.util.database.ResponseRole;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +24,7 @@ public class ResponseSessionDaoService {
     private static final String RESPONSE_SESSION_DATE_LIST_REQUEST = "select rs.id as id, rs.date_modified as dateModified from session rs " +
             "join control_activity ca on ca.id = rs.activity_id " +
             "where rs.status_id = 2 and " +
-            "rs.place = ? and " +
+            "rs.role = ? and " +
             "rs.date_modified > ? " +
             "order by rs.date_modified limit ?";
 
@@ -32,7 +32,7 @@ public class ResponseSessionDaoService {
     private final JdbcTemplate template;
 
     public SessionEntity save(SessionEntity entity) {
-        return repository.save(entity);
+        return repository.saveAndFlush(entity);
     }
 
     public SessionEntity findById(Integer id) {
@@ -40,18 +40,13 @@ public class ResponseSessionDaoService {
                 .orElseThrow(() -> new EntityNotFoundException(Entity.ResponseSession.name(), id));
     }
 
-    public SessionEntity findByIdAndActivity(Integer id, ControlActivityEntity activity) {
-        return repository.findByIdAndActivity(id, activity)
-                .orElseThrow(() -> new EntityNotFoundException(Entity.ResponseSession.name(), id));
-    }
-
-    public List<ExportSessionResponseDomain> getResponseSessionDates(LocalDateTime dateModified, int limit) {
+    public List<ExportSessionResponseDomain> getResponseSessionDates(LocalDateTime offset, int limit) {
         return template.query(RESPONSE_SESSION_DATE_LIST_REQUEST,
                 new BeanPropertyRowMapper<>(ExportSessionResponseDomain.class),
-                SessionPlace.SESSION_RESPONSE.name(), dateModified, limit);
+                ResponseRole.SESSION_RESPONSE.name(), offset, limit);
     }
 
     public Page<SessionEntity> findResponseSessionByActivity(ControlActivityEntity activity, int page, int size) {
-        return repository.findAllByActivityAndPlaceOrderByNumber(activity, SessionPlace.SESSION_RESPONSE, PageRequest.of(page, size));
+        return repository.findAllByActivityAndRoleOrderByNumber(activity, ResponseRole.SESSION_RESPONSE, PageRequest.of(page, size));
     }
 }

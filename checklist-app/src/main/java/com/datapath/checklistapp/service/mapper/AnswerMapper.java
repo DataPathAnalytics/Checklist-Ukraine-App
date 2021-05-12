@@ -1,4 +1,4 @@
-package com.datapath.checklistapp.service.converter.structure;
+package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.AnswerEntity;
 import com.datapath.checklistapp.dao.entity.AnswerStructureEntity;
@@ -19,7 +19,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
-public class AnswerConverter {
+public class AnswerMapper {
 
     private final ObjectMapper mapper;
 

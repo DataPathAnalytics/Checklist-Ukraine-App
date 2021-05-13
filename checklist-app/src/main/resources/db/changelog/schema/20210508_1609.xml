@@ -147,7 +147,7 @@
 
         <addPrimaryKey tableName="session_member" columnNames="session_id, user_id" constraintName="pk_session_member"/>
 
-        <addForeignKeyConstraint baseTableName="session_member" baseColumnNames="session_id"
+        <addForeignKeyConstraint baseTableName="session_member" baseColumnNames="user_id"
                                  constraintName="session_member_to_member_user"
                                  referencedTableName="users"
                                  referencedColumnNames="id"/>

@@ -12,17 +12,17 @@ public interface ControlActivityRepository extends JpaRepository<ControlActivity
     String CONTROL_ACTIVITIES_BY_AUTHOR = "select ca.* from control_activity ca join session rs on " +
             "ca.id = rs.activity_id " +
             "where rs.author = :authorId " +
-            "and rs.place = :place " +
+            "and rs.role = :role " +
             "order by rs.date_modified desc";
 
     String CONTROL_ACTIVITIES = "select ca.* from control_activity ca join session rs on " +
             "ca.id = rs.activity_id " +
-            "where rs.place = :place " +
+            "where rs.role = :role " +
             "order by rs.date_modified desc";
 
     @Query(value = CONTROL_ACTIVITIES_BY_AUTHOR, nativeQuery = true)
-    Page<ControlActivityEntity> findUserControlActivities(@Param("authorId") Integer authorId, @Param("place") String place, Pageable pageable);
+    Page<ControlActivityEntity> findUserControlActivities(@Param("authorId") Integer authorId, @Param("role") String role, Pageable pageable);
 
     @Query(value = CONTROL_ACTIVITIES, nativeQuery = true)
-    Page<ControlActivityEntity> findAll(@Param("place") String place, Pageable pageable);
+    Page<ControlActivityEntity> findAll(@Param("role") String role, Pageable pageable);
 }

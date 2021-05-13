@@ -65,6 +65,9 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         if (nonNull(existed)) delete(existed);
 
         ControlActivityEntity activity = controlActivityRepository.findByOuterId(sessionDTO.getControlActivityId());
+
+        if (isNull(activity)) return;
+
         save(sessionDTO.getSession(), activity.getId());
     }
 

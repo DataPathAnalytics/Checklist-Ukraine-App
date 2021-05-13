@@ -26,7 +26,7 @@ public class ControlActivityDaoService {
     private final static String CONTROL_ACTIVITY_DATE_LIST_REQUEST = "select ca.id as id, ars.date_modified as dateModified " +
             "from control_activity ca " +
             "join session ars on ca.id = ars.activity_id " +
-            "where ars.date_modified > ? and " +
+            "where ars.date_modified > ?::timestamp at time zone 'Etc/UTC' and " +
             "ars.role = ? and " +
             "exists (select id from session where activity_id = ca.id and status_id = 2 and role = ?) " +
             "order by ars.date_modified limit ?";

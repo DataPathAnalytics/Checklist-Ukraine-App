@@ -49,7 +49,7 @@ public class SessionEntity {
     @JoinColumn(name = "reviewer_id")
     private UserEntity reviewer;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(name = "session_member",
             joinColumns = {@JoinColumn(name = "session_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")},

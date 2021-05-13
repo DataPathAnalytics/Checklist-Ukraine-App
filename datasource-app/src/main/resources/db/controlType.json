@@ -28,6 +28,10 @@
     {
       "identifier": 4,
       "name": "Перевiрка закупiвель"
+    },
+    {
+      "identifier": 5,
+      "name": "Ревiзiя"
     }
   ]
 }

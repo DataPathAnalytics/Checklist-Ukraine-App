@@ -25,7 +25,7 @@ public class ResponseSessionDaoService {
             "join control_activity ca on ca.id = rs.activity_id " +
             "where rs.status_id = 2 and " +
             "rs.role = ? and " +
-            "rs.date_modified > ? " +
+            "rs.date_modified > ?::timestamp at time zone 'Etc/UTC' " +
             "order by rs.date_modified limit ?";
 
     private final ResponseSessionRepository repository;

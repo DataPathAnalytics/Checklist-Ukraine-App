@@ -10,6 +10,8 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.datapath.checklistapp.util.Constants.UNKNOWN_NODE;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,8 +51,8 @@ public class CreateTemplateRequest {
         private Integer orderNumber;
 
         private boolean required;
-        private Long linkTypeId;
-        private Long nodeTypeId;
+        private String linkType;
+        private String nodeType = UNKNOWN_NODE;
 
         @Valid
         private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();

@@ -1,10 +1,11 @@
 package com.datapath.analyticapp.service.miner.handler;
 
-import com.datapath.analyticapp.dao.entity.LinkTypeEntity;
-import com.datapath.analyticapp.dao.entity.NodeTypeEntity;
 import com.datapath.analyticapp.dao.entity.RoleEntity;
 import com.datapath.analyticapp.dao.entity.imported.QuestionEntity;
-import com.datapath.analyticapp.dao.repository.*;
+import com.datapath.analyticapp.dao.repository.KnowledgeClassRepository;
+import com.datapath.analyticapp.dao.repository.QuestionRepository;
+import com.datapath.analyticapp.dao.repository.RoleRepository;
+import com.datapath.analyticapp.dao.repository.UserRepository;
 import com.datapath.analyticapp.dao.service.CypherQueryService;
 import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
@@ -12,6 +13,7 @@ import com.datapath.analyticapp.service.miner.config.Place;
 import com.datapath.analyticapp.service.miner.rule.MinerRule;
 import com.datapath.analyticapp.service.miner.rule.MinerRuleProvider;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static com.datapath.analyticapp.dao.Node.DEFAULT_NODE;
-import static com.datapath.analyticapp.dao.Relationship.DEFAULT_LINK;
+import static com.datapath.analyticapp.dao.Node.UNKNOWN_NODE;
 import static com.datapath.analyticapp.service.miner.config.Role.FEATURE_ROLE;
 import static com.datapath.analyticapp.service.miner.config.Role.INITIATOR_ROLE;
 import static java.util.Objects.isNull;
@@ -34,7 +35,6 @@ public class BaseUpdateHandler {
     protected final CypherQueryService queryService;
     protected final MinerRuleProvider minerRuleProvider;
     protected final RoleRepository roleRepository;
-    protected final NodeTypeRepository nodeTypeRepository;
     protected final UserRepository userRepository;
     protected final QuestionRepository questionRepository;
     protected final KnowledgeClassRepository knowledgeClassRepository;
@@ -44,7 +44,6 @@ public class BaseUpdateHandler {
     public BaseUpdateHandler(CypherQueryService queryService,
                              MinerRuleProvider minerRuleProvider,
                              RoleRepository roleRepository,
-                             NodeTypeRepository nodeTypeRepository,
                              UserRepository userRepository,
                              QuestionRepository questionRepository,
                              KnowledgeClassRepository knowledgeClassRepository,
@@ -52,7 +51,6 @@ public class BaseUpdateHandler {
         this.queryService = queryService;
         this.minerRuleProvider = minerRuleProvider;
         this.roleRepository = roleRepository;
-        this.nodeTypeRepository = nodeTypeRepository;
         this.userRepository = userRepository;
         this.questionRepository = questionRepository;
         this.knowledgeClassRepository = knowledgeClassRepository;
@@ -99,6 +97,8 @@ public class BaseUpdateHandler {
                                   Long parentId,
                                   Map<Long, QuestionExecutionDTO> questions,
                                   Map<Long, AnswerDTO> questionAnswers) {
+        if (UNKNOWN_NODE.equals(execution.getNodeType())) return;
+
         AnswerDTO answer = questionAnswers.get(execution.getId());
         if (isNull(answer)) return;
         Map<String, Object> answerValue = answer.getValues();
@@ -106,24 +106,12 @@ public class BaseUpdateHandler {
 
         Optional<FieldDescriptionDTO> identifier = getIdentifierField(execution);
 
-        String nodeType;
-        String linkType;
-
-        Optional<NodeTypeEntity> nodeTypeEntity = getNodeType(execution);
-        if (nodeTypeEntity.isPresent()) {
-            nodeType = nodeTypeEntity.get().getNodeTypeName();
-            linkType = getLinkType(execution, nodeTypeEntity.get()).orElse(DEFAULT_LINK);
-        } else {
-            nodeType = DEFAULT_NODE;
-            linkType = DEFAULT_LINK;
-        }
-
         Long nodeId;
         if (!identifier.isPresent()) {
             nodeId = queryService.mergeNotIdentifierNode(
                     queryRequestBuilder.nonIdentifierRequest(parentId,
-                            nodeType,
-                            linkType,
+                            execution.getNodeType(),
+                            getLinkTypeOrBasedOnNodeType(execution),
                             answerValue,
                             getFieldTypes(execution),
                             getInitiatorId())
@@ -131,14 +119,19 @@ public class BaseUpdateHandler {
         } else {
             nodeId = queryService.mergeIdentifierNode(
                     queryRequestBuilder.identifierRequest(
-                            nodeType,
+                            execution.getNodeType(),
                             identifier.get().getName(),
                             answerValue.get(identifier.get().getName()),
                             answerValue,
                             getFieldTypes(execution))
             );
             queryService.buildRelationship(
-                    queryRequestBuilder.relationshipRequest(parentId, nodeId, linkType, getInitiatorId())
+                    queryRequestBuilder.relationshipRequest(
+                            parentId,
+                            nodeId,
+                            getLinkTypeOrBasedOnNodeType(execution),
+                            getInitiatorId()
+                    )
             );
         }
 
@@ -189,26 +182,6 @@ public class BaseUpdateHandler {
                 .findFirst();
     }
 
-    protected Optional<NodeTypeEntity> getNodeType(QuestionExecutionDTO execution) {
-        if (isNull(execution.getNodeTypeId())) return Optional.empty();
-        return nodeTypeRepository.findById(execution.getNodeTypeId());
-    }
-
-    protected String getNodeType(QuestionExecutionDTO execution, String defaultNodeType) {
-        if (isNull(execution.getNodeTypeId())) return defaultNodeType;
-        Optional<NodeTypeEntity> nodeTypeEntity = nodeTypeRepository.findById(execution.getNodeTypeId());
-        return nodeTypeEntity.map(NodeTypeEntity::getNodeTypeName).orElse(defaultNodeType);
-    }
-
-    protected Optional<String> getLinkType(QuestionExecutionDTO execution, NodeTypeEntity nodeType) {
-        if (isNull(execution.getLinkTypeId())) return Optional.empty();
-        return nodeType.getLinkTypes()
-                .stream()
-                .filter(l -> l.getId().equals(execution.getLinkTypeId()))
-                .findFirst()
-                .map(LinkTypeEntity::getLinkTypeName);
-    }
-
     protected boolean conditionMet(SubQuestionDTO sub, AnswerDTO answer) {
         return isNull(sub.getConditionFieldName()) || nonNull(answer.getValues().get(sub.getConditionFieldName()));
     }
@@ -245,5 +218,17 @@ public class BaseUpdateHandler {
 
     protected Long getInitiatorId() {
         return roleNodeIdMap.get(INITIATOR_ROLE).get(0);
+    }
+
+    protected String getNodeTypeOrDefault(QuestionExecutionDTO execution, String defaultNodeType) {
+        return UNKNOWN_NODE.equals(execution.getNodeType()) ?
+                defaultNodeType :
+                execution.getNodeType();
+    }
+
+    protected String getLinkTypeOrBasedOnNodeType(QuestionExecutionDTO execution) {
+        return StringUtils.hasText(execution.getLinkType()) ?
+                execution.getLinkType() :
+                "HAS_" + execution.getNodeType().toUpperCase();
     }
 }

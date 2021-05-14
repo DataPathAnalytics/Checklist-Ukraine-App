@@ -13,8 +13,8 @@ public class QuestionExecutionDTO {
     private QuestionDTO question;
     private boolean required;
     private boolean root;
-    private Long linkTypeId;
-    private Long nodeTypeId;
+    private String linkType;
+    private String nodeType;
     private Integer orderNumber;
     private Long miningRoleId;
     private Integer parentQuestionId;

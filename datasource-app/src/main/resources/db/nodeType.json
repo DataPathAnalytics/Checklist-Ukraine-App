@@ -1,0 +1,92 @@
+{
+  "name": "nodeLinkType",
+  "description": "Node/Link types",
+  "key": "node",
+  "fields": [
+    {
+      "name": "node",
+      "description": "Тип ноды"
+    },
+    {
+      "name": "links",
+      "description": "Типы связей для этого типа ноды",
+      "type": "ARRAY"
+    },
+    {
+      "name": "description",
+      "description": "Описание"
+    }
+  ],
+  "items": [
+    {
+      "node": "Period",
+      "description": "Период",
+      "links":[
+        "HAS_REVISION_PERIOD",
+        "HAS_DFK_PERIOD"
+      ]
+    },
+    {
+      "node": "FinControlType",
+      "description": "Тип контроля",
+      "links":[
+        "HAS_FINCONTROLTYPE"
+      ]
+    },
+    {
+      "node": "Company",
+      "description": "Компания",
+      "links":[
+        "IS_COMPANY",
+        "WORKS_IN"
+      ]
+    },
+    {
+      "node": "DASUBranch",
+      "description": "ДАСУ",
+      "links":[
+        "HAS_DASUBRANCH"
+      ]
+    },
+    {
+      "node": "ControlOfficer",
+      "description": "Проверяющий",
+      "links":[
+        "HAS_TEAM_MEMBER",
+        "HAS_RESPONSESESSION_RESPONSIBLE",
+        "HAS_CONTROLACTIVITY_RESPONSIBLE"
+      ]
+    },
+    {
+      "node": "Contract",
+      "description": "Контракт",
+      "links":[
+        "HAS_CONTRACT"
+      ]
+    },
+    {
+      "node": "CPV",
+      "description": "Предмет закупки",
+      "links":[
+        "HAS_CPV"
+      ]
+    },
+    {
+      "node": "Amount",
+      "description": "Сумма",
+      "links":[
+        "HAS_COVID_AMOUNT",
+        "HAS_FIXED_AMOUNT",
+        "HAS_LOST_AMOUNT",
+        "HAS_VIOLATION_AMOUNT"
+      ]
+    },
+    {
+      "node": "Human",
+      "description": "Персона",
+      "links":[
+        "HAS_AUTHORITY"
+      ]
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @AllArgsConstructor
 public class SessionMapper {
 
-    private final MapperConverter mapperConverter;
+    private final TemplateMapper templateMapper;
     private final AnswerMapper answerMapper;
 
     public ResponseSessionDTO map(SessionEntity entity) {
@@ -26,7 +26,7 @@ public class SessionMapper {
         dto.setInvalid(entity.isInvalid());
 
         if (nonNull(entity.getTemplateConfig())) {
-            dto.setTemplate(mapperConverter.map(entity.getTemplateConfig()));
+            dto.setTemplate(templateMapper.map(entity.getTemplateConfig()));
 
             if (!isEmpty(entity.getMembers())) {
                 dto.setMembers(
@@ -37,7 +37,7 @@ public class SessionMapper {
                 );
             }
         } else {
-            dto.setTemplate(mapperConverter.map(entity.getTemplate()));
+            dto.setTemplate(templateMapper.map(entity.getTemplate()));
             dto.setSessionStatusId(entity.getStatus().getId());
 
             if (nonNull(entity.getReviewer())) {

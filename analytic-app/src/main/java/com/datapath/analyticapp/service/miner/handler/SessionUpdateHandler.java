@@ -37,7 +37,6 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
     public SessionUpdateHandler(CypherQueryService dbUtils,
                                 MinerRuleProvider minerRuleProvider,
                                 RoleRepository roleRepository,
-                                NodeTypeRepository nodeTypeRepository,
                                 UserRepository userRepository,
                                 ResponseSessionRepository responseSessionRepository,
                                 QuestionRepository questionRepository,
@@ -47,7 +46,6 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         super(dbUtils,
                 minerRuleProvider,
                 roleRepository,
-                nodeTypeRepository,
                 userRepository,
                 questionRepository,
                 knowledgeClassRepository,
@@ -130,7 +128,7 @@ public class SessionUpdateHandler extends BaseUpdateHandler {
         FieldDescriptionDTO identifier = getIdentifierField(subjectQuestion)
                 .orElseThrow(() -> new ValidationException("Subject must have identifier field"));
 
-        String nodeType = getNodeType(subjectQuestion, SUBJECT_DEFAULT_NODE);
+        String nodeType = getNodeTypeOrDefault(subjectQuestion, SUBJECT_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
                 queryRequestBuilder.identifierRequest(

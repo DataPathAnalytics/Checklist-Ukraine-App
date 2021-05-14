@@ -10,8 +10,8 @@ import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
-import com.datapath.checklistapp.service.mapper.MapperConverter;
 import com.datapath.checklistapp.service.mapper.QuestionMapper;
+import com.datapath.checklistapp.service.mapper.TemplateMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
@@ -40,7 +40,7 @@ public class TemplateWebService {
     private final UserDaoService userService;
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
-    private final MapperConverter mapperConverter;
+    private final TemplateMapper templateMapper;
     private final QuestionMapper questionMapper;
     private final QuestionExecutionDaoService questionExecutionService;
     private final QuestionGroupDaoService questionGroupService;
@@ -104,7 +104,7 @@ public class TemplateWebService {
     public List<TemplateFolderTreeDTO> list() {
         Map<Integer, List<TemplateDTO>> folderTemplatesMap = templateService.findAll()
                 .stream()
-                .map(mapperConverter::shortMap)
+                .map(templateMapper::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
         Map<Integer, FolderDTO> folders = folderService.findAllTemplateFolders()
@@ -115,11 +115,11 @@ public class TemplateWebService {
                     return dto;
                 }).collect(toMap(FolderDTO::getId, Function.identity()));
 
-        return mapperConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
+        return templateMapper.joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
     public TemplateDTO get(Integer id) {
-        return mapperConverter.map(templateService.findById(id));
+        return templateMapper.map(templateService.findById(id));
     }
 
 
@@ -131,7 +131,7 @@ public class TemplateWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(mapperConverter::shortMap)
+                        .map(templateMapper::shortMap)
                         .collect(toList())
         );
     }

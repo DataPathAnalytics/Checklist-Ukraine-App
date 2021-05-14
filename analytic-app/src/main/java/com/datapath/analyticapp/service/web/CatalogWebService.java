@@ -2,13 +2,13 @@ package com.datapath.analyticapp.service.web;
 
 import com.datapath.analyticapp.dao.entity.EventTypeEntity;
 import com.datapath.analyticapp.dao.entity.KnowledgeClassEntity;
-import com.datapath.analyticapp.dao.entity.NodeTypeEntity;
 import com.datapath.analyticapp.dao.entity.RoleEntity;
 import com.datapath.analyticapp.dao.repository.EventTypeRepository;
 import com.datapath.analyticapp.dao.repository.KnowledgeClassRepository;
-import com.datapath.analyticapp.dao.repository.NodeTypeRepository;
 import com.datapath.analyticapp.dao.repository.RoleRepository;
-import com.datapath.analyticapp.dto.*;
+import com.datapath.analyticapp.dto.EventTypeDTO;
+import com.datapath.analyticapp.dto.KnowledgeClassDTO;
+import com.datapath.analyticapp.dto.RoleDTO;
 import com.datapath.analyticapp.dto.request.SearchRequest;
 import com.datapath.analyticapp.dto.response.PageableResponse;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,6 @@ public class CatalogWebService {
 
     private final KnowledgeClassRepository knowledgeClassRepository;
     private final EventTypeRepository eventTypeRepository;
-    private final NodeTypeRepository nodeTypeRepository;
     private final RoleRepository roleRepository;
 
     public PageableResponse<KnowledgeClassDTO> searchKnowledgeClasses(SearchRequest request) {
@@ -53,26 +52,6 @@ public class CatalogWebService {
                 page.get()
                         .map(i -> new EventTypeDTO(i.getId(), i.getEventTypeName()))
                         .collect(toList())
-        );
-    }
-
-    public PageableResponse<NodeTypeDTO> searchNodeTypes(SearchRequest request) {
-        Page<NodeTypeEntity> page = nodeTypeRepository.findByNodeTypeNameMatchesRegexOrderByNodeTypeName(
-                String.format(SEARCH_PATTERN, request.getKeyword()), PageRequest.of(request.getPage(), request.getSize()));
-
-        return new PageableResponse<>(
-                page.getNumber(),
-                page.getTotalElements(),
-                page.getTotalPages(),
-                page.get()
-                        .map(i -> new NodeTypeDTO(
-                                        i.getId(),
-                                        i.getNodeTypeName(),
-                                        i.getLinkTypes().stream()
-                                                .map(l -> new LinkTypeDTO(l.getId(), l.getLinkTypeName(), l.getLinkTypeDescription()))
-                                                .collect(toList())
-                                )
-                        ).collect(toList())
         );
     }
 

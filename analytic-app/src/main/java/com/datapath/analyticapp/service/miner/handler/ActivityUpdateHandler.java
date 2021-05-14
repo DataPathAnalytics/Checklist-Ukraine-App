@@ -36,7 +36,6 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
                                  UserRepository userRepository,
                                  QuestionRepository questionRepository,
                                  KnowledgeClassRepository knowledgeClassRepository,
-                                 NodeTypeRepository nodeTypeRepository,
                                  MinerRuleProvider minerRuleProvider,
                                  CypherQueryService cypherQueryService,
                                  RoleRepository roleRepository,
@@ -45,7 +44,6 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
         super(cypherQueryService,
                 minerRuleProvider,
                 roleRepository,
-                nodeTypeRepository,
                 userRepository,
                 questionRepository,
                 knowledgeClassRepository,
@@ -113,7 +111,7 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
         FieldDescriptionDTO identifier = getIdentifierField(authorityQuestion)
                 .orElseThrow(() -> new ValidationException("Authority must have identifier field"));
 
-        String nodeType = getNodeType(authorityQuestion, AUTHORITY_DEFAULT_NODE);
+        String nodeType = getNodeTypeOrDefault(authorityQuestion, AUTHORITY_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
                 queryRequestBuilder.identifierRequest(
@@ -143,7 +141,7 @@ public class ActivityUpdateHandler extends BaseUpdateHandler {
         FieldDescriptionDTO identifier = getIdentifierField(ownerQuestion)
                 .orElseThrow(() -> new ValidationException("Owner must have identifier field"));
 
-        String nodeType = getNodeType(ownerQuestion, OWNER_DEFAULT_NODE);
+        String nodeType = getNodeTypeOrDefault(ownerQuestion, OWNER_DEFAULT_NODE);
 
         Long nodeId = queryService.mergeIdentifierNode(
                 queryRequestBuilder.identifierRequest(

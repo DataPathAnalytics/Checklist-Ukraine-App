@@ -25,8 +25,8 @@ public class QuestionMapper {
         executionDTO.setId(entity.getId());
         executionDTO.setRequired(entity.isRequired());
         executionDTO.setRoot(entity.isRoot());
-        executionDTO.setLinkTypeId(entity.getLinkTypeId());
-        executionDTO.setNodeTypeId(entity.getNodeTypeId());
+        executionDTO.setLinkType(entity.getLinkType());
+        executionDTO.setNodeType(entity.getNodeType());
         executionDTO.setOrderNumber(entity.getOrderNumber());
         executionDTO.setMiningRoleId(entity.getMiningRoleId());
 
@@ -94,8 +94,8 @@ public class QuestionMapper {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setOrderNumber(q.getOrderNumber());
         execution.setRequired(q.isRequired());
-        execution.setLinkTypeId(q.getLinkTypeId());
-        execution.setNodeTypeId(q.getNodeTypeId());
+        execution.setLinkType(q.getLinkType());
+        execution.setNodeType(q.getNodeType());
         execution.setQuestion(question);
 
         if (!isEmpty(q.getConditionCharacteristics())) {
@@ -113,8 +113,8 @@ public class QuestionMapper {
         execution.setQuestion(question);
         execution.setOrderNumber(q.getOrderNumber());
         execution.setRequired(q.isRequired());
-        execution.setLinkTypeId(q.getLinkTypeId());
-        execution.setNodeTypeId(q.getNodeTypeId());
+        execution.setLinkType(q.getLinkType());
+        execution.setNodeType(q.getNodeType());
         execution.setMiningRoleId(q.getMiningRoleId());
         execution.setRole(role);
 

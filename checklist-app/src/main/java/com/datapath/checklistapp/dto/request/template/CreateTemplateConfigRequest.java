@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.datapath.checklistapp.util.Constants.ACTIVITY_TEMPLATE_TYPE;
+import static com.datapath.checklistapp.util.Constants.UNKNOWN_NODE;
 import static java.util.Objects.nonNull;
 
 @Data
@@ -44,7 +45,7 @@ public class CreateTemplateConfigRequest {
         @NotNull
         private Integer questionId;
 
-        private Long nodeTypeId;
+        private String nodeType = UNKNOWN_NODE;
         private Long miningRoleId;
 
         @Valid
@@ -53,7 +54,7 @@ public class CreateTemplateConfigRequest {
         public TemplateQuestion asTemplateQuestion() {
             TemplateQuestion question = new TemplateQuestion();
             question.setQuestionId(this.questionId);
-            question.setNodeTypeId(this.nodeTypeId);
+            question.setNodeType(this.nodeType);
             question.setMiningRoleId(this.miningRoleId);
             question.setAutoCompleteConfigs(this.autoCompleteConfigs);
             return question;
@@ -68,11 +69,9 @@ public class CreateTemplateConfigRequest {
         private Integer questionId;
         @NotNull
         private Integer orderNumber;
-        @NotNull
-        private Long nodeTypeId;
-        @NotNull
-        private Long linkTypeId;
 
+        private String nodeType = UNKNOWN_NODE;
+        private String linkType;
         private Long miningRoleId;
 
         private boolean required;

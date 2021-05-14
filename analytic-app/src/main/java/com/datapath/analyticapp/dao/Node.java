@@ -5,7 +5,7 @@ public final class Node {
     private Node() {
     }
 
-    public final static String DEFAULT_NODE = "Data";
+    public final static String UNKNOWN_NODE = "Unknown";
 
     public final static String AUTHORITY_DEFAULT_NODE = "Authority";
     public final static String OWNER_DEFAULT_NODE = "Owner";

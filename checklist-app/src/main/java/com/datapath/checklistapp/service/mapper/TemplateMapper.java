@@ -19,7 +19,7 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 @AllArgsConstructor
-public class MapperConverter {
+public class TemplateMapper {
 
     private final QuestionMapper questionMapper;
 

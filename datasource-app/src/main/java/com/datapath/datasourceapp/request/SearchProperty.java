@@ -13,7 +13,6 @@ public class SearchProperty {
 
     @NotBlank
     private String datasource;
-    @NotBlank
     private String fieldName;
     private Object fieldValue = "";
 

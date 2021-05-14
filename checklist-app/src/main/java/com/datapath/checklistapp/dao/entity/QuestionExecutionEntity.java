@@ -19,8 +19,8 @@ public class QuestionExecutionEntity {
     private Integer conditionAnswerId;
     private String conditionFieldName;
     private Integer orderNumber;
-    private Long linkTypeId;
-    private Long nodeTypeId;
+    private String linkType;
+    private String nodeType;
     private Long miningRoleId;
     private boolean required;
     private boolean root;

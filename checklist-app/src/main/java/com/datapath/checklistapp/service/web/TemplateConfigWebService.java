@@ -14,8 +14,8 @@ import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigReques
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.exception.ValidationException;
-import com.datapath.checklistapp.service.mapper.MapperConverter;
 import com.datapath.checklistapp.service.mapper.QuestionMapper;
+import com.datapath.checklistapp.service.mapper.TemplateMapper;
 import com.datapath.checklistapp.util.UserUtils;
 import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class TemplateConfigWebService {
     private final FolderDaoService folderService;
     private final QuestionDaoService questionService;
     private final TemplateConfigTypeDaoService templateTypeService;
-    private final MapperConverter mapperConverter;
+    private final TemplateMapper templateMapper;
     private final QuestionMapper questionMapper;
     private final QuestionExecutionDaoService questionExecutionService;
 
@@ -109,7 +109,7 @@ public class TemplateConfigWebService {
         }
 
         Map<Integer, List<TemplateDTO>> folderTemplatesMap = entities.stream()
-                .map(mapperConverter::shortMap)
+                .map(templateMapper::shortMap)
                 .collect(groupingBy(TemplateDTO::getFolderId));
 
         Map<Integer, FolderDTO> folders = folderService.findAllTemplateConfigFolders()
@@ -120,11 +120,11 @@ public class TemplateConfigWebService {
                     return dto;
                 }).collect(toMap(FolderDTO::getId, Function.identity()));
 
-        return mapperConverter.joinFolderWithTemplates(folderTemplatesMap, folders);
+        return templateMapper.joinFolderWithTemplates(folderTemplatesMap, folders);
     }
 
     public TemplateDTO get(Integer id) {
-        return mapperConverter.map(templateConfigService.findById(id));
+        return templateMapper.map(templateConfigService.findById(id));
     }
 
     public PageableResponse<TemplateDTO> search(SearchRequest request) {
@@ -135,7 +135,7 @@ public class TemplateConfigWebService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.get()
-                        .map(mapperConverter::shortMap)
+                        .map(templateMapper::shortMap)
                         .collect(toList())
         );
     }

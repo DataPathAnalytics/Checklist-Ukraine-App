@@ -8,8 +8,8 @@ import java.util.List;
 public class QuestionExecutionDTO {
     private Long id;
     private boolean root;
-    private Long linkTypeId;
-    private Long nodeTypeId;
+    private String nodeType;
+    private String linkType;
     private Long roleId;
     private QuestionDTO question;
     private List<SubQuestionDTO> subQuestions;

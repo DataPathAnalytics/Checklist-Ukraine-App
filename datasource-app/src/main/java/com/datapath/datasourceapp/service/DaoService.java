@@ -46,9 +46,13 @@ public class DaoService {
     public List<Document> searchItem(SearchProperty property) {
         Query query = new Query();
         query.limit(10);
-        query.with(Sort.by(property.getFieldName()));
 
-        query.addCriteria(Criteria.where(property.getFieldName()).regex("^" + property.getFieldValue()));
+        if (nonNull(property.getFieldName())) {
+            query.with(Sort.by(property.getFieldName()));
+            query.addCriteria(Criteria.where(property.getFieldName()).regex("^" + property.getFieldValue()));
+        } else {
+            query.with(Sort.by("_id"));
+        }
 
         if (nonNull(property.getFilterFieldName())) {
             query.addCriteria(Criteria.where(property.getFilterFieldName()).is(property.getFilterFieldValue()));

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="question_execution" columnName="link_type_id"/>
+        </preConditions>
+
+        <renameColumn newColumnName="link_type"
+                      oldColumnName="link_type_id"
+                      tableName="question_execution"/>
+    </changeSet>
+
+    <changeSet id="2" author="andrey">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="question_execution" columnName="node_type_id"/>
+        </preConditions>
+
+        <renameColumn newColumnName="node_type"
+                      oldColumnName="node_type_id"
+                      tableName="question_execution"/>
+    </changeSet>
+
+    <changeSet id="3" author="andrey">
+        <modifyDataType columnName="node_type" newDataType="text" tableName="question_execution"/>
+        <modifyDataType columnName="link_type" newDataType="text" tableName="question_execution"/>
+    </changeSet>
+</databaseChangeLog>

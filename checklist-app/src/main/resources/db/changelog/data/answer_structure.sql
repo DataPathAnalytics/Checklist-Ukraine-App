@@ -34,6 +34,14 @@ INSERT INTO answer_structure
 VALUES (8, 'Сума', false)
 ON CONFLICT DO NOTHING;
 
+INSERT INTO answer_structure
+VALUES (9, 'Дата', false)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO answer_structure
+VALUES (10, 'Аудитор', false)
+ON CONFLICT DO NOTHING;
+
 -- field description
 INSERT INTO field_description
 VALUES (1, 'value', null, 'STRING', 'INPUT', false, false, false, 1)
@@ -94,6 +102,20 @@ INSERT INTO field_description
 VALUES (17, 'currency', 'Валюта', 'STRING', 'INPUT', false, false, false, 8)
 ON CONFLICT DO NOTHING;
 
+INSERT INTO field_description
+VALUES (18, 'value', null, 'DATE', 'DATE', false, false, false, 9)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO field_description
+VALUES (19, 'id', 'Идентификатор', 'NUMBER', 'INPUT', false, false, true, 10)
+ON CONFLICT DO NOTHING;
+INSERT INTO field_description
+VALUES (20, 'name', 'Имя', 'STRING', 'INPUT', false, false, false, 10)
+ON CONFLICT DO NOTHING;
+INSERT INTO field_description
+VALUES (21, 'email', 'Електронная почта', 'STRING', 'INPUT', false, false, false, 10)
+ON CONFLICT DO NOTHING;
+
 -- values
 INSERT INTO value
 VALUES (1, 'Так', 15)
@@ -102,5 +124,5 @@ INSERT INTO value
 VALUES (2, 'Нi', 15)
 ON CONFLICT DO NOTHING;
 INSERT INTO value
-VALUES (3, 'Не застосовуэться', 15)
+VALUES (3, 'Не застосовується', 15)
 ON CONFLICT DO NOTHING;

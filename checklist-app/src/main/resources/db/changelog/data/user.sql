@@ -13,3 +13,7 @@ ON CONFLICT DO NOTHING;
 INSERT INTO users(email, first_name, last_name, password, disable, locked, removed, super_admin)
 VALUES ('methodolog@datapath.com', 'Сергей', 'Сергеев', '$2a$10$ZATc1/JoMDWr6tRVZXXrQONrBb91yDLEcLMH1jELb8ANwP09SBpK.', false, false, false, false)
 ON CONFLICT DO NOTHING;
+
+INSERT INTO users(email, first_name, last_name, password, disable, locked, removed, super_admin)
+VALUES ('avtoDorMigrator@datapath.com', null, null, '$2a$10$ZATc1/JoMDWr6tRVZXXrQONrBb91yDLEcLMH1jELb8ANwP09SBpK.', false, false, false, false)
+ON CONFLICT DO NOTHING;

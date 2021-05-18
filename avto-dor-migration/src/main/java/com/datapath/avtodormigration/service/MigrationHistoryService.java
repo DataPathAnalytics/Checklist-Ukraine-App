@@ -30,7 +30,7 @@ public class MigrationHistoryService {
     private static Map<String, Integer> contractResponseSessions;
 
     @PostConstruct
-    public void init() throws IOException {
+    private void init() throws IOException {
         Path path = Paths.get(MIGRATION_HISTORY_FILE);
 
         if (Files.exists(path)) {
@@ -50,7 +50,7 @@ public class MigrationHistoryService {
     }
 
     @PreDestroy
-    public void destroy() throws IOException {
+    private void destroy() throws IOException {
         MigrationHistory history = new MigrationHistory();
         history.setBuyerControlActivities(
                 buyerControlActivities.entrySet().stream()

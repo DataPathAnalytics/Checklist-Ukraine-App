@@ -16,6 +16,7 @@ import java.util.function.Function;
 
 import static com.datapath.checklistapp.util.Constants.METHODOLOGIST_ROLE;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
@@ -52,23 +53,25 @@ public interface QuestionAnswerDataUtils {
     default Set<AnswerEntity> updateAnswers(List<AnswerDTO> answerDtos, SessionEntity session, Map<Integer, QuestionExecutionEntity> questions) {
         Set<AnswerEntity> answers = new HashSet<>();
         answerDtos.forEach(dto -> {
+            String values = getAnswerMapper().toJson(dto);
+            if (nonNull(values)) {
+                QuestionExecutionEntity questionExecution = questions.get(dto.getQuestionId());
+                if (isNull(questionExecution))
+                    throw new EntityNotFoundException(Entity.QuestionExecution.name(), dto.getQuestionId());
 
-            QuestionExecutionEntity questionExecution = questions.get(dto.getQuestionId());
-            if (isNull(questionExecution))
-                throw new EntityNotFoundException(Entity.QuestionExecution.name(), dto.getQuestionId());
+                //TODO: needs review after adding multiple answers to question
+                AnswerEntity answer = session.getAnswers()
+                        .stream()
+                        .filter(ea -> dto.getQuestionId().equals(ea.getQuestionExecution().getId()))
+                        .findFirst()
+                        .orElseGet(AnswerEntity::new);
 
-            //TODO: needs review after adding multiple answers to question
-            AnswerEntity answer = session.getAnswers()
-                    .stream()
-                    .filter(ea -> dto.getQuestionId().equals(ea.getQuestionExecution().getId()))
-                    .findFirst()
-                    .orElseGet(AnswerEntity::new);
+                answer.setQuestionExecution(questionExecution);
+                answer.setComment(dto.getComment());
+                answer.setValues(values);
 
-            answer.setQuestionExecution(questionExecution);
-            answer.setComment(dto.getComment());
-            answer.setValues(getAnswerMapper().toJson(dto));
-
-            answers.add(answer);
+                answers.add(answer);
+            }
         });
 
         return answers;

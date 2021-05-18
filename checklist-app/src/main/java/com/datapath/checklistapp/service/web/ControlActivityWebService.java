@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.datapath.checklistapp.util.Constants.*;
+import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.util.CollectionUtils.isEmpty;
@@ -90,14 +91,19 @@ public class ControlActivityWebService implements QuestionAnswerDataUtils {
         Map<Integer, QuestionExecutionEntity> questionExecutionIdMap = getQuestionExecutionMap(config);
 
         request.getAnswers().forEach(a -> {
-            QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
+            String values = answerMapper.toJson(a);
 
-            AnswerEntity answerEntity = new AnswerEntity();
-            answerEntity.setComment(a.getComment());
-            answerEntity.setQuestionExecution(questionExecution);
-            answerEntity.setValues(answerMapper.toJson(a));
+            if (nonNull(values)) {
+                QuestionExecutionEntity questionExecution = questionExecutionIdMap.get(a.getQuestionId());
 
-            activityResponse.getAnswers().add(answerEntity);
+                AnswerEntity answerEntity = new AnswerEntity();
+                answerEntity.setComment(a.getComment());
+                answerEntity.setQuestionExecution(questionExecution);
+
+                answerEntity.setValues(values);
+
+                activityResponse.getAnswers().add(answerEntity);
+            }
         });
 
         ControlActivityEntity activityEntity = new ControlActivityEntity();

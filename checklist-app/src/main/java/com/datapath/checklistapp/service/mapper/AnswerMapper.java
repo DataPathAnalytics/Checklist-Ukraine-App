@@ -10,11 +10,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
@@ -72,12 +75,30 @@ public class AnswerMapper {
     }
 
     public String toJson(AnswerDTO answer) {
+        Map<String, Object> values = clearAnswer(answer);
+        if (isEmpty(values)) return null;
+
         try {
-            return mapper.writeValueAsString(answer.getValues());
+            return mapper.writeValueAsString(values);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private Map<String, Object> clearAnswer(AnswerDTO answer) {
+        if (isEmpty(answer.getValues())) return null;
+
+        return answer.getValues().entrySet()
+                .stream()
+                .filter(e -> {
+                    Object value = e.getValue();
+
+                    if (isNull(value)) return false;
+
+                    String stringValue = String.valueOf(value);
+                    return StringUtils.hasText(stringValue);
+                }).collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public Map<String, Object> toValues(AnswerEntity entity) {

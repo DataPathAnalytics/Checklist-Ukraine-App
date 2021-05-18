@@ -4,16 +4,18 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity(name = "checklist")
 public class ChecklistEntity {
     @Id
     private Integer id;
-    @Column(name = "template_id")
     private Integer templateId;
-    @Column(name = "status_id")
     private Integer statusId;
+
+    private LocalDate startDate;
 
     private Integer tenderId;
     private Integer contractId;
@@ -34,6 +36,7 @@ public class ChecklistEntity {
     private String summary;
 
     @ManyToOne
+    @JoinColumn(name = "auditor_id")
     private AuditorEntity auditor;
 
     @ManyToOne
@@ -41,5 +44,10 @@ public class ChecklistEntity {
     private ChecklistEventEntity event;
 
     @ManyToOne
+    @JoinColumn(name = "buyer_id")
     private BuyerEntity buyer;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "checklist_id")
+    private List<AnswerEntity> answers = new ArrayList<>();
 }

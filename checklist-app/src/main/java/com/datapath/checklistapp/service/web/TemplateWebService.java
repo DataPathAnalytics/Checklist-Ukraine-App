@@ -80,8 +80,8 @@ public class TemplateWebService {
             request.getQuestionGroups().forEach(groupDTO -> {
                 if (!isEmpty(groupDTO.getQuestions())) {
                     QuestionGroupEntity group = new QuestionGroupEntity();
-                    group.setName(group.getName());
-                    group.setOrderNumber(group.getOrderNumber());
+                    group.setName(groupDTO.getName());
+                    group.setOrderNumber(groupDTO.getOrderNumber());
 
                     Set<QuestionExecutionEntity> question = new HashSet<>();
 

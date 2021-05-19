@@ -1,4 +1,4 @@
-package com.datapath.analyticapp.dto.imported.response;
+package com.datapath.analyticapp.service.miner.converter;
 
 public enum ValueType {
     STRING,

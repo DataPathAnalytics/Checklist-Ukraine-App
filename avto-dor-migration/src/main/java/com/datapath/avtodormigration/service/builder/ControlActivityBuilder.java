@@ -1,4 +1,4 @@
-package com.datapath.avtodormigration.service.converter;
+package com.datapath.avtodormigration.service.builder;
 
 import com.datapath.avtodormigration.QuestionValues;
 import com.datapath.avtodormigration.dao.entity.ChecklistEntity;
@@ -12,7 +12,7 @@ import java.util.Collections;
 
 @Service
 @AllArgsConstructor
-public class ControlActivityConverter {
+public class ControlActivityBuilder implements Builder {
 
     private final TemplateProvideService templateService;
 
@@ -50,8 +50,8 @@ public class ControlActivityConverter {
 
         AnswerDTO answer = new AnswerDTO();
         answer.setQuestionId(questionId);
-        answer.getValues().put("startDate", checklist.getDfkPeriodStartDate());
-        answer.getValues().put("endDate", checklist.getDfkPeriodEndDate());
+        answer.getValues().put("startDate", asString(checklist.getDfkPeriodStartDate()));
+        answer.getValues().put("endDate", asString(checklist.getDfkPeriodEndDate()));
 
         return answer;
     }

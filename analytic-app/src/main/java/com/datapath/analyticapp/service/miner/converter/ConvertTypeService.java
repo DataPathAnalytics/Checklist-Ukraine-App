@@ -1,6 +1,5 @@
 package com.datapath.analyticapp.service.miner.converter;
 
-import com.datapath.analyticapp.dto.imported.response.ValueType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

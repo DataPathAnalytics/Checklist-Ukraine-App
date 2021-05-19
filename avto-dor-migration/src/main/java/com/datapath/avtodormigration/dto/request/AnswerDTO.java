@@ -8,5 +8,6 @@ import java.util.Map;
 @Data
 public class AnswerDTO {
     private Integer questionId;
+    private String comment;
     private Map<String, Object> values = new HashMap<>();
 }

@@ -24,6 +24,7 @@
         <module>checklist-app</module>
         <module>datasource-app</module>
         <module>analytic-app</module>
+        <module>avto-dor-migration</module>
     </modules>
 
 </project>

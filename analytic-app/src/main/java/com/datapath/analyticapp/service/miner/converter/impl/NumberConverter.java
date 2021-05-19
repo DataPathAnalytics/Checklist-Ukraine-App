@@ -1,7 +1,7 @@
 package com.datapath.analyticapp.service.miner.converter.impl;
 
-import com.datapath.analyticapp.dto.imported.response.ValueType;
 import com.datapath.analyticapp.service.miner.converter.AnswerTypeConverter;
+import com.datapath.analyticapp.service.miner.converter.ValueType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 

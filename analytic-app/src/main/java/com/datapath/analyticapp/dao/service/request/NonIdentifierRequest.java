@@ -1,6 +1,6 @@
 package com.datapath.analyticapp.dao.service.request;
 
-import com.datapath.analyticapp.dto.imported.response.ValueType;
+import com.datapath.analyticapp.service.miner.converter.ValueType;
 import lombok.Builder;
 import lombok.Data;
 

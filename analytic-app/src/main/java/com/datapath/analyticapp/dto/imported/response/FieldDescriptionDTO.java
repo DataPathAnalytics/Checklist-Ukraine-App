@@ -1,5 +1,6 @@
 package com.datapath.analyticapp.dto.imported.response;
 
+import com.datapath.analyticapp.service.miner.converter.ValueType;
 import lombok.Data;
 
 import java.util.List;

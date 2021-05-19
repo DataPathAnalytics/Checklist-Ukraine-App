@@ -62,17 +62,17 @@ public class TemplateWebService {
             QuestionGroupEntity group = new QuestionGroupEntity();
             group.setName(UNGROUPED_NAME);
 
-            Set<QuestionExecutionEntity> question = new HashSet<>();
+            Set<QuestionExecutionEntity> questions = new HashSet<>();
 
             request.getUngroupedQuestions().forEach(q -> processQuestion(
                     q,
                     questionService.findById(q.getQuestionId()),
-                    question,
+                    questions,
                     null,
                     null,
                     null)
             );
-            group.setQuestions(question);
+            group.setQuestions(questions);
             entity.getGroups().add(group);
         }
 
@@ -83,17 +83,17 @@ public class TemplateWebService {
                     group.setName(groupDTO.getName());
                     group.setOrderNumber(groupDTO.getOrderNumber());
 
-                    Set<QuestionExecutionEntity> question = new HashSet<>();
+                    Set<QuestionExecutionEntity> questions = new HashSet<>();
 
                     groupDTO.getQuestions().forEach(q -> processQuestion(
                             q,
                             questionService.findById(q.getQuestionId()),
-                            question,
+                            questions,
                             null,
                             null,
                             null)
                     );
-                    group.setQuestions(question);
+                    group.setQuestions(questions);
                     entity.getGroups().add(group);
                 }
             });

@@ -61,7 +61,15 @@ public class TemplateProvideService {
         return executions.stream()
                 .filter(ex -> value.equals(ex.getQuestion().getValue()))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("not found question by value"))
+                .orElseThrow(() -> new RuntimeException("not found question by value: " + value))
                 .getId();
+    }
+
+    public QuestionExecutionDTO extractQuestionById(Integer id) {
+        return template.getQuestionGroups().stream()
+                .flatMap(group -> group.getQuestions().stream())
+                .filter(ex -> id.equals(ex.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("not found question by id: " + id));
     }
 }

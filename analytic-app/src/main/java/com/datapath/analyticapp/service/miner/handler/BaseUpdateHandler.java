@@ -10,6 +10,7 @@ import com.datapath.analyticapp.dao.service.CypherQueryService;
 import com.datapath.analyticapp.dao.service.QueryRequestBuilder;
 import com.datapath.analyticapp.dto.imported.response.*;
 import com.datapath.analyticapp.service.miner.config.Place;
+import com.datapath.analyticapp.service.miner.converter.ValueType;
 import com.datapath.analyticapp.service.miner.rule.MinerRule;
 import com.datapath.analyticapp.service.miner.rule.MinerRuleProvider;
 import org.springframework.stereotype.Service;

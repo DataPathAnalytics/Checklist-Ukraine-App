@@ -235,7 +235,7 @@ public class ResponseSessionBuilder implements Builder {
         AnswerDTO answer = new AnswerDTO();
         answer.setQuestionId(questionId);
         answer.getValues().put("contractNumber", contract.getContractId());
-        answer.getValues().put("amount", contract.getAmount());
+        answer.getValues().put("amount", contract.getValueAmount());
         answer.getValues().put("currency", contract.getCurrency());
         answer.getValues().put("startDate", asString(contract.getStartDate()));
         answer.getValues().put("endDate", asString(contract.getEndDate()));

@@ -13,7 +13,7 @@ public class ContractEntity {
     @Id
     private Integer id;
     private String contractId;
-    private Double amount;
+    private Double valueAmount;
     private String currency;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

@@ -26,7 +26,6 @@ public class MigrationHistoryService {
 
     private ObjectMapper mapper;
 
-    private static Map<String, Integer> buyerControlActivities;
     private static Map<String, Integer> contractResponseSessions;
 
     @PostConstruct
@@ -36,15 +35,10 @@ public class MigrationHistoryService {
         if (Files.exists(path)) {
             MigrationHistory migrationHistory = mapper.readValue(path.toFile(), MigrationHistory.class);
 
-            buyerControlActivities = migrationHistory.getBuyerControlActivities()
-                    .stream()
-                    .collect(toMap(MigrationState::getIdentifier, MigrationState::getId));
-
             contractResponseSessions = migrationHistory.getContractResponseSessions()
                     .stream()
                     .collect(toMap(MigrationState::getIdentifier, MigrationState::getId));
         } else {
-            buyerControlActivities = new HashMap<>();
             contractResponseSessions = new HashMap<>();
         }
     }
@@ -52,11 +46,6 @@ public class MigrationHistoryService {
     @PreDestroy
     private void destroy() throws IOException {
         MigrationHistory history = new MigrationHistory();
-        history.setBuyerControlActivities(
-                buyerControlActivities.entrySet().stream()
-                        .map(e -> new MigrationState(e.getKey(), e.getValue()))
-                        .collect(toList())
-        );
         history.setContractResponseSessions(
                 contractResponseSessions.entrySet().stream()
                         .map(e -> new MigrationState(e.getKey(), e.getValue()))
@@ -66,16 +55,8 @@ public class MigrationHistoryService {
         mapper.writeValue(Paths.get(MIGRATION_HISTORY_FILE).toFile(), history);
     }
 
-    public Integer getControlActivityIdByBuyerIdentifier(String identifier) {
-        return buyerControlActivities.getOrDefault(identifier, null);
-    }
-
     public boolean existsByContractIdentifier(String identifier) {
         return contractResponseSessions.containsKey(identifier);
-    }
-
-    public void addBuyerControlActivity(String identifier, Integer id) {
-        buyerControlActivities.put(identifier, id);
     }
 
     public void addContractResponseSession(String identifier, Integer id) {

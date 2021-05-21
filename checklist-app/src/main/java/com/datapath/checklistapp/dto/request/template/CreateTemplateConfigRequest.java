@@ -67,13 +67,11 @@ public class CreateTemplateConfigRequest {
     public static class TemplateQuestion {
         @NotNull
         private Integer questionId;
-        @NotNull
-        private Integer orderNumber;
 
+        private Integer orderNumber = 1;
         private String nodeType = UNKNOWN_NODE;
         private String linkType;
         private Long miningRoleId;
-
         private boolean required;
 
         @Valid

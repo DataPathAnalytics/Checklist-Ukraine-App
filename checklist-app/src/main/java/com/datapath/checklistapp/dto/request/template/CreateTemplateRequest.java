@@ -35,8 +35,8 @@ public class CreateTemplateRequest {
     public static class QuestionGroup {
         @NotNull
         private String name;
-        @NotNull
-        private Integer orderNumber;
+
+        private Integer orderNumber = 1;
         @Valid
         private List<TemplateQuestion> questions = new ArrayList<>();
     }
@@ -47,9 +47,8 @@ public class CreateTemplateRequest {
     public static class TemplateQuestion {
         @NotNull
         private Integer questionId;
-        @NotNull
-        private Integer orderNumber;
 
+        private Integer orderNumber = 1;
         private boolean required;
         private String linkType;
         private String nodeType = UNKNOWN_NODE;

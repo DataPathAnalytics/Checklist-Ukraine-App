@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
@@ -46,10 +45,7 @@ public class MigrationService {
 
     private void doMigrate(ChecklistEntity checklist) {
         log.info("Process checklist {}", checklist.getId());
-        handleResponseSession(checklist, handleControlActivity(checklist));
-    }
 
-    private void handleResponseSession(ChecklistEntity checklist, Integer controlActivityId) {
         Optional<ContractEntity> byId = contractRepository.findById(checklist.getContractId());
         if (!byId.isPresent()) {
             log.warn("Not found contract {}", checklist.getContractId());
@@ -63,6 +59,10 @@ public class MigrationService {
             return;
         }
 
+        handleResponseSession(checklist, contract, handleControlActivity(checklist));
+    }
+
+    private void handleResponseSession(ChecklistEntity checklist, ContractEntity contract, Integer controlActivityId) {
         ResponseSessionRequest request = responseSessionBuilder.prepareToMigration(checklist, contract, controlActivityId);
 
         Integer savedId = uploadDataService.uploadResponseSession(request);
@@ -72,16 +72,10 @@ public class MigrationService {
     }
 
     private Integer handleControlActivity(ChecklistEntity checklist) {
-        Integer existedControlActivity = historyService.getControlActivityIdByBuyerIdentifier(checklist.getBuyer().getIdentifierId());
-
-        if (nonNull(existedControlActivity)) return existedControlActivity;
-
         ControlActivityRequest request = controlActivityBuilder.prepareToMigration(checklist);
 
         Integer savedId = uploadDataService.uploadControlActivity(request);
         log.info("Uploaded control activity. Id {}", savedId);
-
-        historyService.addBuyerControlActivity(checklist.getBuyer().getIdentifierId(), savedId);
 
         return savedId;
     }

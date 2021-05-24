@@ -6,6 +6,7 @@ import com.datapath.avtodormigration.dao.repository.ChecklistRepository;
 import com.datapath.avtodormigration.dao.repository.ContractRepository;
 import com.datapath.avtodormigration.dto.request.ControlActivityRequest;
 import com.datapath.avtodormigration.dto.request.ResponseSessionRequest;
+import com.datapath.avtodormigration.service.builder.BuilderProvider;
 import com.datapath.avtodormigration.service.builder.ControlActivityBuilder;
 import com.datapath.avtodormigration.service.builder.ResponseSessionBuilder;
 import lombok.AllArgsConstructor;
@@ -27,8 +28,7 @@ public class MigrationService {
     private final UploadDataService uploadDataService;
     private final ChecklistRepository checklistRepository;
     private final ContractRepository contractRepository;
-    private final ControlActivityBuilder controlActivityBuilder;
-    private final ResponseSessionBuilder responseSessionBuilder;
+    private final BuilderProvider builderProvider;
 
     @Transactional
     public void doMigrate() {
@@ -63,7 +63,9 @@ public class MigrationService {
     }
 
     private void handleResponseSession(ChecklistEntity checklist, ContractEntity contract, Integer controlActivityId) {
-        ResponseSessionRequest request = responseSessionBuilder.prepareToMigration(checklist, contract, controlActivityId);
+        ResponseSessionBuilder builder = builderProvider.getResponseSessionBuilder(checklist);
+
+        ResponseSessionRequest request = builder.prepareToMigration(checklist, contract, controlActivityId);
 
         Integer savedId = uploadDataService.uploadResponseSession(request);
         log.info("Uploaded response session. Id {}", savedId);
@@ -72,7 +74,9 @@ public class MigrationService {
     }
 
     private Integer handleControlActivity(ChecklistEntity checklist) {
-        ControlActivityRequest request = controlActivityBuilder.prepareToMigration(checklist);
+        ControlActivityBuilder builder = builderProvider.getControlActivityBuilder(checklist);
+
+        ControlActivityRequest request = builder.prepareToMigration(checklist);
 
         Integer savedId = uploadDataService.uploadControlActivity(request);
         log.info("Uploaded control activity. Id {}", savedId);

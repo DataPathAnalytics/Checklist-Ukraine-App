@@ -4,35 +4,45 @@ import com.datapath.avtodormigration.QuestionValues;
 import com.datapath.avtodormigration.dao.entity.ChecklistEntity;
 import com.datapath.avtodormigration.dto.request.AnswerDTO;
 import com.datapath.avtodormigration.dto.request.ControlActivityRequest;
-import com.datapath.avtodormigration.service.TemplateProvideService;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-@Service
-@AllArgsConstructor
-public class ControlActivityBuilder implements Builder {
+public interface ControlActivityBuilder extends Builder {
 
-    private final TemplateProvideService templateService;
+    default void prepareOtherAnswers(ControlActivityRequest request, ChecklistEntity checklist) {
+    }
 
-    public ControlActivityRequest prepareToMigration(ChecklistEntity checklist) {
+    default ControlActivityRequest prepareToMigration(ChecklistEntity checklist) {
         ControlActivityRequest request = new ControlActivityRequest();
-        request.setTemplateConfigId(templateService.getTemplateConfigId());
-        request.setTemplateIds(Collections.singletonList(templateService.getTemplateId()));
+        request.setTemplateConfigId(getTemplateProvideService().getTemplateConfigId(forTemplateType()));
+        request.setTemplateIds(Collections.singletonList(getTemplateProvideService().getTemplateId(forTemplateType())));
 
         request.getAnswers().add(prepareObjectAnswer(checklist));
         request.getAnswers().add(prepareAuthorityAnswer(checklist));
-        request.getAnswers().add(prepareDasuBranchAnswer(checklist));
-        request.getAnswers().add(prepareDfkPeriodAnswer(checklist));
         request.getAnswers().add(prepareFinControlTypeAnswer(checklist));
+        request.getAnswers().add(prepareTemplateType(checklist));
+
+        prepareOtherAnswers(request, checklist);
 
         return request;
     }
 
-    private AnswerDTO prepareFinControlTypeAnswer(ChecklistEntity checklist) {
-        Integer questionId = templateService.extractQuestionIdByValue(
-                templateService.getTemplateConfig().getTypeQuestions(),
+    default AnswerDTO prepareTemplateType(ChecklistEntity checklist) {
+        Integer questionId = getTemplateProvideService().extractQuestionIdByValue(
+                getTemplateProvideService().getTemplateConfig(forTemplateType()).getTypeQuestions(),
+                QuestionValues.TYPE_QUESTION_TEMPLATE_TYPE);
+
+        AnswerDTO answer = new AnswerDTO();
+        answer.setQuestionId(questionId);
+        answer.getValues().put("identifier", checklist.getTemplateTypeId());
+        answer.getValues().put("name", checklist.getTemplateName());
+
+        return answer;
+    }
+
+    default AnswerDTO prepareFinControlTypeAnswer(ChecklistEntity checklist) {
+        Integer questionId = getTemplateProvideService().extractQuestionIdByValue(
+                getTemplateProvideService().getTemplateConfig(forTemplateType()).getTypeQuestions(),
                 QuestionValues.TYPE_QUESTION_FIN_CONTROL_TYPE);
 
         AnswerDTO answer = new AnswerDTO();
@@ -43,34 +53,8 @@ public class ControlActivityBuilder implements Builder {
         return answer;
     }
 
-    private AnswerDTO prepareDfkPeriodAnswer(ChecklistEntity checklist) {
-        Integer questionId = templateService.extractQuestionIdByValue(
-                templateService.getTemplateConfig().getTypeQuestions(),
-                QuestionValues.TYPE_QUESTION_DFK_PERIOD);
-
-        AnswerDTO answer = new AnswerDTO();
-        answer.setQuestionId(questionId);
-        answer.getValues().put("startDate", asString(checklist.getDfkPeriodStartDate()));
-        answer.getValues().put("endDate", asString(checklist.getDfkPeriodEndDate()));
-
-        return answer;
-    }
-
-    private AnswerDTO prepareDasuBranchAnswer(ChecklistEntity checklist) {
-        Integer questionId = templateService.extractQuestionIdByValue(
-                templateService.getTemplateConfig().getAuthorityFeatureQuestions(),
-                QuestionValues.AUTHORITY_FEATURE_QUESTION_DASU_BRANCH);
-
-        AnswerDTO answer = new AnswerDTO();
-        answer.setQuestionId(questionId);
-        answer.getValues().put("identifier", checklist.getOffice().getId());
-        answer.getValues().put("name", checklist.getOffice().getName());
-
-        return answer;
-    }
-
-    private AnswerDTO prepareAuthorityAnswer(ChecklistEntity checklist) {
-        Integer questionId = templateService.getTemplateConfig().getAuthorityQuestion().getId();
+    default AnswerDTO prepareAuthorityAnswer(ChecklistEntity checklist) {
+        Integer questionId = getTemplateProvideService().getTemplateConfig(forTemplateType()).getAuthorityQuestion().getId();
 
         AnswerDTO answer = new AnswerDTO();
         answer.setQuestionId(questionId);
@@ -81,8 +65,8 @@ public class ControlActivityBuilder implements Builder {
         return answer;
     }
 
-    private AnswerDTO prepareObjectAnswer(ChecklistEntity checklist) {
-        Integer questionId = templateService.getTemplateConfig().getObjectQuestion().getId();
+    default AnswerDTO prepareObjectAnswer(ChecklistEntity checklist) {
+        Integer questionId = getTemplateProvideService().getTemplateConfig(forTemplateType()).getObjectQuestion().getId();
 
         AnswerDTO answer = new AnswerDTO();
         answer.setQuestionId(questionId);

@@ -7,11 +7,14 @@ public final class QuestionValues {
     public static final String AUTHORITY_FEATURE_QUESTION_DASU_BRANCH = "Територіальний орган, що здійснює заходи ДФК";
     public static final String TYPE_QUESTION_DFK_PERIOD = "Період проведення заходу ДФК";
     public static final String TYPE_QUESTION_FIN_CONTROL_TYPE = "Захід державного фінансового контролю";
+    public static final String TYPE_QUESTION_TEMPLATE_TYPE = "Тип шаблону контрольного листа";
 
     public static final String TYPE_QUESTION_REVISION_PERIOD = "Ревізійний період";
     public static final String TYPE_QUESTION_START_DATE = "Дата створення";
     public static final String TYPE_QUESTION_SUMMARY = "Короткий коментар з приводу спірних питань. Загальне резюме огляду";
     public static final String OBJECT_FEATURE_CPV = "Інформація про предмет закупівлі";
+    public static final String OBJECT_FEATURE_USED_AMOUNT = "Використанi кошти";
+    public static final String OBJECT_FEATURE_COVID_19_USED_AMOUNT = "в т.ч. сума використаних коштів, виділених з субвенції на подолання COVID 19";
 
     public static final String TOTAL_CONTRACT_AMOUNT_STATE_BUDGET = "Загальна вартість договору з урахуванням змін (Кошти Державного бюджету, грн)";
     public static final String REVISION_PERIOD_TOTAL_CONTRACT_AMOUNT_STATE_BUDGET = "Загальна вартість договору за ревізійний період (Кошти Державного бюджету, грн)";

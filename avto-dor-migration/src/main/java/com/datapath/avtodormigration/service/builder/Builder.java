@@ -1,5 +1,7 @@
 package com.datapath.avtodormigration.service.builder;
 
+import com.datapath.avtodormigration.service.TemplateProvideService;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +11,10 @@ import static java.util.Objects.isNull;
 public interface Builder {
 
     String PATTERN = "yyyy-MM-dd";
+
+    Integer forTemplateType();
+
+    TemplateProvideService getTemplateProvideService();
 
     default String asString(LocalDate date) {
         if (isNull(date)) return null;

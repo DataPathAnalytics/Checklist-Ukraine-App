@@ -22,6 +22,7 @@ public class AnswerEntity {
     private String categoryName;
     private String questionDescription;
 
+    private Double amount;
     private Double violationAmount;
     private Double violationAmountCovidFund;
     private Double lossAmount;

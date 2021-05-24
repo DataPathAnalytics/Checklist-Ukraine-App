@@ -92,11 +92,22 @@ insert into question_knowledge_class(question_id, knowledge_class_outer_id)
 values (13, 8)
 on conflict do nothing;
 
--- ukr-avto-dor
+-- dasu checklist
 insert into question(value, answer_structure_id)
-values ('Перевіряючий', 10)
+values ('Аудитор', 10)
 on conflict do nothing;
 
+insert into question(value, answer_structure_id)
+values ('Короткий коментар з приводу спірних питань. Загальне резюме огляду', 1)
+on conflict do nothing;
+
+insert into question(value, answer_structure_id)
+values ('Дата створення', 9)
+on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Тип шаблону контрольного листа', 2) on conflict do nothing;
+
+-- ukr-avto-dor
 insert into question(value, answer_structure_id)
 values ('Загальна вартість договору з урахуванням змін (Кошти Державного бюджету, грн)', 8)
 on conflict do nothing;
@@ -158,14 +169,6 @@ insert into question(value, answer_structure_id)
 values ('Обсяг перевірених робіт (послуг) (Інші джерела фінансування, грн)', 8)
 on conflict do nothing;
 
-insert into question(value, answer_structure_id)
-values ('Короткий коментар з приводу спірних питань. Загальне резюме огляду', 1)
-on conflict do nothing;
-
-insert into question(value, answer_structure_id)
-values ('Дата створення', 9)
-on conflict do nothing;
-
 insert into question(value, answer_structure_id) values ('Вартість матеріальних ресурсів в актах форми КБ-2в відповідає фактичній вартості матеріальних ресурсів, списаній за даними бухгалтерського обліку.', 7) on conflict do nothing;
 insert into question(value, answer_structure_id) values ('Вартість матеріальних ресурсів калькуляції (власне виробництво) у актах форми КБ-2в відповідає фактичній вартості матеріальних ресурсів, списаній за даними бухгалтерського обліку.', 7) on conflict do nothing;
 insert into question(value, answer_structure_id) values ('Витрати матеріальних ресурсів відповідають нормативним витратам, передбаченим державною ресурсно-елементною кошторисною нормою.', 7) on conflict do nothing;
@@ -191,3 +194,66 @@ insert into question(value, answer_structure_id) values ('Зазначені в 
 insert into question(value, answer_structure_id) values ('Товщина вирівнюючого шару із асфальтобетону (при влаштуванні окремим шаром) дорівнює або більше ніж два з половиною діаметри максимального розміру зерна щебеню.', 7) on conflict do nothing;
 insert into question(value, answer_structure_id) values ('Фізико-механічні властивості асфальтобетону відповідають вимогам нормативних документів (ДСТУ Б В. 2.7-119 «Суміші асфальтобетонні і асфальтобетон дорожній та аеродромний. Технічні умови», ДСТУ Б В.2.7-127 «Суміші асфальтобетонні і асфальтобетон щебенево-мастикові. Технічні умови»).', 7) on conflict do nothing;
 insert into question(value, answer_structure_id) values ('Марка бітуму відповідає кліматичному району і вмісту бітуму затвердженому складу (Додаток А, Б ДСТУ Б В. 2.7-119 «Суміші асфальтобетонні і асфальтобетон дорожній та аеродромний. Технічні умови», затверджений склад асфальтобетону).', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Випадки завищення вартості виконаних робіт з інших причин відсутні', 7) on conflict do nothing;
+
+
+
+-- simple checklist
+insert into question(value, answer_structure_id)
+values ('Використанi кошти', 8)
+on conflict do nothing;
+
+insert into question(value, answer_structure_id)
+values ('в т.ч. сума використаних коштів, виділених з субвенції на подолання COVID 19', 8)
+on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Моніторинг закупівлі було здійснено без встановлених порушень', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Наявність документів, що свідчать про обґрунтування визначення потреби закупівлі предмета закупівлі', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Наявність документів, що свідчать про обґрунтування технічних та якісних характеристик предмета закупівлі, розміру бюджетного призначення, очікуваної вартості предмета закупівлі;', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано вимог законодавства у сфері публічних закупівель при складанні тендерної документації у випадках, визначених законодавством', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримання вимог законодавства у сфері публічних закупівель при застосуванні процедури закупівлі / спрощеної закупівлі', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримання законодавства у сфері публічних закупівель при публікації звіту про договір про закупівлю, укладеного без використання електронної системи закупівель', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримання законодавства у сфері публічних закупівель щодо повернення/ не повернення забезпечення тендерної пропозиції / пропозиції (у випадках передбачених частиною третьою, четвертою статті 25 Закону України "Про публічні закупівлі" (далі - Закон)', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Відповідність умов договору умовам тендерної пропозиції переможця', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Відповідність технічних та якісних характеристик предмета закупівлі вимогам тендерної документації (у разі проведення закупівлі за переговорною процедурою питання досліджується за умови застосування пункту першого частини другої статті 40 Закону)', 7) on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Дотримання законодавства щодо внесення змін до договору (наявність підстав)', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Замовник дотримувався законодавства при внесені змін до істотних умов договору (предмер закупівлі, ціна та срок дії договору).', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Замовник дотримувався законодавства при внесені змін до інших умов договору.', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Замовник дотримувався законодавства при збільшені ціни за одиницю товару', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Замовник дотримувався вимог Закону 922 при оприлюдненні інформації про внесення змін до договору', 7) on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Дотримання сторонами умов договору при його виконанні', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Документальне підтвердження кількості (обсягу) та вартості поставлених товарів, виконаних робіт або послуг у відповідності до умов договору', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримання переможцем гарантійних зобовязань за договором', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Документальне підтвердження якості поставлених товарів, виконаних робіт у відповідності до умов договору', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Поставлені товари, виконані роботи або послуги відповідають якісним та технічним характеристикам запропонованим переможцем в його тендерній пропозиції (наприклад наявність сертифікатів якості, свідоцтв відповідності, тощо)', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Умови договору виконуються/виконані Замовником за відсутності претензійно-позовної роботи та без застосування штрафних санкцій з боку Постачальника', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Умови договору виконуються/виконані Постачальником за відсутності претензійно-позовної роботи та без застосування штрафних санкцій з боку Замовника', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Постачання товару, виконання робіт та послуг здійснено до проведення замовником повної (100 %) оплати', 7) on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Фактичне залучення субпідрядних організацій під час виконання договору в обсязі більше 20% від вартості договору про закупівлі і у відповідності до умов ТД та тендерної пропозиції про заплановане залучення субпідрядної організації під час виконання договору про закупівлю.', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Фактичне залучення субпідрядних організацій під час виконання договору в обсязі менше 20% від вартості договору про закупівлі і у відповідності до умов ТД та тендерної пропозиції про заплановане залучення субпідрядної організації під час виконання договору про закупівлю.', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Відсутня необхідність у проведенні зустрічної звірки', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('До проведення зустрічної звірки посадових осіб Держаудитслужби допущено', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Обєкт зустірчної звірки знаходиться за фактичною та/або юридичною адресою, зазначених у договорі', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Обєктом зустрічної звірки надіслано Держаудитслужбі запитувану інформацію та документи у повному обсязі', 7) on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Не виявлено лишків при здійснення інвентаризації', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Не виявлено нестачі при здійснення інвентаризації', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Проведені контрольні обміри не встановили завищення виконаних робіт', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Замовник сприяв здійсненню контрольних обмірів та не застосовував перешкоди', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('При проведеному обстеженні встановлено відповідність якості поставлених товарів, наданих послуг, виконаних робіт умовам договору та/або тендерної пропозиції', 7) on conflict do nothing;
+
+insert into question(value, answer_structure_id) values ('Вартість виконаних робіт справедлива, та завищення відсутні', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Роботи передбачені договором виконані', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Технологічні процеси при виконанні ремонтно-будівельних робіт дотримані', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано законодавства у сфері публічних закупівель при оприлюдненні інформації про виконання договору (звіт про виконання договору)', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано законодавства при відображенні в бухгалтерському обліку замовника розрахунків за договором', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано законодавства з питання своєчасності, повноти та правильності оприбуткування придбаних товарно-матеріальних цінностей, робіт та послуг', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Умовами тендерної документації/оголошення про проведення спрощеної закупівлі передбачено надання забезпечення виконання договору', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано законодавства та умов договору при внесенні переможцем процедури закупівлі/ спрощеної закупівлі забезпечення виконання договору про закупівлю', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Дотримано законодавства та умов договору при поверненні/неповернення замовником забезпечення виконання договору та подальшого перерахування до відповідного бюджету (або на рахунок замовника)', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Відсутня необхідність у спрямуванні матеріалів до правоохоронних органів.', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Вартість придбаних товарів не перевищує середньоринкові ціни по регіону', 7) on conflict do nothing;
+insert into question(value, answer_structure_id) values ('Придбаний товар Замовник не передав на відповідальне зберігання іншому суб’єкту господарювання', 7) on conflict do nothing;

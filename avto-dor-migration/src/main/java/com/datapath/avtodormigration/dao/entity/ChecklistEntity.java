@@ -12,13 +12,17 @@ import java.util.List;
 public class ChecklistEntity {
     @Id
     private Integer id;
-    private Integer templateId;
+    private String templateName;
+    private Integer templateTypeId;
     private Integer statusId;
 
     private LocalDate startDate;
 
     private Integer tenderId;
     private Integer contractId;
+
+    private Double covidAmount;
+    private Double usedAmount;
 
     private LocalDate revisionPeriodStartDate;
     private LocalDate revisionPeriodEndDate;

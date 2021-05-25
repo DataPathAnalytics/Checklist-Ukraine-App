@@ -3,6 +3,7 @@ package com.datapath.analyticapp.dto.imported.response;
 import com.datapath.analyticapp.service.miner.converter.ValueType;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -10,7 +11,7 @@ public class FieldDescriptionDTO {
     private Long id;
     private String name;
     private ValueType valueType;
-    private List<ValueDTO> values;
+    private List<ValueDTO> values = new ArrayList<>();
     private boolean identifier;
 
     @Data

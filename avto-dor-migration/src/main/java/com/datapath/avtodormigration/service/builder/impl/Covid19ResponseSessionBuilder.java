@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.datapath.avtodormigration.Constants.COVID_19_AVTODOR_TEMPLATE_TYPE_ID;
+import static com.datapath.avtodormigration.Constants.COVID_19_TEMPLATE_TYPE_ID;
 import static com.datapath.avtodormigration.QuestionValues.OBJECT_FEATURE_COVID_19_USED_AMOUNT;
 import static com.datapath.avtodormigration.QuestionValues.OBJECT_FEATURE_USED_AMOUNT;
 import static java.util.Objects.isNull;
@@ -43,7 +43,7 @@ public class Covid19ResponseSessionBuilder implements ResponseSessionBuilder {
 
     @Override
     public Integer forTemplateType() {
-        return COVID_19_AVTODOR_TEMPLATE_TYPE_ID;
+        return COVID_19_TEMPLATE_TYPE_ID;
     }
 
     @Override

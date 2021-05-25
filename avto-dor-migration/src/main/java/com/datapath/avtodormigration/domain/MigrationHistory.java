@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 public class MigrationHistory {
-    @JsonProperty("contract_response_sessions")
-    private List<MigrationState> contractResponseSessions;
+    @JsonProperty("migration_history")
+    private List<MigrationState> history;
 }

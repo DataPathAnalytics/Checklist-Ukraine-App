@@ -4,6 +4,7 @@ import com.datapath.avtodormigration.dao.entity.ChecklistEntity;
 import com.datapath.avtodormigration.dao.entity.ContractEntity;
 import com.datapath.avtodormigration.dao.repository.ChecklistRepository;
 import com.datapath.avtodormigration.dao.repository.ContractRepository;
+import com.datapath.avtodormigration.domain.MigrationState;
 import com.datapath.avtodormigration.dto.request.ControlActivityRequest;
 import com.datapath.avtodormigration.dto.request.ResponseSessionRequest;
 import com.datapath.avtodormigration.service.builder.BuilderProvider;
@@ -17,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Slf4j
@@ -46,34 +49,45 @@ public class MigrationService {
     private void doMigrate(ChecklistEntity checklist) {
         log.info("Process checklist {}", checklist.getId());
 
+        handleControlActivity(checklist);
+        handleResponseSession(checklist);
+    }
+
+    private void handleResponseSession(ChecklistEntity checklist) {
+        MigrationState history = historyService.getMigrationStateByChecklistId(checklist.getId());
+
+        if (isNull(history) || isNull(history.getControlActivityId())) {
+            throw new RuntimeException("Invalid history data");
+        }
+
+        if (nonNull(history.getResponseSessionId())) {
+            return;
+        }
+
         Optional<ContractEntity> byId = contractRepository.findById(checklist.getContractId());
+
         if (!byId.isPresent()) {
             log.warn("Not found contract {}", checklist.getContractId());
             return;
         }
 
-        ContractEntity contract = byId.get();
-
-        if (historyService.existsByContractIdentifier(contract.getContractId())) {
-            log.info("Contract {} already migrated", checklist.getContractId());
-            return;
-        }
-
-        handleResponseSession(checklist, contract, handleControlActivity(checklist));
-    }
-
-    private void handleResponseSession(ChecklistEntity checklist, ContractEntity contract, Integer controlActivityId) {
         ResponseSessionBuilder builder = builderProvider.getResponseSessionBuilder(checklist);
 
-        ResponseSessionRequest request = builder.prepareToMigration(checklist, contract, controlActivityId);
+        ResponseSessionRequest request = builder.prepareToMigration(checklist, byId.get(), history.getControlActivityId());
 
         Integer savedId = uploadDataService.uploadResponseSession(request);
         log.info("Uploaded response session. Id {}", savedId);
 
-        historyService.addContractResponseSession(contract.getContractId(), savedId);
+        history.setResponseSessionId(savedId);
     }
 
-    private Integer handleControlActivity(ChecklistEntity checklist) {
+    private void handleControlActivity(ChecklistEntity checklist) {
+        MigrationState history = historyService.getMigrationStateByChecklistId(checklist.getId());
+
+        if (nonNull(history) && nonNull(history.getControlActivityId())) {
+            return;
+        }
+
         ControlActivityBuilder builder = builderProvider.getControlActivityBuilder(checklist);
 
         ControlActivityRequest request = builder.prepareToMigration(checklist);
@@ -81,6 +95,9 @@ public class MigrationService {
         Integer savedId = uploadDataService.uploadControlActivity(request);
         log.info("Uploaded control activity. Id {}", savedId);
 
-        return savedId;
+        history = new MigrationState();
+        history.setChecklistId(checklist.getId());
+        history.setControlActivityId(savedId);
+        historyService.addMigrationState(history);
     }
 }

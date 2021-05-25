@@ -24,6 +24,7 @@ public class TemplateProvideService {
     private final String templateConfigUrl;
     private final String templateUrl;
     private final RestTemplate restTemplate;
+    private final AuthService authService;
 
     private TemplateDTO templateConfig;
     private TemplateDTO template;
@@ -36,7 +37,8 @@ public class TemplateProvideService {
                                   @Value("${avtodor.template.id}") int avtodorTemplateId,
                                   @Value("${template.config.url}") String templateConfigUrl,
                                   @Value("${template.url}") String templateUrl,
-                                  RestTemplate restTemplate) {
+                                  RestTemplate restTemplate,
+                                  AuthService authService) {
         this.templateConfigId = templateConfigId;
         this.templateId = templateId;
         this.avtodorTemplateConfigId = avtodorTemplateConfigId;
@@ -44,10 +46,13 @@ public class TemplateProvideService {
         this.templateConfigUrl = templateConfigUrl;
         this.templateUrl = templateUrl;
         this.restTemplate = restTemplate;
+        this.authService = authService;
     }
 
     @PostConstruct
     private void init() {
+        authService.login();
+
         templateConfig = restTemplate.getForObject(templateConfigUrl, TemplateDTO.class, templateConfigId);
         template = restTemplate.getForObject(templateUrl, TemplateDTO.class, templateId);
         avtodorTemplateConfig = restTemplate.getForObject(templateConfigUrl, TemplateDTO.class, avtodorTemplateConfigId);

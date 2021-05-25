@@ -12,10 +12,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -26,7 +27,7 @@ public class MigrationHistoryService {
 
     private ObjectMapper mapper;
 
-    private static Map<String, Integer> contractResponseSessions;
+    private static Map<Integer, MigrationState> historyMap;
 
     @PostConstruct
     private void init() throws IOException {
@@ -35,31 +36,27 @@ public class MigrationHistoryService {
         if (Files.exists(path)) {
             MigrationHistory migrationHistory = mapper.readValue(path.toFile(), MigrationHistory.class);
 
-            contractResponseSessions = migrationHistory.getContractResponseSessions()
+            historyMap = migrationHistory.getHistory()
                     .stream()
-                    .collect(toMap(MigrationState::getIdentifier, MigrationState::getId));
+                    .collect(toMap(MigrationState::getChecklistId, Function.identity()));
         } else {
-            contractResponseSessions = new HashMap<>();
+            historyMap = new HashMap<>();
         }
     }
 
     @PreDestroy
     private void destroy() throws IOException {
         MigrationHistory history = new MigrationHistory();
-        history.setContractResponseSessions(
-                contractResponseSessions.entrySet().stream()
-                        .map(e -> new MigrationState(e.getKey(), e.getValue()))
-                        .collect(toList())
-        );
+        history.setHistory(new ArrayList<>(historyMap.values()));
 
         mapper.writeValue(Paths.get(MIGRATION_HISTORY_FILE).toFile(), history);
     }
 
-    public boolean existsByContractIdentifier(String identifier) {
-        return contractResponseSessions.containsKey(identifier);
+    public MigrationState getMigrationStateByChecklistId(Integer id) {
+        return historyMap.get(id);
     }
 
-    public void addContractResponseSession(String identifier, Integer id) {
-        contractResponseSessions.put(identifier, id);
+    public void addMigrationState(MigrationState state) {
+        historyMap.put(state.getChecklistId(), state);
     }
 }

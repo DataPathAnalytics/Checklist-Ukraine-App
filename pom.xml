@@ -24,7 +24,7 @@
         <module>checklist-app</module>
         <module>datasource-app</module>
         <module>analytic-app</module>
-        <module>avto-dor-migration</module>
+        <module>dasu-checklist-migration</module>
     </modules>
 
 </project>

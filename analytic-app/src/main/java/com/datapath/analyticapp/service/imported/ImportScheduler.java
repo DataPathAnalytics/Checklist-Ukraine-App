@@ -12,7 +12,7 @@ public class ImportScheduler {
 
     private final List<ImportService> importServices;
 
-    @Scheduled(fixedDelay = 1000 * 60)
+    @Scheduled(fixedDelay = 1000 * 60 * 60)
     public void update() {
         importServices.forEach(ImportService::upload);
     }

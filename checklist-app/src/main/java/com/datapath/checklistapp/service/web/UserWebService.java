@@ -14,7 +14,7 @@ import com.datapath.checklistapp.dto.UserStateDTO;
 import com.datapath.checklistapp.dto.request.users.RegisterRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordSendRequest;
-import com.datapath.checklistapp.dto.request.users.UpdateRequest;
+import com.datapath.checklistapp.dto.request.users.UserUpdateRequest;
 import com.datapath.checklistapp.exception.ResetPasswordException;
 import com.datapath.checklistapp.exception.UserException;
 import com.datapath.checklistapp.security.ConfirmationTokenStorageService;
@@ -110,7 +110,7 @@ public class UserWebService {
     }
 
     @Transactional
-    public void update(UpdateRequest request) {
+    public void update(UserUpdateRequest request) {
         UserEntity user = userService.findById(request.getId());
 
         if (user.isSuperAdmin()) throw new UserException("SuperAdmin updating not allowed");

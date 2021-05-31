@@ -1,9 +1,7 @@
-package com.datapath.checklistapp.dto.request.activity;
+package com.datapath.checklistapp.dto.request.response_session;
 
 import com.datapath.checklistapp.dto.AnswerDTO;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -11,15 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class UpdateRequest {
+public class ResponseSessionCreateRequest {
 
     @NotNull
-    private Integer id;
+    private Integer controlActivityId;
+    @NotNull
+    private Integer templateId;
 
     @Valid
     private List<AnswerDTO> answers = new ArrayList<>();
 
-    private List<Integer> memberIds = new ArrayList<>();
+    private boolean autoCreated;
 }

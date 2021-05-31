@@ -7,7 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 @Data
-public class UpdateRequest {
+public class UserUpdateRequest {
 
     @NotNull
     private Integer id;

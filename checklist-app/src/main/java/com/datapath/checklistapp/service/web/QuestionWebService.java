@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dao.service.AnswerStructureDaoService;
 import com.datapath.checklistapp.dao.service.QuestionDaoService;
 import com.datapath.checklistapp.dao.service.QuestionSourceDaoService;
 import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.request.question.CreateRequest;
+import com.datapath.checklistapp.dto.request.question.QuestionCreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.mapper.QuestionMapper;
@@ -32,7 +32,7 @@ public class QuestionWebService {
     private final QuestionSourceDaoService questionSourceService;
 
     @Transactional
-    public void create(CreateRequest request) {
+    public void create(QuestionCreateRequest request) {
         QuestionEntity entity = new QuestionEntity();
 
         entity.setValue(request.getValue());

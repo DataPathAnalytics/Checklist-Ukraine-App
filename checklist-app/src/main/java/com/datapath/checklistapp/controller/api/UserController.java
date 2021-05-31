@@ -6,7 +6,7 @@ import com.datapath.checklistapp.dto.UserStateDTO;
 import com.datapath.checklistapp.dto.request.users.RegisterRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordRequest;
 import com.datapath.checklistapp.dto.request.users.ResetPasswordSendRequest;
-import com.datapath.checklistapp.dto.request.users.UpdateRequest;
+import com.datapath.checklistapp.dto.request.users.UserUpdateRequest;
 import com.datapath.checklistapp.service.web.UserWebService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,8 +36,8 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasAuthority('admin')")
-    public UserPageDTO update(@RequestBody @Valid List<UpdateRequest> requests) {
-        for (UpdateRequest request : requests) {
+    public UserPageDTO update(@RequestBody @Valid List<UserUpdateRequest> requests) {
+        for (UserUpdateRequest request : requests) {
             service.update(request);
         }
         return service.list(0, Integer.parseInt(DEFAULT_PAGE_SIZE));

@@ -7,9 +7,9 @@ import com.datapath.checklistapp.dao.service.TemplateDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
 import com.datapath.checklistapp.dao.service.classifier.ActivityStatusDaoService;
 import com.datapath.checklistapp.dto.ControlActivityDTO;
-import com.datapath.checklistapp.dto.request.activity.CreateRequest;
+import com.datapath.checklistapp.dto.request.activity.ControlActivityCreateRequest;
+import com.datapath.checklistapp.dto.request.activity.ControlActivityUpdateRequest;
 import com.datapath.checklistapp.dto.request.activity.TemplateOperationRequest;
-import com.datapath.checklistapp.dto.request.activity.UpdateRequest;
 import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.mapper.AnswerMapper;
@@ -79,7 +79,7 @@ public class ControlActivityWebService implements QuestionAnswerDataUtils {
     }
 
     @Transactional
-    public ControlActivityDTO create(CreateRequest request) {
+    public ControlActivityDTO create(ControlActivityCreateRequest request) {
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
 
         SessionEntity activityResponse = new SessionEntity();
@@ -117,7 +117,7 @@ public class ControlActivityWebService implements QuestionAnswerDataUtils {
     }
 
     @Transactional
-    public ControlActivityDTO update(UpdateRequest request) {
+    public ControlActivityDTO update(ControlActivityUpdateRequest request) {
         ControlActivityEntity entity = controlActivityService.findById(request.getId());
         checkPermission(entity);
 

@@ -1,9 +1,9 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.ControlActivityDTO;
-import com.datapath.checklistapp.dto.request.activity.CreateRequest;
+import com.datapath.checklistapp.dto.request.activity.ControlActivityCreateRequest;
+import com.datapath.checklistapp.dto.request.activity.ControlActivityUpdateRequest;
 import com.datapath.checklistapp.dto.request.activity.TemplateOperationRequest;
-import com.datapath.checklistapp.dto.request.activity.UpdateRequest;
 import com.datapath.checklistapp.dto.request.page.PageableRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.web.ControlActivityWebService;
@@ -27,12 +27,12 @@ public class ControlActivityController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ControlActivityDTO create(@RequestBody @Valid CreateRequest request) {
+    public ControlActivityDTO create(@RequestBody @Valid ControlActivityCreateRequest request) {
         return service.create(request);
     }
 
     @PutMapping
-    public ControlActivityDTO update(@RequestBody @Valid UpdateRequest request) {
+    public ControlActivityDTO update(@RequestBody @Valid ControlActivityUpdateRequest request) {
         return service.update(request);
     }
 

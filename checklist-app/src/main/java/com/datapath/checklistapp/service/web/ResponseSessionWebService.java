@@ -6,10 +6,10 @@ import com.datapath.checklistapp.dao.service.ResponseSessionDaoService;
 import com.datapath.checklistapp.dao.service.UserDaoService;
 import com.datapath.checklistapp.dao.service.classifier.SessionStatusDaoService;
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.dto.request.response_session.CreateRequest;
-import com.datapath.checklistapp.dto.request.response_session.PageableRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionCreateRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionPageableRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionUpdateRequest;
 import com.datapath.checklistapp.dto.request.response_session.StatusOperationRequest;
-import com.datapath.checklistapp.dto.request.response_session.UpdateRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.ValidationException;
 import com.datapath.checklistapp.service.mapper.AnswerMapper;
@@ -47,7 +47,7 @@ public class ResponseSessionWebService implements QuestionAnswerDataUtils {
     }
 
     @Transactional
-    public PageableResponse<ResponseSessionDTO> list(PageableRequest request) {
+    public PageableResponse<ResponseSessionDTO> list(ResponseSessionPageableRequest request) {
         ControlActivityEntity activity = controlActivityService.findById(request.getControlActivityId());
 
         checkPermission(activity);
@@ -65,7 +65,7 @@ public class ResponseSessionWebService implements QuestionAnswerDataUtils {
     }
 
     @Transactional
-    public ResponseSessionDTO create(CreateRequest request) {
+    public ResponseSessionDTO create(ResponseSessionCreateRequest request) {
         ControlActivityEntity activity = controlActivityService.findById(request.getControlActivityId());
 
         checkPermission(activity);
@@ -99,7 +99,7 @@ public class ResponseSessionWebService implements QuestionAnswerDataUtils {
     }
 
     @Transactional
-    public ResponseSessionDTO update(UpdateRequest request) {
+    public ResponseSessionDTO update(ResponseSessionUpdateRequest request) {
         SessionEntity session = responseSessionService.findById(request.getId());
 
         checkPermission(session.getActivity());

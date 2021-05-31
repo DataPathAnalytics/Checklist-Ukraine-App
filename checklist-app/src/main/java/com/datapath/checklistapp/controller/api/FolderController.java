@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.FolderDTO;
-import com.datapath.checklistapp.dto.request.folder.CreateRequest;
+import com.datapath.checklistapp.dto.request.folder.FolderCreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.web.FolderWebService;
@@ -22,7 +22,7 @@ public class FolderController {
     @PostMapping("templates")
     @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
-    public PageableResponse<FolderDTO> createTemplateFolder(@RequestBody @Valid CreateRequest request) {
+    public PageableResponse<FolderDTO> createTemplateFolder(@RequestBody @Valid FolderCreateRequest request) {
         service.createTemplateFolder(request);
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setKeyword(request.getName());
@@ -32,7 +32,7 @@ public class FolderController {
     @PostMapping("template-configs")
     @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
-    public PageableResponse<FolderDTO> createTemplateConfigFolder(@RequestBody @Valid CreateRequest request) {
+    public PageableResponse<FolderDTO> createTemplateConfigFolder(@RequestBody @Valid FolderCreateRequest request) {
         service.createTemplateConfigFolder(request);
         SearchRequest searchRequest = new SearchRequest();
         searchRequest.setKeyword(request.getName());

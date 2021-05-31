@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageableRequest {
+public class ResponseSessionPageableRequest {
     @NotNull
     private Integer controlActivityId;
     private int page = 0;

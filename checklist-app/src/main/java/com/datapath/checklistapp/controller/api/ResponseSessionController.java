@@ -1,10 +1,10 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.ResponseSessionDTO;
-import com.datapath.checklistapp.dto.request.response_session.CreateRequest;
-import com.datapath.checklistapp.dto.request.response_session.PageableRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionCreateRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionPageableRequest;
+import com.datapath.checklistapp.dto.request.response_session.ResponseSessionUpdateRequest;
 import com.datapath.checklistapp.dto.request.response_session.StatusOperationRequest;
-import com.datapath.checklistapp.dto.request.response_session.UpdateRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.web.ResponseSessionWebService;
 import lombok.AllArgsConstructor;
@@ -21,18 +21,18 @@ public class ResponseSessionController {
     private final ResponseSessionWebService service;
 
     @PostMapping("list")
-    public PageableResponse<ResponseSessionDTO> list(@RequestBody @Valid PageableRequest request) {
+    public PageableResponse<ResponseSessionDTO> list(@RequestBody @Valid ResponseSessionPageableRequest request) {
         return service.list(request);
     }
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ResponseSessionDTO create(@RequestBody @Valid CreateRequest request) {
+    public ResponseSessionDTO create(@RequestBody @Valid ResponseSessionCreateRequest request) {
         return service.create(request);
     }
 
     @PutMapping
-    public ResponseSessionDTO update(@RequestBody @Valid UpdateRequest request) {
+    public ResponseSessionDTO update(@RequestBody @Valid ResponseSessionUpdateRequest request) {
         return service.update(request);
     }
 

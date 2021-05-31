@@ -1,7 +1,7 @@
 package com.datapath.checklistapp.controller.api;
 
 import com.datapath.checklistapp.dto.QuestionDTO;
-import com.datapath.checklistapp.dto.request.question.CreateRequest;
+import com.datapath.checklistapp.dto.request.question.QuestionCreateRequest;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.web.QuestionWebService;
@@ -22,7 +22,7 @@ public class QuestionController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
-    public void create(@RequestBody @Valid CreateRequest request) {
+    public void create(@RequestBody @Valid QuestionCreateRequest request) {
         service.create(request);
     }
 

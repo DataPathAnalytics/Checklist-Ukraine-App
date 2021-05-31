@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateRequest {
+public class ControlActivityCreateRequest {
 
     @NotNull
     private Integer templateConfigId;

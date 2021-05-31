@@ -12,7 +12,8 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import static com.datapath.datasourceapp.Constants.DB_PATH;
+import static com.datapath.datasourceapp.Constants.COLLECTIONS_PATH;
+import static java.util.Objects.isNull;
 
 @Slf4j
 @Component
@@ -27,6 +28,8 @@ public class DBInitializer implements InitializingBean {
         log.info("DB initialization started");
 
         File[] files = files();
+
+        if (isNull(files)) return;
 
         log.info("Found collections {}", files.length);
 
@@ -43,6 +46,10 @@ public class DBInitializer implements InitializingBean {
     }
 
     private File[] files() throws FileNotFoundException {
-        return ResourceUtils.getFile(DB_PATH).listFiles();
+        File collectionFolder = ResourceUtils.getFile(COLLECTIONS_PATH);
+
+        if (!collectionFolder.exists()) return null;
+
+        return collectionFolder.listFiles();
     }
 }

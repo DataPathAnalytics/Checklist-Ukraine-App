@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -30,5 +32,11 @@ public class CatalogWebService {
                         .map(answerMapper::map)
                         .collect(toList())
         );
+    }
+
+    public List<AnswerStructureDTO> allAnswerStructures() {
+        return answerStructureService.findAll().stream()
+                .map(answerMapper::map)
+                .collect(toList());
     }
 }

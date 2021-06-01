@@ -8,7 +8,10 @@ import com.datapath.checklistapp.util.database.Entity;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -28,5 +31,10 @@ public class AnswerStructureDaoService {
 
     public AnswerStructureEntity findDefault() {
         return repository.findFirstBy_defaultIsTrue();
+    }
+
+    public List<AnswerStructureEntity> findAll() {
+        Sort sort = Sort.by("name");
+        return repository.findAll(sort);
     }
 }

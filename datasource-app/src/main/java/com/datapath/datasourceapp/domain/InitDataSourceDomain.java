@@ -6,7 +6,7 @@ import org.bson.Document;
 import java.util.List;
 
 @Data
-public class InitCollectionDomain {
+public class InitDataSourceDomain {
 
     private String name;
     private String description;

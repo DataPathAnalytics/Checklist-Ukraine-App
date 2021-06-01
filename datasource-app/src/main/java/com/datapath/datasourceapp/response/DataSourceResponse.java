@@ -1,6 +1,6 @@
 package com.datapath.datasourceapp.response;
 
-import com.datapath.datasourceapp.domain.CollectionInfoDomain;
+import com.datapath.datasourceapp.domain.DataSourceInfoDomain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,6 +8,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CollectionResponse {
-    List<CollectionInfoDomain> collections;
+public class DataSourceResponse {
+    List<DataSourceInfoDomain> dataSources;
 }

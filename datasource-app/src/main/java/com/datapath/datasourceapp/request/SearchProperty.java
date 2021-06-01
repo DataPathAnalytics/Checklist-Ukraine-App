@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class SearchProperty {
 
     @NotBlank
-    private String datasource;
+    private String dataSource;
     private String fieldName;
     private Object fieldValue = "";
 

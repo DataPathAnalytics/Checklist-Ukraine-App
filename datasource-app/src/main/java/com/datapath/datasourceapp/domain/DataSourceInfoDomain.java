@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CollectionInfoDomain {
+public class DataSourceInfoDomain {
 
     private String name;
     private String description;

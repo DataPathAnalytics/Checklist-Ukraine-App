@@ -1,6 +1,6 @@
 package com.datapath.datasourceapp;
 
-import com.datapath.datasourceapp.domain.InitCollectionDomain;
+import com.datapath.datasourceapp.domain.InitDataSourceDomain;
 import com.datapath.datasourceapp.service.DaoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.util.ResourceUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-import static com.datapath.datasourceapp.Constants.COLLECTIONS_PATH;
+import static com.datapath.datasourceapp.Constants.DATA_SOURCES_PATH;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -34,7 +34,7 @@ public class DBInitializer implements InitializingBean {
         log.info("Found collections {}", files.length);
 
         for (File file : files) {
-            InitCollectionDomain collection = mapper.readValue(file, InitCollectionDomain.class);
+            InitDataSourceDomain collection = mapper.readValue(file, InitDataSourceDomain.class);
 
             log.info("Processing collection {}", collection.getName());
 
@@ -46,7 +46,7 @@ public class DBInitializer implements InitializingBean {
     }
 
     private File[] files() throws FileNotFoundException {
-        File collectionFolder = ResourceUtils.getFile(COLLECTIONS_PATH);
+        File collectionFolder = ResourceUtils.getFile(DATA_SOURCES_PATH);
 
         if (!collectionFolder.exists()) return null;
 

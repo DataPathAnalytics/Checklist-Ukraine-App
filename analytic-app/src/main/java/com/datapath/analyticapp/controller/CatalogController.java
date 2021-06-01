@@ -7,14 +7,12 @@ import com.datapath.analyticapp.dto.request.SearchRequest;
 import com.datapath.analyticapp.dto.response.PageableResponse;
 import com.datapath.analyticapp.service.web.CatalogWebService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("catalogs")
+@CrossOrigin
 public class CatalogController {
 
     private final CatalogWebService service;

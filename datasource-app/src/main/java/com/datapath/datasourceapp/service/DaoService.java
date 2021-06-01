@@ -1,7 +1,7 @@
 package com.datapath.datasourceapp.service;
 
-import com.datapath.datasourceapp.domain.CollectionInfoDomain;
-import com.datapath.datasourceapp.domain.InitCollectionDomain;
+import com.datapath.datasourceapp.domain.DataSourceInfoDomain;
+import com.datapath.datasourceapp.domain.InitDataSourceDomain;
 import com.datapath.datasourceapp.request.SearchProperty;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
@@ -23,14 +23,14 @@ public class DaoService {
 
     private final MongoTemplate template;
 
-    public void saveItem(InitCollectionDomain collection, Document item) {
+    public void saveItem(InitDataSourceDomain collection, Document item) {
         Query query = new Query();
         query.addCriteria(Criteria.where(collection.getKey()).is(item.get(collection.getKey())));
 
         template.upsert(query, Update.fromDocument(item), collection.getName());
     }
 
-    public void saveCollectionInfo(InitCollectionDomain collection) {
+    public void saveCollectionInfo(InitDataSourceDomain collection) {
         Query query = new Query();
         query.addCriteria(Criteria.where(NAME).is(collection.getName()));
 
@@ -40,7 +40,7 @@ public class DaoService {
         document.put(KEY, collection.getKey());
         document.put(FIELDS, collection.getFields());
 
-        template.upsert(query, Update.fromDocument(document), COLLECTIONS);
+        template.upsert(query, Update.fromDocument(document), DATA_SOURCES);
     }
 
     public List<Document> searchItem(SearchProperty property) {
@@ -58,13 +58,13 @@ public class DaoService {
             query.addCriteria(Criteria.where(property.getFilterFieldName()).is(property.getFilterFieldValue()));
         }
 
-        return template.find(query, Document.class, property.getDatasource());
+        return template.find(query, Document.class, property.getDataSource());
     }
 
-    public List<CollectionInfoDomain> getCollectionInfo() {
+    public List<DataSourceInfoDomain> getDataSources() {
         Query query = new Query();
         query.with(Sort.by(NAME));
 
-        return template.find(query, CollectionInfoDomain.class, COLLECTIONS);
+        return template.find(query, DataSourceInfoDomain.class, DATA_SOURCES);
     }
 }

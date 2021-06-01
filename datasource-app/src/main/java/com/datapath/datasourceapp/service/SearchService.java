@@ -1,7 +1,7 @@
 package com.datapath.datasourceapp.service;
 
 import com.datapath.datasourceapp.request.SearchProperty;
-import com.datapath.datasourceapp.response.CollectionResponse;
+import com.datapath.datasourceapp.response.DataSourceResponse;
 import lombok.AllArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class SearchService {
                 .collect(toList());
     }
 
-    public CollectionResponse collections() {
-        return new CollectionResponse(daoService.getCollectionInfo());
+    public DataSourceResponse dataSources() {
+        return new DataSourceResponse(daoService.getDataSources());
     }
 }

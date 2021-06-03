@@ -30,7 +30,7 @@ public class QuestionEntity {
     @JoinColumn(name = "answer_structure_id")
     private AnswerStructureEntity answerStructure;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "question_source_id")
     private QuestionSourceEntity questionSource;
 }

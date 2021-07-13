@@ -146,7 +146,7 @@ public class TemplateConfigWebService {
         templateConfigService.delete(templateConfigService.findById(id));
     }
 
-    private void processQuestion(CreateTemplateConfigRequest.TemplateQuestion dtoQuestion,
+    private void processQuestion(CreateTemplateConfigRequest.TemplateConfigQuestion dtoQuestion,
                                  QuestionEntity daoQuestion,
                                  Set<QuestionExecutionEntity> questionExecutions,
                                  QuestionExecutionEntity parentQuestion,

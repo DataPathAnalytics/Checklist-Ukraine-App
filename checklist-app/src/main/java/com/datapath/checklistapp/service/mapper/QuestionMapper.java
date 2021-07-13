@@ -108,7 +108,7 @@ public class QuestionMapper {
         return execution;
     }
 
-    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateQuestion q, QuestionEntity question, QuestionExecutionRole role) {
+    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateConfigQuestion q, QuestionEntity question, QuestionExecutionRole role) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setQuestion(question);
         execution.setOrderNumber(q.getOrderNumber());

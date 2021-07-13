@@ -32,11 +32,11 @@ public class CreateTemplateConfigRequest {
     private BaseQuestion authorityQuestion;
 
     @Valid
-    private List<TemplateQuestion> objectFeatureQuestions = new ArrayList<>();
+    private List<TemplateConfigQuestion> objectFeatureQuestions = new ArrayList<>();
     @Valid
-    private List<TemplateQuestion> typeQuestions = new ArrayList<>();
+    private List<TemplateConfigQuestion> typeQuestions = new ArrayList<>();
     @Valid
-    private List<TemplateQuestion> authorityFeatureQuestions = new ArrayList<>();
+    private List<TemplateConfigQuestion> authorityFeatureQuestions = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
@@ -51,8 +51,8 @@ public class CreateTemplateConfigRequest {
         @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
 
-        public TemplateQuestion asTemplateQuestion() {
-            TemplateQuestion question = new TemplateQuestion();
+        public TemplateConfigQuestion asTemplateQuestion() {
+            TemplateConfigQuestion question = new TemplateConfigQuestion();
             question.setQuestionId(this.questionId);
             question.setNodeType(this.nodeType);
             question.setMiningRoleId(this.miningRoleId);
@@ -64,7 +64,7 @@ public class CreateTemplateConfigRequest {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class TemplateQuestion {
+    public static class TemplateConfigQuestion {
         @NotNull
         private Integer questionId;
 
@@ -75,7 +75,7 @@ public class CreateTemplateConfigRequest {
         private boolean required;
 
         @Valid
-        private List<TemplateQuestion> subQuestions = new ArrayList<>();
+        private List<TemplateConfigQuestion> subQuestions = new ArrayList<>();
         @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
     }

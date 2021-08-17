@@ -2,8 +2,8 @@ package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dto.*;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
+import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest.TemplateConfigQuestion;
+import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest.TemplateQuestion;
 import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -90,7 +90,7 @@ public class QuestionMapper {
         return source;
     }
 
-    public QuestionExecutionEntity map(CreateTemplateRequest.TemplateQuestion q, QuestionEntity question) {
+    public QuestionExecutionEntity map(TemplateQuestion q, QuestionEntity question) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setOrderNumber(q.getOrderNumber());
         execution.setRequired(q.isRequired());
@@ -108,7 +108,7 @@ public class QuestionMapper {
         return execution;
     }
 
-    public QuestionExecutionEntity map(CreateTemplateConfigRequest.TemplateConfigQuestion q, QuestionEntity question, QuestionExecutionRole role) {
+    public QuestionExecutionEntity map(TemplateConfigQuestion q, QuestionEntity question, QuestionExecutionRole role) {
         QuestionExecutionEntity execution = new QuestionExecutionEntity();
         execution.setQuestion(question);
         execution.setOrderNumber(q.getOrderNumber());

@@ -25,9 +25,9 @@ public class CreateTemplateRequest {
     private Integer templateConfigId;
 
     @Valid
-    private List<TemplateQuestion> ungroupedQuestions = new ArrayList<>();
+    private List<TemplateQuestion> questions = new ArrayList<>();
     @Valid
-    private List<QuestionGroup> questionGroups = new ArrayList<>();
+    private List<QuestionGroup> groups = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
@@ -53,10 +53,14 @@ public class CreateTemplateRequest {
         private String linkType;
         private String nodeType = UNKNOWN_NODE;
 
+        @NotBlank
+        private String hash;
+        private String parentHash;
+        private String conditionFieldName;
+        private Integer conditionAnswerId;
+
         @Valid
         private List<ConditionCharacteristic> conditionCharacteristics = new ArrayList<>();
-        @Valid
-        private List<SubQuestion> subQuestions = new ArrayList<>();
     }
 
     @Data
@@ -67,13 +71,11 @@ public class CreateTemplateRequest {
         private Integer conditionAnswerId;
     }
 
-    @Data
-    public static class SubQuestion {
-        private Integer conditionAnswerId;
-
-        @NotBlank
-        private String conditionFieldName;
-        @NotNull
-        private TemplateQuestion question;
+    public static QuestionGroup toGroup(String name, List<TemplateQuestion> questions) {
+        QuestionGroup group = new QuestionGroup();
+        group.setName(name);
+        group.setOrderNumber(-1);
+        group.setQuestions(questions);
+        return group;
     }
 }

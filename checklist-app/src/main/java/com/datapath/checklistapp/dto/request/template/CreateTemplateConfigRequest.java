@@ -74,8 +74,10 @@ public class CreateTemplateConfigRequest {
         private Long miningRoleId;
         private boolean required;
 
-        @Valid
-        private List<TemplateConfigQuestion> subQuestions = new ArrayList<>();
+        @NotBlank
+        private String hash;
+        private String parentHash;
+
         @Valid
         private List<AutoCompleteConfig> autoCompleteConfigs = new ArrayList<>();
     }

@@ -13,7 +13,6 @@ public class AnswerStructureDTO {
 
     private Integer id;
     private String name;
-    private String linkType;
     private List<FieldDescriptionDTO> fieldDescriptions;
 
     @Data

@@ -18,8 +18,9 @@ import static java.util.Objects.nonNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTemplateConfigRequest {
+public class SaveTemplateConfigRequest {
 
+    private Integer id;
     @NotBlank
     private String name;
     @NotNull

@@ -47,6 +47,7 @@ public class TemplateConfigDaoService {
     }
 
     public boolean isUsed(Integer id) {
-        return repository.isUsed(id);
+        return repository.isUsedInResponseSession(id) ||
+                repository.isUsedInUsabilityTemplate(id);
     }
 }

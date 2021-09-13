@@ -2,8 +2,8 @@ package com.datapath.checklistapp.service.mapper;
 
 import com.datapath.checklistapp.dao.entity.*;
 import com.datapath.checklistapp.dto.*;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest.TemplateConfigQuestion;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest.TemplateQuestion;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateConfigRequest.TemplateConfigQuestion;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateRequest.TemplateQuestion;
 import com.datapath.checklistapp.util.database.QuestionExecutionRole;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;

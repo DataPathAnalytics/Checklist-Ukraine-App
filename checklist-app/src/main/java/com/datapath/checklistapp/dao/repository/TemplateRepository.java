@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface TemplateRepository extends JpaRepository<TemplateEntity, Integer> {
 
-    String IS_USED_QUERY = "select exists(select id from session where template_id = :id)";
+    String IS_USED_QUERY = "select exists(select control_activity_id from control_activity_template where template_id = :id)";
 
     @Query(value = "select * from template where name ilike CONCAT(:name, '%') order by name", nativeQuery = true)
     Page<TemplateEntity> searchByName(@Param("name") String name, Pageable pageable);

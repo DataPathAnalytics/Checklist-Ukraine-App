@@ -6,9 +6,9 @@ import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest.QuestionGroup;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateRequest.TemplateQuestion;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateRequest;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateRequest.QuestionGroup;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateRequest.TemplateQuestion;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.service.mapper.QuestionMapper;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.datapath.checklistapp.dto.request.template.CreateTemplateRequest.toGroup;
+import static com.datapath.checklistapp.dto.request.template.SaveTemplateRequest.toGroup;
 import static com.datapath.checklistapp.util.Constants.UNGROUPED_NAME;
 import static com.datapath.checklistapp.util.UserUtils.getCurrentUserId;
 import static java.util.Objects.isNull;
@@ -45,16 +45,21 @@ public class TemplateWebService {
     private final TemplateMapper templateMapper;
     private final QuestionMapper questionMapper;
     private final QuestionExecutionDaoService questionExecutionService;
-    private final QuestionGroupDaoService questionGroupService;
     private final ValidateService validateService;
 
     @Transactional
-    public void create(CreateTemplateRequest request) {
+    public void create(SaveTemplateRequest request) {
         TemplateConfigEntity config = templateConfigService.findById(request.getTemplateConfigId());
 
         validateService.validate(config);
 
         TemplateEntity entity = new TemplateEntity();
+
+        if (nonNull(request.getId())) {
+            checkUsability(request.getId());
+            entity.setId(request.getId());
+        }
+
         entity.setName(request.getName());
         entity.setAuthor(userService.findById(getCurrentUserId()));
         entity.setFolder(folderService.findTemplateFolderById(request.getFolderId()));
@@ -161,13 +166,11 @@ public class TemplateWebService {
 
     @Transactional
     public void delete(Integer id) {
-        if (templateService.isUsed(id)) throw new UnmodifiedException("Template already is used");
+        checkUsability(id);
+        templateService.delete(templateService.findById(id));
+    }
 
-        TemplateEntity entity = templateService.findById(id);
-        entity.getGroups().forEach(g -> {
-            g.getQuestions().forEach(questionExecutionService::delete);
-            questionGroupService.delete(g);
-        });
-        templateService.delete(entity);
+    private void checkUsability(Integer id) {
+        if (templateService.isUsed(id)) throw new UnmodifiedException("Template already is used");
     }
 }

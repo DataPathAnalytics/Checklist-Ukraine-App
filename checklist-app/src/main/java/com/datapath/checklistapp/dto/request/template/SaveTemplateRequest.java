@@ -15,8 +15,9 @@ import static com.datapath.checklistapp.util.Constants.UNKNOWN_NODE;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateTemplateRequest {
+public class SaveTemplateRequest {
 
+    private Integer id;
     @NotBlank
     private String name;
     @NotNull

@@ -9,9 +9,9 @@ import com.datapath.checklistapp.dto.FolderDTO;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest.BaseQuestion;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest.TemplateConfigQuestion;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateConfigRequest;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateConfigRequest.BaseQuestion;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateConfigRequest.TemplateConfigQuestion;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.exception.UnmodifiedException;
 import com.datapath.checklistapp.service.mapper.QuestionMapper;
@@ -53,8 +53,13 @@ public class TemplateConfigWebService {
     private final ValidateService validateService;
 
     @Transactional
-    public void create(CreateTemplateConfigRequest request) {
+    public void create(SaveTemplateConfigRequest request) {
         TemplateConfigEntity entity = new TemplateConfigEntity();
+
+        if (nonNull(request.getId())) {
+            checkUsability(request.getId());
+            entity.setId(request.getId());
+        }
 
         entity.setName(request.getName());
         entity.setAuthor(userService.findById(UserUtils.getCurrentUserId()));
@@ -172,7 +177,11 @@ public class TemplateConfigWebService {
 
     @Transactional
     public void delete(Integer id) {
-        if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
+        checkUsability(id);
         templateConfigService.delete(templateConfigService.findById(id));
+    }
+
+    private void checkUsability(Integer id) {
+        if (templateConfigService.isUsed(id)) throw new UnmodifiedException("Template config already is used");
     }
 }

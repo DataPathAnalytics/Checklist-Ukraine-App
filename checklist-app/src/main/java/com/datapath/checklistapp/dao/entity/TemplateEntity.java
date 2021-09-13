@@ -2,6 +2,7 @@ package com.datapath.checklistapp.dao.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -20,6 +21,8 @@ public class TemplateEntity {
     private String name;
     @CreatedDate
     private LocalDateTime dateCreated;
+    @LastModifiedDate
+    private LocalDateTime dateModified;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
@@ -33,7 +36,7 @@ public class TemplateEntity {
     @JoinColumn(name = "config_id")
     private TemplateConfigEntity config;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "template_id")
     private Set<QuestionGroupEntity> groups = new HashSet<>();
 }

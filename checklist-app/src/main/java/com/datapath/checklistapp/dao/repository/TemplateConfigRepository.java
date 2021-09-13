@@ -12,14 +12,20 @@ import java.util.List;
 
 public interface TemplateConfigRepository extends JpaRepository<TemplateConfigEntity, Integer> {
 
-    String IS_USED_QUERY = "select exists(select id from session where template_config_id = :id) or " +
-            "exists(select id from template where config_id = :id)";
+    String IS_USED_IN_RESPONSE_SESSION_QUERY = "select exists(select id from session where template_config_id = :id)";
+
+    String IS_USED_IN_USABILITY_TEMPLATE_QUERY = "select exists(" +
+            "select control_activity_id from control_activity_template where template_id in (" +
+            "select id from template where config_id = :id))";
 
     List<TemplateConfigEntity> findAllByType(TemplateConfigType type);
 
     @Query(value = "select * from template_config where name ilike CONCAT(:name, '%') order by name", nativeQuery = true)
     Page<TemplateConfigEntity> searchByName(@Param("name") String name, Pageable pageable);
 
-    @Query(value = IS_USED_QUERY, nativeQuery = true)
-    boolean isUsed(Integer id);
+    @Query(value = IS_USED_IN_RESPONSE_SESSION_QUERY, nativeQuery = true)
+    boolean isUsedInResponseSession(Integer id);
+
+    @Query(value = IS_USED_IN_USABILITY_TEMPLATE_QUERY, nativeQuery = true)
+    boolean isUsedInUsabilityTemplate(Integer id);
 }

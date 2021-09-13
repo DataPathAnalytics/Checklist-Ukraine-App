@@ -3,7 +3,7 @@ package com.datapath.checklistapp.controller.api;
 import com.datapath.checklistapp.dto.TemplateDTO;
 import com.datapath.checklistapp.dto.TemplateFolderTreeDTO;
 import com.datapath.checklistapp.dto.request.search.SearchRequest;
-import com.datapath.checklistapp.dto.request.template.CreateTemplateConfigRequest;
+import com.datapath.checklistapp.dto.request.template.SaveTemplateConfigRequest;
 import com.datapath.checklistapp.dto.response.page.PageableResponse;
 import com.datapath.checklistapp.service.web.TemplateConfigWebService;
 import lombok.AllArgsConstructor;
@@ -24,7 +24,7 @@ public class TemplateConfigController {
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     @PreAuthorize("hasAuthority('methodologist')")
-    public void create(@RequestBody @Valid CreateTemplateConfigRequest request) {
+    public void save(@RequestBody @Valid SaveTemplateConfigRequest request) {
         service.create(request);
     }
 

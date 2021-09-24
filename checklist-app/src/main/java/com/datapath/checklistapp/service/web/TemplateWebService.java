@@ -65,11 +65,11 @@ public class TemplateWebService {
         entity.setFolder(folderService.findTemplateFolderById(request.getFolderId()));
         entity.setConfig(config);
 
-        if (!isEmpty(request.getQuestions()))
-            entity.getGroups().add(handle(toGroup(UNGROUPED_NAME, request.getQuestions())));
+        if (!isEmpty(request.getUngroupedQuestions()))
+            entity.getGroups().add(handle(toGroup(UNGROUPED_NAME, request.getUngroupedQuestions())));
 
-        if (!isEmpty(request.getGroups()))
-            entity.getGroups().addAll(handle(request.getGroups()));
+        if (!isEmpty(request.getQuestionGroups()))
+            entity.getGroups().addAll(handle(request.getQuestionGroups()));
 
         templateService.save(entity);
     }

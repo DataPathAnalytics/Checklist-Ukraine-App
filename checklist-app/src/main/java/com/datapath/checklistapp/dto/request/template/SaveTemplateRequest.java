@@ -26,9 +26,9 @@ public class SaveTemplateRequest {
     private Integer templateConfigId;
 
     @Valid
-    private List<TemplateQuestion> questions = new ArrayList<>();
+    private List<TemplateQuestion> ungroupedQuestions = new ArrayList<>();
     @Valid
-    private List<QuestionGroup> groups = new ArrayList<>();
+    private List<QuestionGroup> questionGroups = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
